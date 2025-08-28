@@ -20,7 +20,6 @@ int	main(int ac, char *av[])
 			add_history(line);
 		free(line);
 	}
-	(void)sa;
 	return (0);
 }
 
