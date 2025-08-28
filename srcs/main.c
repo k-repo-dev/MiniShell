@@ -1,11 +1,13 @@
 #include "../incls/minishell.h"
 
 int	main(int ac, char *av[])
-{
-	char *line;
+{	
+	t_sa	sa;
+	char	*line;
 	
 	(void)ac;
 	(void)av;
+	sa = init_sigaction(signal_handler);
 	while (1)
 	{
 		line = readline("my_prompt> ");
@@ -18,5 +20,8 @@ int	main(int ac, char *av[])
 			add_history(line);
 		free(line);
 	}
+	(void)sa;
 	return (0);
 }
+
+
