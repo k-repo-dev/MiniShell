@@ -1,9 +1,10 @@
-#include "../incls/minishell.h"
+#include "../incls/prototypes.h"
 
 int	main(int ac, char *av[])
 {	
 	t_sa	sa;
 	char	*line;
+	t_token	*tokens;
 	
 	(void)ac;
 	(void)av;
@@ -18,7 +19,11 @@ int	main(int ac, char *av[])
 		}
 		if (*line)
 			add_history(line);
-		input_parser(line);
+		tokens = parser(line);
+		if (tokens)
+		{
+			//executions starts
+		}
 		free(line);
 	}
 	return (0);

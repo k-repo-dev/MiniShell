@@ -1,4 +1,4 @@
-#include "../../incls/minishell.h"
+#include "../../incls/prototypes.h"
 
 t_sa	init_sigaction(void (*handler)(int, siginfo_t *, void *))
 {

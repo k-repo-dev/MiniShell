@@ -1,12 +1,4 @@
-#include "../../incls/minishell.h"
-#include "../../incls/memory.h"
-
-int	memory_arena(const char *command_line)
-{
-	t_arena	arena;
-
-	
-}
+#include "../../incls/prototypes.h"
 
 int	init_arena(t_arena *arena, size_t size)
 {
@@ -35,6 +27,20 @@ void	*alloc_arena(t_arena *arena, size_t size)
 	ptr = arena->buffer + arena->offset;
 	arena->offset += size;
 	return (ptr);
+}
+
+char	*arena_strdup(t_arena *arena, const char *str)
+{
+	char	*new_str;
+	size_t	len;
+
+	if (str == NULL)
+		return (NULL);
+	len = ft_strlen(str) + 1;
+	new_str = (char *)alloc_arena(arena, len);
+	if (new_str)
+		ft_memcpy(new_str, str, len);
+	return (new_str);
 }
 
 void	free_arena(t_arena *arena)
