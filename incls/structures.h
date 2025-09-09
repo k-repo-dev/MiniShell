@@ -21,11 +21,17 @@ typedef struct	s_token
 	struct s_token	*next;
 }	t_token;
 
+typedef struct	s_redir
+{
+	t_token_type	type;
+	char			*filename;
+	struct	s_redir	*next;
+}	t_redir;
+
 typedef struct	s_command
 {
 	char				**args;
-	int					input_fd;
-	int					output_fd;
+	t_redir				*redirects;
 	struct s_command	*next;
 }	t_command;
 
