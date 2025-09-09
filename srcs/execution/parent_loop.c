@@ -1,5 +1,16 @@
 #include "minishell.h"
 
+int	parent_loop(t_command args, char **envp)
+{
+	while (args != 0)
+	{
+		// check for builtin or binary
+		*cmd_check(*envp, args[arg]);
+		safe_fork(NULL);
+		args--;
+	}
+}
+
 int	not_main(int argc, char *argv[], char *envp[])
 {
 	int		pipefd[2];
