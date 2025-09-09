@@ -30,7 +30,7 @@ t_command	*parse_commands(t_token *token_head, t_arena *arena);
 void		expand_commands(t_command *cmd_list, t_arena *arena, int exit_status);
 
 // Execution
-int		parent_loop(t_command args);
+int		parent_loop(t_command args, char **envp);
 pid_t	safe_fork(int pipefd[2]);
 
 // Builtins
@@ -39,10 +39,10 @@ int		builtin_pwd(void);
 int		builtin_env(char **envp);
 int		builtin_cd(char **args, char ***envp);
 int		builtin_export(char **args, char ***envp);
-int		builtin_unset(*char **args, char ***envp);
+int		builtin_unset(char **args, char ***envp);
 int		builtin_exit(char **args);
-int		is_builtin(const char *cmd);
-int		exec_builting(char **args, char ***envp);
+bool	is_builtin(const char *cmd);
+int		exec_builtin(char **args, char ***envp);
 
 // Pathing
 char	*cmd_findpath(char *envp[]);
