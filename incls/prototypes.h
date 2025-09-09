@@ -6,7 +6,7 @@
 # include "../libft/libft.h"
 
 // Function prototypes in signal.c
-t_sa		init_sigaction(void (*handler)(int, siginfo_t *, void *));
+t_sa		init_sigaction(void (*handler)(int));
 void		handle_sigint(int sig);
 
 // Function prototypes from memory_arena.c

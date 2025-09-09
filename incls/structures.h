@@ -3,15 +3,18 @@
 
 # include "minishell.h"
 
-typedef struct sigaction	t_sa;
+typedef struct s_sa
+{
+	int	sig;
+}	t_sa;
 
 typedef enum	e_token_type
 {
 	CMD_TOKEN,
 	ARG_TOKEN,
 	PIPE_TOKEN,
-	REDIRECT_IN_TOKEN,
-	REDIRECT_OUT_TOKEN
+	LESS_TOKEN,
+	GREAT_TOKEN
 }	t_token_type;
 
 typedef struct	s_token
