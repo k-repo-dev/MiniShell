@@ -14,12 +14,16 @@ void		*alloc_arena(t_arena *arena, size_t size);
 int			init_arena(t_arena *arena, size_t size);
 char		*arena_strdup(t_arena *arena, const char *str);
 void		free_arena(t_arena *arena);
-
-// Function prototypes from parsing.c
-t_token		*parser(const char *line);
+char		*arena_itoa(int n, t_arena *arena);
 
 // Function prototypes from tokenizer.c
 t_token		*tokenizer(const char *line, t_arena *arena);
 const char	*find_token_end(const char *start);
+
+// Function prototypes from commands.c
+t_command	*parse_command(t_token *token_head, t_arena *arena);
+
+// Function prortypes from env_vars.c
+void		expand_commnd(t_command *cmd_list, t_arena *arena, int exit_status);
 
 #endif

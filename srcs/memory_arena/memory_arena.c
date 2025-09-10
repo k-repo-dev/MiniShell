@@ -53,3 +53,39 @@ void	free_arena(t_arena *arena)
 		arena->offset = 0;
 	}
 }
+
+char	*arena_itoa(int n, t_arena *arena)
+{
+	char	*str;
+	int		len;
+	long	nb;
+
+	len = 0;
+	nb = n;
+	if (nb == 0)
+		return (arena_strdup(arena, "0"));
+	if (nb < 0)
+	{
+		nb = -nb;
+		len++;
+	}
+	while (nb > 0)
+	{
+		nb /= 10;
+		len++;
+	}
+	str = alloc_arena(arena, len + 1);
+	str[len] = '\0';
+	nb = n;
+	if (nb < 0)
+	{
+		nb = -nb;
+		str[0] = '-';
+	}
+	while (nb > 0)
+	{
+		str[--len] = (nb % 10) + '0';
+		nb /= 10;
+	}
+	return (str);
+}
