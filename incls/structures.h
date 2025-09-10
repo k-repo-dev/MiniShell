@@ -8,7 +8,7 @@ typedef struct s_sa
 	int	sig;
 }	t_sa;
 
-typedef enum	e_token_type
+typedef enum e_token_type
 {
 	CMD_TOKEN,
 	ARG_TOKEN,
@@ -19,12 +19,12 @@ typedef enum	e_token_type
 	DGREAT_TOKEN
 }	t_token_type;
 
-typedef struct	s_token
+typedef struct s_token
 {
-	char			*value;
-	t_token_type	type;
-	struct s_token	*next;
-}	t_token;
+	char					*value;
+	t_token_type			type;
+	struct s_token			*next;
+}							t_token;
 
 typedef struct	s_redir
 {
@@ -40,11 +40,11 @@ typedef struct	s_command
 	struct s_command	*next;
 }	t_command;
 
-typedef struct	s_arena
+typedef struct s_arena
 {
-	char	*buffer;
-	size_t	size;
-	size_t	offset;
-}	t_arena;
+	char					*buffer;
+	size_t					size;
+	size_t					offset;
+}							t_arena;
 
 #endif
