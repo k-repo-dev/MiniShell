@@ -3,10 +3,28 @@
 // Child safe
 int	builtin_echo(char **args)
 {
-	if (strcmp(args, "echo -n"))
-		ft_printf("%s", args);
-	if (strcmp(args, "echo"))
-		ft_printf("%s\n", args);
+	int	i;
+	int	newline;
+
+	i = 1;
+	newline = 1;
+	if (!args || !args[0])
+		return (1);
+	while (args[i] && strcmp(args[i], "-n" != 0))
+	{
+		newline = 0;
+		i++;
+	}
+	while (args[i])
+	{
+		printf("%s", args[i]);
+		if (args[i + 1])
+			printf(" ");
+		i++;
+	}
+	if (newline)
+		printf("\n");
+	return (0);
 }
 
 int	builtin_pwd(void)
@@ -42,6 +60,7 @@ int	builtin_cd(char **args, char ***envp)
 
 int	builtin_export(char **args, char ***envp)
 {
+	// sort by ascii
 }
 
 int	builtin_unset(char **args, char ***envp)
@@ -55,10 +74,30 @@ int	builtin_exit(char **args)
 // Builtin brains
 bool	is_builtin(const char *cmd)
 {
+	if (cmd == "echo" || cmd == "pwd" || cmd == "env" || cmd == "cd"
+		|| cmd == "unset" || cmd == "export" || cmd == "exit")
+		return (true);
+	else
+		return (false);
 }
 
 int	exec_builtin(char **args, char ***envp)
 {
+	is_builtin(args);
+	if (args == "echo")
+		builtin_echo();
+	if (args == "pwd")
+		buildin_pwd();
+	if (args == "env")
+		buildin_env();
+	if (args == "cd")
+		builtin_cd();
+	if (args == "unset")
+		builtin_unset();
+	if (args == "export")
+		builtin_export();
+	if (args == "exit")
+		builtin_exit();
 }
 
 void	find_directory(char **envp, char *directory)
