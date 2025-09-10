@@ -36,10 +36,43 @@ t_command	*parse_command(t_token *token_head, t_arena *arena)
 
 static void	add_arg_to_cmd(t_command *cmd, t_token *token, t_arena *arena)
 {
+	char	**new_args;
+	int		i;
+	int		count;
 
+	count = 0;
+	if (cmd->args)
+		while (cmd->args[count])
+			count++;
+	new_args = alloc_arena(arena, sizeof(char *) * (count + 2));
+	i = 0;
+	while (i < count)
+	{
+		new_args[i] = cmd->args[i];
+		i++;
+	}
+	new_args[i] = arena_strdup(arena, token->value);
+	new_args[i + 1] = NULL;
+	cmd->args = new_args;
 }
 
 static void add_redir_to_cmd(t_command *cmd, t_token **token, t_arena *arena)
 {
+	t_redir	*new_redir;
+	t_redir	*current_redir;
 
+	new_redir = alloc_arena(arena, sizeof(t_redir));
+	new_redir->type = (*token)->type;
+	*token = (*token)->next;
+	new_redir->filename = arena_strdup(arena, (*token)->value);
+	new_redir->next = NULL;
+	if (!cmd->redirects)
+		cmd->redirects = new_redir;
+	else
+	{
+		current_redir = cmd->redirects;
+		while (current_redir->next)
+			current_redir = current_redir->next;
+		current_redir->next = new_redir;
+	}
 }
