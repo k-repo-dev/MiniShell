@@ -24,6 +24,6 @@ const char	*find_token_end(const char *start);
 t_command	*parse_command(t_token *token_head, t_arena *arena);
 
 // Function prortypes from env_vars.c
-void		expand_commnd(t_command *cmd_list, t_arena *arena, int exit_status);
+void		expand_command(t_command *cmd_list, t_arena *arena, int exit_status);
 
 #endif
