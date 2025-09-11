@@ -56,36 +56,28 @@ void	free_arena(t_arena *arena)
 
 char	*arena_itoa(int n, t_arena *arena)
 {
-	char	*str;
-	int		len;
-	long	nb;
+	char		*result;
+	size_t		len;
+	long long	tmp_n;
 
-	len = 0;
-	nb = n;
-	if (nb == 0)
-		return (arena_strdup(arena, "0"));
-	if (nb < 0)
+	tmp_n = (long long)n;
+	len = ft_counter(tmp_n);
+	result = alloc_arena(arena, len + 1);
+	if (result == NULL)
+		return (NULL);
+	if (tmp_n == 0)
+		result[0] = '0';
+	if (tmp_n < 0)
 	{
-		nb = -nb;
-		len++;
+		tmp_n *= -1;
+		result[0] = '-';
 	}
-	while (nb > 0)
+	result[len] = '\0';
+	while (len > 0 && tmp_n != 0)
 	{
-		nb /= 10;
-		len++;
+		result[len - 1] = (tmp_n % 10) + '0';
+		tmp_n = tmp_n / 10;
+		len--;
 	}
-	str = alloc_arena(arena, len + 1);
-	str[len] = '\0';
-	nb = n;
-	if (nb < 0)
-	{
-		nb = -nb;
-		str[0] = '-';
-	}
-	while (nb > 0)
-	{
-		str[--len] = (nb % 10) + '0';
-		nb /= 10;
-	}
-	return (str);
+	return (result);
 }

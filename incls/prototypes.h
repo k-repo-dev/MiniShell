@@ -16,14 +16,17 @@ char		*arena_strdup(t_arena *arena, const char *str);
 void		free_arena(t_arena *arena);
 char		*arena_itoa(int n, t_arena *arena);
 
+// Function prortypes from memory_utils.c
+size_t		ft_counter(long long n);
+
 // Function prototypes from tokenizer.c
 t_token		*tokenizer(const char *line, t_arena *arena);
 const char	*find_token_end(const char *start);
 
 // Function prototypes from commands.c
-t_command	*parse_command(t_token *token_head, t_arena *arena);
+t_command	*parse_commands(t_token *token_head, t_arena *arena);
 
 // Function prortypes from env_vars.c
-void		expand_command(t_command *cmd_list, t_arena *arena, int exit_status);
+void		expand_commands(t_command *cmd_list, t_arena *arena, int exit_status);
 
 #endif
