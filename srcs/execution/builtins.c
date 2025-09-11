@@ -1,7 +1,7 @@
 #include "minishell.h"
 
 // Child safe
-int	builtin_echo(char **args)
+int	builtin_echo(t_command **args)
 {
 	int	i;
 	int	newline;
@@ -27,7 +27,7 @@ int	builtin_echo(char **args)
 	return (0);
 }
 
-int	builtin_pwd(void)
+int	builtin_pwd(t_command **args)
 {
 	ft_printf("");
 }
@@ -44,7 +44,7 @@ int	builtin_env(char **envp)
 }
 
 // Parent only
-int	builtin_cd(char **args, char ***envp)
+int	builtin_cd(t_command **args, char ***envp)
 {
 	char	*directory;
 
@@ -58,17 +58,22 @@ int	builtin_cd(char **args, char ***envp)
 	}
 }
 
-int	builtin_export(char **args, char ***envp)
+int	builtin_export(t_command **args, char ***envp)
 {
 	// sort by ascii
 }
 
-int	builtin_unset(char **args, char ***envp)
+int	builtin_unset(t_command **args, char ***envp)
 {
 }
 
-int	builtin_exit(char **args)
+int	builtin_exit(t_command **args)
 {
+	int	status;
+
+	status = 0;
+	cleanup();
+	exit(status);
 }
 
 // Builtin brains
@@ -81,9 +86,10 @@ bool	is_builtin(const char *cmd)
 		return (false);
 }
 
-int	exec_builtin(char **args, char ***envp)
+int	exec_builtin(t_command **args, char ***envp)
 {
 	is_builtin(args);
+	// check if parent or child friendly?
 	if (args == "echo")
 		builtin_echo();
 	if (args == "pwd")
