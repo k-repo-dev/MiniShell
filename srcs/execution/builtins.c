@@ -77,15 +77,6 @@ int	builtin_unset(t_command **args, char ***envp)
 {
 }
 
-int	builtin_exit(t_command **args)
-{
-	int	status;
-
-	status = 0;
-	cleanup();
-	exit(status);
-}
-
 // Builtin brains
 bool	is_builtin(const char *cmd)
 {
@@ -96,11 +87,18 @@ bool	is_builtin(const char *cmd)
 		return (false);
 }
 
-int	exec_builtin(t_command *command_list, char ***envp)
+void	exec_builtin(t_command *command_list, char ***envp)
 {
 	// check if parent or child friendly?
 	if (ft_strcmp(command_list->args[0], "echo") == 0)
 		builtin_echo(command_list->args);
+	if (ft_strcmp(command_list->args[0], "cd") == 0)
+		if (command_list->args[1] == NULL)
+			chdir(getenv("HOME"));
+		else
+			chdir(command_list->args[1]);
+	else if (ft_strcmp(command_list->args, "exit") == 0)
+		exit(0);
 	// if (args == "pwd")
 	// 	buildin_pwd();
 	// if (args == "env")
