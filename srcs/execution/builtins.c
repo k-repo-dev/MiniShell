@@ -29,7 +29,16 @@ int	builtin_echo(t_command **args)
 
 int	builtin_pwd(t_command **args)
 {
-	ft_printf("");
+	char	cwd[4096];
+
+	if (getcwd(cwd, sizeof(cwd)) == NULL)
+	{
+		perror("getcwd");
+	}
+	else
+	{
+		printf("Current directory: %s\n", cwd);
+	}
 }
 
 int	builtin_env(char **envp)
@@ -106,14 +115,14 @@ int	exec_builtin(t_command **args, char ***envp)
 		builtin_exit();
 }
 
-void	find_directory(char **envp, char *directory)
-{
-	int i = 0;
-	int arg_len = ft_strlen(directory);
-	while (envp[i])
-	{
-		if (ft_strncmp(envp[i]), directory, ft_strlen(directory) == 0)
-			return ((envp[i])i++);
-	}
-	return ()
-}
+// void	find_directory(char **envp, char *directory)
+// {
+// 	int i = 0;
+// 	int arg_len = ft_strlen(directory);
+// 	while (envp[i])
+// 	{
+// 		if (ft_strncmp(envp[i]), directory, ft_strlen(directory) == 0)
+// 			return ((envp[i])i++);
+// 	}
+// 	return (1)
+// }

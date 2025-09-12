@@ -5,7 +5,7 @@ int	parent_loop(t_command args, char **envp)
 	while (args != 0)
 	{
 		// check for builtin or binary
-		*cmd_check(*envp, args[arg]);
+		*cmd_check(*envp, args->arg[args]);
 		safe_fork(NULL);
 		args--;
 	}
@@ -38,7 +38,7 @@ int	not_main(int argc, char *argv[], char *envp[])
 	return (1);
 }
 
-void	kid_one(char *argv[], char *envp[], int *pipefd)
+void	child(char *argv[], char *envp[], int *pipefd)
 {
 	int		infile;
 	char	*cmd_path;

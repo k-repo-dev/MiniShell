@@ -2,11 +2,11 @@
 # define EXECUTION_H
 
 # include "../libft/libft.h"
-# include "minishell.h"
 # include "structures.h"
 
 // Execution
 int		parent_loop(t_command args, char **envp);
+int		child_loop(t_command args, t_command **env);
 pid_t	safe_fork(int pipefd[2]);
 
 // Builtins
