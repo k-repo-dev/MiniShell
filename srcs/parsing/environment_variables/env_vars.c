@@ -2,8 +2,10 @@
 
 static char		*expand_str(const char *str, int exit_status, t_arena *arena);
 static size_t	get_expanded_len(const char *str, int exit_status);
-static char		*copy_expanded_str(const char *str, int exit_status, t_arena *arena);
-static char		*get_variable_value(const char *var_name, int exit_status, t_arena *arena);
+static char		*copy_expanded_str(const char *str, int exit_status,
+					t_arena *arena);
+static char		*get_variable_value(const char *var_name, int exit_status,
+					t_arena *arena);
 
 void	expand_commands(t_command *cmd_list, t_arena *arena, int exit_status)
 {
@@ -29,6 +31,7 @@ static size_t	get_expanded_len(const char *str, int exit_status)
 	int		i;
 	int		start;
 	char	*value;
+	char	var_name[i - start + 1];
 
 	i = 0;
 	len = 0;
@@ -46,7 +49,8 @@ static size_t	get_expanded_len(const char *str, int exit_status)
 			if (str[i] == '\'')
 				len++;
 		}
-		else if (str[i] == '$' && str[i + 1] && (ft_isalnum(str[i + 1]) || str[i + 1] == '?'))
+		else if (str[i] == '$' && str[i + 1] && (ft_isalnum(str[i + 1]) || str[i
+				+ 1] == '?'))
 		{
 			i++;
 			if (str[i] == '?')
@@ -61,7 +65,6 @@ static size_t	get_expanded_len(const char *str, int exit_status)
 				start = i;
 				while (str[i] && ft_isalnum(str[i]))
 					i++;
-				char	var_name[i - start + 1];
 				ft_strlcpy(var_name, &str[start], i - start + 1);
 				value = get_variable_value(var_name, exit_status, NULL);
 				if (value)
@@ -84,6 +87,7 @@ static char	*copy_expanded_str(const char *str, int exit_status, t_arena *arena)
 	char		*expanded_str;
 	const char	*value;
 	int			start;
+	char		var_name[i - start + 1];
 
 	expanded_str = alloc_arena(arena, get_expanded_len(str, exit_status) + 1);
 	i = 0;
@@ -98,7 +102,8 @@ static char	*copy_expanded_str(const char *str, int exit_status, t_arena *arena)
 			if (str[i] == '\'')
 				expanded_str[j++] = str[i++];
 		}
-		else if (str[i] == '$' && str[i + 1] && (ft_isalnum(str[i + 1]) || str[i + 1] == '?'))
+		else if (str[i] == '$' && str[i + 1] && (ft_isalnum(str[i + 1]) || str[i
+				+ 1] == '?'))
 		{
 			i++;
 			if (str[i] == '?')
@@ -107,7 +112,7 @@ static char	*copy_expanded_str(const char *str, int exit_status, t_arena *arena)
 				if (value)
 				{
 					ft_memcpy(&expanded_str[j], value, ft_strlen(value));
-					j+= ft_strlen(value);
+					j += ft_strlen(value);
 				}
 				i++;
 			}
@@ -116,7 +121,6 @@ static char	*copy_expanded_str(const char *str, int exit_status, t_arena *arena)
 				start = i;
 				while (str[i] && ft_isalnum(str[i]))
 					i++;
-				char	var_name[i - start + 1];
 				ft_strlcpy(var_name, &str[start], i - start + 1);
 				value = get_variable_value(var_name, exit_status, arena);
 				if (value)
@@ -133,7 +137,8 @@ static char	*copy_expanded_str(const char *str, int exit_status, t_arena *arena)
 	return (expanded_str);
 }
 
-static char		*get_variable_value(const char *var_name, int exit_status, t_arena *arena)
+static char	*get_variable_value(const char *var_name, int exit_status,
+		t_arena *arena)
 {
 	const char	*value;
 

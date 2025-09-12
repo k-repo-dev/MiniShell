@@ -3,13 +3,13 @@
 static int	run_minishell_loop(void);
 
 int	main(int ac, char *av[])
-{	
+{
 	t_sa		sa;
 	char		*line;
 	t_token		*token_list;
 	t_command	*command_list;
 	t_arena		arena;
-	
+
 	(void)ac;
 	(void)av;
 	sa = init_sigaction(NULL);
@@ -25,7 +25,7 @@ static int	run_minishell_loop(void)
 	int			exit_status;
 
 	exit_status = 0;
-	while(1)
+	while (1)
 	{
 		line = readline("my_prompt> ");
 		if (line == NULL)
@@ -43,7 +43,7 @@ static int	run_minishell_loop(void)
 			if (command_list)
 			{
 				expand_command(command_list, &arena, exit_status);
-				// Execution starts here
+				parent_loop(command_list); // Execution starts here
 			}
 		}
 		free(line);

@@ -1,14 +1,16 @@
+#include "execution.h"
 #include "minishell.h"
 
-int	parent_loop(t_command args, char **envp)
+int	parent_loop(t_command *command_list, t_env *env)
 {
-	while (args != 0)
-	{
-		// check for builtin or binary
-		*cmd_check(*envp, args->arg[args]);
-		safe_fork(NULL);
-		args--;
-	}
+	int	fd[2];
+
+	// check for builtin or binary
+	if (is_builtin == true)
+		exec_builtin(command_list, env);
+	// *cmd_check(*envp, args->arg[args]);
+	// safe_fork(NULL);
+	// args--;
 }
 
 int	not_main(int argc, char *argv[], char *envp[])

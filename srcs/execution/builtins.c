@@ -1,3 +1,4 @@
+#include "execution.h"
 #include "minishell.h"
 
 // Child safe
@@ -95,24 +96,23 @@ bool	is_builtin(const char *cmd)
 		return (false);
 }
 
-int	exec_builtin(t_command **args, char ***envp)
+int	exec_builtin(t_command *command_list, char ***envp)
 {
-	is_builtin(args);
 	// check if parent or child friendly?
-	if (args == "echo")
-		builtin_echo();
-	if (args == "pwd")
-		buildin_pwd();
-	if (args == "env")
-		buildin_env();
-	if (args == "cd")
-		builtin_cd();
-	if (args == "unset")
-		builtin_unset();
-	if (args == "export")
-		builtin_export();
-	if (args == "exit")
-		builtin_exit();
+	if (ft_strcmp(command_list->args[0], "echo") == 0)
+		builtin_echo(command_list->args);
+	// if (args == "pwd")
+	// 	buildin_pwd();
+	// if (args == "env")
+	// 	buildin_env();
+	// if (args == "cd")
+	// 	builtin_cd();
+	// if (args == "unset")
+	// 	builtin_unset();
+	// if (args == "export")
+	// 	builtin_export();
+	// if (args == "exit")
+	// 	builtin_exit();
 }
 
 // void	find_directory(char **envp, char *directory)

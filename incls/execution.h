@@ -2,7 +2,7 @@
 # define EXECUTION_H
 
 # include "../libft/libft.h"
-# include "structures.h"
+# include "prototypes.h"
 
 // Execution
 int		parent_loop(t_command args, char **envp);
@@ -11,7 +11,7 @@ pid_t	safe_fork(int pipefd[2]);
 
 // Builtins
 int		builtin_echo(t_command **args);
-int		builtin_pwd(void);
+int		builtin_pwd(t_command **args);
 int		builtin_env(char **envp);
 int		builtin_cd(t_command **args, char ***envp);
 int		builtin_export(t_command **args, char ***envp);

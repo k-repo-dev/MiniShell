@@ -31,10 +31,12 @@ t_token	*tokenizer(const char *line, t_arena *arena)
 			new->type = LESS_TOKEN;
 		else if (ft_strlen(new->value) == 1 && new->value[0] == '>')
 			new->type = GREAT_TOKEN;
-		else if (ft_strlen(new->value) == 2 && new->value[0] == '<' && new->value[1] == '<')
+		else if (ft_strlen(new->value) == 2 && new->value[0] == '<'
+			&& new->value[1] == '<')
 			new->type = DLESS_TOKEN;
-		else if (ft_strlen(new->value) == 2 && new->value[0] == '>' && new->value[1] == '>')
-			new->type == DGREAT_TOKEN;
+		else if (ft_strlen(new->value) == 2 && new->value[0] == '>'
+			&& new->value[1] == '>')
+			new->type = DGREAT_TOKEN;
 		else
 			new->type = ARG_TOKEN;
 		if (!head)
@@ -47,7 +49,7 @@ t_token	*tokenizer(const char *line, t_arena *arena)
 	return (head);
 }
 
-const char *find_token_end(const char *start)
+const char	*find_token_end(const char *start)
 {
 	const char	*end;
 
@@ -78,8 +80,8 @@ const char *find_token_end(const char *start)
 		return (end + 1);
 	}
 	end = start;
-	while (*end && *end != ' ' && *end != '\t' && *end != '|'
-			&& *end != '<' && *end != '>')
+	while (*end && *end != ' ' && *end != '\t' && *end != '|' && *end != '<'
+		&& *end != '>')
 		end++;
 	return (end);
 }
