@@ -17,7 +17,6 @@ int		builtin_env(t_env *envp);
 // int		builtin_cd(t_command **args, char ***envp);
 // int		builtin_export(t_command **args, char ***envp);
 // int		builtin_unset(t_command **args, char ***envp);
-// int		builtin_exit(t_command **args);
 bool	is_builtin(const char *cmd);
 void	exec_builtin(t_command **args, t_env *env);
 

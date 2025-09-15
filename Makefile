@@ -31,7 +31,7 @@ RESET	:= \033[0m
 all: $(NAME)
 
 $(NAME): $(OBJ) $(LIBFT)
-	@$(CC) $(CFLAGS) -o $@ $^
+	@$(CC) $(CFLAGS) -o $@ $^ -lreadline
 	@echo "$(CYAN)🚀 Built: $@$(RESET)"
 
 $(OBJDIR)/%.o: %.c
