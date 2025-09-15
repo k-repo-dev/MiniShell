@@ -7,7 +7,7 @@
 # include "structures.h"
 
 // Function prototypes in signal.c
-t_sa		init_sigaction(void (*handler)(int));
+int			init_sigaction(void (*handler)(int));
 void		handle_sigint(int sig);
 
 // Function prototypes from memory_arena.c

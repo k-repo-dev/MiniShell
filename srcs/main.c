@@ -4,15 +4,10 @@ static int	run_minishell_loop(void);
 
 int	main(int ac, char *av[])
 {
-	t_sa		sa;
-	char		*line;
-	t_token		*token_list;
-	t_command	*command_list;
-	t_arena		arena;
-
 	(void)ac;
 	(void)av;
-	sa = init_sigaction(NULL);
+	if (init_sigaction(handle_sigint) == -1)
+		return (1);
 	return (run_minishell_loop());
 }
 
@@ -39,10 +34,10 @@ static int	run_minishell_loop(void)
 		token_list = tokenizer(line, &arena);
 		if (token_list)
 		{
-			command_list = parse_command(token_list, &arena);
+			command_list = parse_commands(token_list, &arena);
 			if (command_list)
 			{
-				expand_command(command_list, &arena, exit_status);
+				expand_commands(command_list, &arena, exit_status);
 				parent_loop(command_list); // Execution starts here
 			}
 		}

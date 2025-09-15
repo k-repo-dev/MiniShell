@@ -1,11 +1,18 @@
 #include "../../incls/prototypes.h"
 
-t_sa	init_sigaction(void (*handler)(int))
+int	init_sigaction(void (*handler)(int))
 {
 	t_sa	sa;
 
-	(void)handler;
-	return (sa);
+	sa.sa_handler = handler;
+	sigemptyset(&sa.sa_mask);
+	sa.sa_flags = 0;
+	if (sigaction(SIGINT, &sa, NULL) == -1)
+	{
+		ft_putstr_fd("Error: sigaction", 2);
+		return (-1);
+	}
+	return (0);
 }
 
 void	handle_sigint(int sig)
