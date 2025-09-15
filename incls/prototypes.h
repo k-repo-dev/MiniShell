@@ -2,6 +2,7 @@
 # define PROTOTYPES_H
 
 # include "../libft/libft.h"
+# include "execution.h"
 # include "minishell.h"
 # include "structures.h"
 
@@ -27,6 +28,7 @@ const char	*find_token_end(const char *start);
 t_command	*parse_commands(t_token *token_head, t_arena *arena);
 
 // Function prortypes from env_vars.c
-void		expand_commands(t_command *cmd_list, t_arena *arena, int exit_status);
+void		expand_commands(t_command *cmd_list, t_arena *arena,
+				int exit_status);
 
 #endif
