@@ -1,6 +1,6 @@
 # Compiler
 CC		:= cc
-# CFLAGS	:= -Wall -Wextra -Werror -I include -I libft/include
+CFLAGS	:= -Wall -Wextra -Werror -Iincls -Ilibft/incls
 
 # Directories
 OBJDIR	:= objs
