@@ -38,7 +38,7 @@ static int	run_minishell_loop(void)
 			if (command_list)
 			{
 				expand_commands(command_list, &arena, exit_status);
-				parent_loop(command_list); // Execution starts here
+				parent_loop(&command_list); // Execution starts here
 			}
 		}
 		free(line);

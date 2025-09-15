@@ -4,7 +4,7 @@ CFLAGS	:= -Wall -Wextra -Werror -Iincls -Ilibft/incls
 
 # Directories
 OBJDIR	:= objs
-LIBDIR	:= libft/lib
+LIBDIR	:= libft
 
 # Executable
 NAME	:= minishell

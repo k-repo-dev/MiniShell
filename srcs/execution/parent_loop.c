@@ -1,8 +1,11 @@
 #include "execution.h"
 #include "minishell.h"
 
-int	parent_loop(t_command **command_list, t_env *env)
+int	parent_loop(t_command **command_list)
 {
+	t_env	*env;
+
+	env = NULL;
 	// int	fd[2];
 	// check for builtin or binary
 	if (is_builtin((*command_list)->args[0]) == true)

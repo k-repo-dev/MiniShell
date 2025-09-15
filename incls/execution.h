@@ -6,7 +6,7 @@
 # include "structures.h"
 
 // Execution
-int		parent_loop(t_command **command_list, t_env *env);
+int		parent_loop(t_command **command_list);
 // int		child(t_command args, t_command **env);
 pid_t	safe_fork(int pipefd[2]);
 
