@@ -7,6 +7,7 @@ int	builtin_echo(t_command *cmd)
 	int	i;
 	int	newline;
 
+	printf("echo pls\n");
 	i = 1;
 	newline = 1;
 	if (!cmd || !cmd->args || !cmd->args[0])
@@ -28,11 +29,10 @@ int	builtin_echo(t_command *cmd)
 	return (0);
 }
 
-int	builtin_pwd(t_command *cmd)
+int	builtin_pwd(void)
 {
 	char	*cwd;
 
-	(void)cmd;
 	cwd = getcwd(NULL, 0);
 	if (cwd == NULL)
 	{
@@ -44,35 +44,47 @@ int	builtin_pwd(t_command *cmd)
 	return (0);
 }
 
-int	builtin_env(t_env *env)
+int	builtin_env(char **envp)
 {
 	int	i;
 
 	i = 0;
-	if (!env || !env->envp)
+	if (!envp)
 		return (1);
-	while (env->envp[i])
+	while (envp[i])
 	{
-		printf("%s\n", env->envp[i]);
+		printf("%s\n", envp[i]);
 		i++;
 	}
 	return (0);
 }
 
 // Parent only
-// int	builtin_cd(t_command **args)
-// {
-// 	char	*directory;
+int	builtin_cd(t_command *cmd)
+{
+	const char	*target_dir;
 
-// 	directory = cmd_check(envp, args);
-// 	if (directory)
-// 		printf("%s", directory);
-// 	else
-// 	{
-// 		ft_putstr_fd("cd: no such file or directory", 2);
-// 		ft_printf("%s", args);
-// 	}
-// }
+	if (cmd->args[1] == NULL)
+	{
+		target_dir = getenv("HOME");
+		if (!target_dir)
+		{
+			printf("cd: Home not set\n");
+			return (1);
+		}
+	}
+	else
+	{
+		target_dir = cmd->args[1];
+		printf("test1");
+	}
+	if (chdir(target_dir) != 0)
+	{
+		printf("cd");
+		return (1);
+	}
+	return (0);
+}
 
 // int	builtin_export(t_command **args, char ***envp)
 // {

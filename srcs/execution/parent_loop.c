@@ -1,15 +1,20 @@
 #include "execution.h"
 #include "minishell.h"
 
-int	parent_loop(t_command **command_list)
+int	parent_loop(t_command **command_list, char **envp)
 {
 	t_env	*env;
 
 	env = NULL;
 	// int	fd[2];
 	// check for builtin or binary
+	printf("Parent\n");
+	printf("%s cmd->args[1]\n", (*command_list)->args[0]);
 	if (is_builtin((*command_list)->args[0]) == true)
-		exec_builtin(command_list, env);
+	{
+		printf("builtin check\n");
+		exec_builtin(command_list, envp);
+	}
 	// *cmd_check(*envp, args->arg[args]);
 	// safe_fork(NULL);
 	return (0);
@@ -18,40 +23,37 @@ int	parent_loop(t_command **command_list)
 // Builtin brains
 bool	is_builtin(const char *cmd)
 {
-	if (strcmp(cmd, "echo") == 0 || strcmp(cmd, "pwd") == 0 || strcmp(cmd,
-			"env") == 0 || strcmp(cmd, "cd") == 0 || strcmp(cmd, "unset") == 0
-		|| strcmp(cmd, "export") == 0 || strcmp(cmd, "exit") == 0)
+	if (ft_strcmp(cmd, "echo") == 0 || ft_strcmp(cmd, "pwd") == 0
+		|| ft_strcmp(cmd, "env") == 0 || ft_strcmp(cmd, "cd") == 0
+		|| ft_strcmp(cmd, "unset") == 0 || ft_strcmp(cmd, "export") == 0
+		|| ft_strcmp(cmd, "exit") == 0)
 		return (true);
 	else
 		return (false);
 }
 
-void	exec_builtin(t_command **command_list, t_env *env)
+void	exec_builtin(t_command **command_list, char **envp)
 {
 	t_command	*cmd;
 
 	cmd = *command_list;
+	printf("builtin check 2\n");
+	printf("%s", cmd->args[0]);
 	if (ft_strcmp(cmd->args[0], "echo") == 0)
-		builtin_echo(cmd);
-	else if (ft_strcmp(cmd->args[0], "cd") == 0)
 	{
-		if (cmd->args[1] == NULL)
-			chdir(getenv("HOME"));
-		else
-			chdir(cmd->args[1]);
+		printf("echo check\n");
+		builtin_echo(cmd);
 	}
+	else if (ft_strcmp(cmd->args[0], "cd") == 0)
+		builtin_cd(cmd);
 	else if (ft_strcmp(cmd->args[0], "pwd") == 0)
-		builtin_pwd(cmd);
+		builtin_pwd();
 	else if (ft_strcmp(cmd->args[0], "exit") == 0)
-		exit(0);
+		exit(0); // return 0?
 	else if (ft_strcmp(cmd->args[0], "env") == 0)
-		builtin_env(env);
+		builtin_env(envp);
 	// if (args == "pwd")
 	// 	buildin_pwd(cmd);
-	// if (args == "env")
-	// 	buildin_env();
-	// if (args == "cd")
-	// 	builtin_cd();
 	// if (args == "unset")
 	// 	builtin_unset();
 	// if (args == "export")

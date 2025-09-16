@@ -1,17 +1,17 @@
 #include "../incls/prototypes.h"
 
-static int	run_minishell_loop(void);
+static int	run_minishell_loop(char **envp);
 
-int	main(int ac, char *av[])
+int	main(int ac, char *av[], char **envp)
 {
 	(void)ac;
 	(void)av;
 	if (init_sigaction(handle_sigint) == -1)
 		return (1);
-	return (run_minishell_loop());
+	return (run_minishell_loop(envp));
 }
 
-static int	run_minishell_loop(void)
+static int	run_minishell_loop(char **envp)
 {
 	char		*line;
 	t_token		*token_list;
@@ -38,7 +38,7 @@ static int	run_minishell_loop(void)
 			if (command_list)
 			{
 				expand_commands(command_list, &arena, exit_status);
-				parent_loop(&command_list); // Execution starts here
+				parent_loop(&command_list, envp); // Execution starts here
 			}
 		}
 		free(line);
