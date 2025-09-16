@@ -19,6 +19,7 @@ char		*arena_itoa(int n, t_arena *arena);
 
 // Function prortypes from memory_utils.c
 size_t		ft_counter(long long n);
+char	*arena_strndup(t_arena *arena, const char *s1, size_t n);
 
 // Function prototypes from tokenizer.c
 t_token		*tokenizer(const char *line, t_arena *arena);

@@ -23,20 +23,18 @@ t_token	*tokenizer(const char *line, t_arena *arena)
 		new = (t_token *)alloc_arena(arena, sizeof(t_token));
 		if (!new)
 			return (NULL);
-		new->value = arena_strdup(arena, cursor);
+		new->value = arena_strndup(arena, cursor, token_end - cursor);
 		new->next = NULL;
-		if (ft_strlen(new->value) == 1 && new->value[0] == '|')
-			new->type = PIPE_TOKEN;
-		else if (ft_strlen(new->value) == 1 && new->value[0] == '<')
-			new->type = LESS_TOKEN;
-		else if (ft_strlen(new->value) == 1 && new->value[0] == '>')
-			new->type = GREAT_TOKEN;
-		else if (ft_strlen(new->value) == 2 && new->value[0] == '<'
-			&& new->value[1] == '<')
-			new->type = DLESS_TOKEN;
-		else if (ft_strlen(new->value) == 2 && new->value[0] == '>'
-			&& new->value[1] == '>')
+		if (ft_strcmp(new->value, ">>") == 0)
 			new->type = DGREAT_TOKEN;
+		else if (ft_strcmp(new->value, "<<") == 0)
+			new->type = DLESS_TOKEN;
+		else if (*cursor == '>')
+			new->type = GREAT_TOKEN;
+		else if (*cursor == '<')
+			new->type = LESS_TOKEN;
+		else if (new->type == '|')
+			new->type = PIPE_TOKEN;
 		else
 			new->type = ARG_TOKEN;
 		if (!head)
@@ -53,17 +51,9 @@ const char	*find_token_end(const char *start)
 {
 	const char	*end;
 
-	if (*start == '|')
-		return (start + 1);
-	if (*start == '<')
+	if (*start == '|' || *start == '<' || *start == '>')
 	{
-		if (*(start + 1) == '<')
-			return (start + 2);
-		return (start + 1);
-	}
-	if (*start == '>')
-	{
-		if (*(start + 1) == '>')
+		if (*(start + 1) == *start)
 			return (start + 2);
 		return (start + 1);
 	}
