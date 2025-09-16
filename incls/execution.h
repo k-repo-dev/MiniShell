@@ -6,7 +6,7 @@
 # include "structures.h"
 
 // Execution
-int		parent_loop(t_command **command_list, t_env *env);
+int		parent_loop(t_command **command_list);
 // int		child(t_command args, t_command **env);
 pid_t	safe_fork(int pipefd[2]);
 
@@ -17,7 +17,6 @@ int		builtin_env(t_env *envp);
 // int		builtin_cd(t_command **args, char ***envp);
 // int		builtin_export(t_command **args, char ***envp);
 // int		builtin_unset(t_command **args, char ***envp);
-// int		builtin_exit(t_command **args);
 bool	is_builtin(const char *cmd);
 void	exec_builtin(t_command **args, t_env *env);
 

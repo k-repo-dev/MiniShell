@@ -3,10 +3,7 @@
 
 # include "minishell.h"
 
-typedef struct s_sa
-{
-	int					sig;
-}						t_sa;
+typedef struct	sigaction	t_sa;
 
 typedef enum e_token_type
 {

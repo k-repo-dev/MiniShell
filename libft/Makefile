@@ -1,15 +1,3 @@
-# **************************************************************************** #
-#                                                                              #
-#                                                         :::      ::::::::    #
-#    Makefile                                           :+:      :+:    :+:    #
-#                                                     +:+ +:+         +:+      #
-#    By: krepo <krepo@student.hive.fi>              +#+  +:+       +#+         #
-#                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2025/07/17 12:30:57 by krepo             #+#    #+#              #
-#    Updated: 2025/07/17 12:31:02 by krepo            ###   ########.fr        #
-#                                                                              #
-# **************************************************************************** #
-
 COMPILER = cc
 
 COMPILERFLAGS = -Wextra -Wall -Werror -I .
@@ -22,7 +10,7 @@ SRCS = ascii/ft_isalnum.c ascii/ft_isalpha.c ascii/ft_isascii.c \
 				string/ft_strjoin.c string/ft_strlcat.c string/ft_strlcpy.c \
 				string/ft_strlen.c string/ft_strmapi.c string/ft_strncmp.c \
 				string/ft_strnstr.c string/ft_strrchr.c string/ft_strtrim.c \
-				string/ft_substr.c \
+				string/ft_substr.c string/ft_strcmp.c \
 				memory/ft_bzero.c memory/ft_calloc.c memory/ft_memchr.c \
 				memory/ft_memcmp.c memory/ft_memcpy.c memory/ft_memmove.c \
 				memory/ft_memset.c \
@@ -41,7 +29,7 @@ OBJS = $(SRCS:.c=.o)
 all: $(NAME)
 
 $(NAME): $(OBJS)
-	ar -rcs $(NAME) -o $@ $^
+	ar -rcs $(NAME) $(OBJS)
 	
 clean:
 	rm -f $(OBJS)

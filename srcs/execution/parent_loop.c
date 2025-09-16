@@ -1,16 +1,63 @@
 #include "execution.h"
 #include "minishell.h"
 
-int	parent_loop(t_command **command_list, t_env *env)
+int	parent_loop(t_command **command_list)
 {
+	t_env	*env;
+
+	env = NULL;
 	// int	fd[2];
 	// check for builtin or binary
 	if (is_builtin((*command_list)->args[0]) == true)
 		exec_builtin(command_list, env);
 	// *cmd_check(*envp, args->arg[args]);
 	// safe_fork(NULL);
-	// args--;
 	return (0);
+}
+
+// Builtin brains
+bool	is_builtin(const char *cmd)
+{
+	if (strcmp(cmd, "echo") == 0 || strcmp(cmd, "pwd") == 0 || strcmp(cmd,
+			"env") == 0 || strcmp(cmd, "cd") == 0 || strcmp(cmd, "unset") == 0
+		|| strcmp(cmd, "export") == 0 || strcmp(cmd, "exit") == 0)
+		return (true);
+	else
+		return (false);
+}
+
+void	exec_builtin(t_command **command_list, t_env *env)
+{
+	t_command	*cmd;
+
+	cmd = *command_list;
+	if (ft_strcmp(cmd->args[0], "echo") == 0)
+		builtin_echo(cmd);
+	else if (ft_strcmp(cmd->args[0], "cd") == 0)
+	{
+		if (cmd->args[1] == NULL)
+			chdir(getenv("HOME"));
+		else
+			chdir(cmd->args[1]);
+	}
+	else if (ft_strcmp(cmd->args[0], "pwd") == 0)
+		builtin_pwd(cmd);
+	else if (ft_strcmp(cmd->args[0], "exit") == 0)
+		exit(0);
+	else if (ft_strcmp(cmd->args[0], "env") == 0)
+		builtin_env(env);
+	// if (args == "pwd")
+	// 	buildin_pwd(cmd);
+	// if (args == "env")
+	// 	buildin_env();
+	// if (args == "cd")
+	// 	builtin_cd();
+	// if (args == "unset")
+	// 	builtin_unset();
+	// if (args == "export")
+	// 	builtin_export();
+	// if (args == "exit")
+	// 	builtin_exit();
 }
 
 // int	not_main(int argc, char *argv[], char *envp[])

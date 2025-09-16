@@ -1,6 +1,5 @@
 #include "../../../incls/prototypes.h"
 
-static char		*expand_str(const char *str, int exit_status, t_arena *arena);
 static size_t	get_expanded_len(const char *str, int exit_status);
 static char		*copy_expanded_str(const char *str, int exit_status,
 					t_arena *arena);
