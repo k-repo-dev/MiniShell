@@ -60,7 +60,7 @@ int	builtin_env(t_env *env)
 }
 
 // Parent only
-// int	builtin_cd(t_command **args, char ***envp)
+// int	builtin_cd(t_command **args)
 // {
 // 	char	*directory;
 

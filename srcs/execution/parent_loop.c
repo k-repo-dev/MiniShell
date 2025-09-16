@@ -12,7 +12,6 @@ int	parent_loop(t_command **command_list)
 		exec_builtin(command_list, env);
 	// *cmd_check(*envp, args->arg[args]);
 	// safe_fork(NULL);
-	// args--;
 	return (0);
 }
 
