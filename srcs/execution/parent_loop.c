@@ -1,7 +1,7 @@
 #include "execution.h"
 #include "minishell.h"
 
-int	parent_loop(t_command **command_list)
+int	parent_loop(t_command **command_list, char **envp)
 {
 	t_env	*env;
 
@@ -9,7 +9,7 @@ int	parent_loop(t_command **command_list)
 	// int	fd[2];
 	// check for builtin or binary
 	if (is_builtin((*command_list)->args[0]) == true)
-		exec_builtin(command_list, env);
+		exec_builtin(command_list, envp);
 	// *cmd_check(*envp, args->arg[args]);
 	// safe_fork(NULL);
 	return (0);
@@ -26,7 +26,7 @@ bool	is_builtin(const char *cmd)
 		return (false);
 }
 
-void	exec_builtin(t_command **command_list, t_env *env)
+void	exec_builtin(t_command **command_list, char **envp)
 {
 	t_command	*cmd;
 
@@ -34,6 +34,7 @@ void	exec_builtin(t_command **command_list, t_env *env)
 	if (ft_strcmp(cmd->args[0], "echo") == 0)
 		builtin_echo(cmd);
 	else if (ft_strcmp(cmd->args[0], "cd") == 0)
+	// builtin_cd(cmd, envp);
 	{
 		if (cmd->args[1] == NULL)
 			chdir(getenv("HOME"));
@@ -41,11 +42,11 @@ void	exec_builtin(t_command **command_list, t_env *env)
 			chdir(cmd->args[1]);
 	}
 	else if (ft_strcmp(cmd->args[0], "pwd") == 0)
-		builtin_pwd(cmd);
+		builtin_pwd();
 	else if (ft_strcmp(cmd->args[0], "exit") == 0)
-		exit(0);
+		exit(0); // return 0?
 	else if (ft_strcmp(cmd->args[0], "env") == 0)
-		builtin_env(env);
+		builtin_env(envp);
 	// if (args == "pwd")
 	// 	buildin_pwd(cmd);
 	// if (args == "env")

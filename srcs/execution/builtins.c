@@ -28,11 +28,10 @@ int	builtin_echo(t_command *cmd)
 	return (0);
 }
 
-int	builtin_pwd(t_command *cmd)
+int	builtin_pwd(void)
 {
 	char	*cwd;
 
-	(void)cmd;
 	cwd = getcwd(NULL, 0);
 	if (cwd == NULL)
 	{
@@ -44,34 +43,35 @@ int	builtin_pwd(t_command *cmd)
 	return (0);
 }
 
-int	builtin_env(t_env *env)
+int	builtin_env(char **envp)
 {
 	int	i;
 
 	i = 0;
-	if (!env || !env->envp)
+	if (!envp)
 		return (1);
-	while (env->envp[i])
+	while (envp[i])
 	{
-		printf("%s\n", env->envp[i]);
+		printf("%s\n", envp[i]);
 		i++;
 	}
 	return (0);
 }
 
 // Parent only
-// int	builtin_cd(t_command **args)
+// int	builtin_cd(t_command **cmd, char **envp)
 // {
-// 	char	*directory;
+// 	const char	*directory = getenv("PATH");
 
-// 	directory = cmd_check(envp, args);
+// 	(void)(envp);
 // 	if (directory)
 // 		printf("%s", directory);
 // 	else
 // 	{
 // 		ft_putstr_fd("cd: no such file or directory", 2);
-// 		ft_printf("%s", args);
+// 		ft_printf("%s", cmd);
 // 	}
+// 	return (0);
 // }
 
 // int	builtin_export(t_command **args, char ***envp)
