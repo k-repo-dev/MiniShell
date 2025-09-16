@@ -8,13 +8,14 @@ int	parent_loop(t_command **command_list, char **envp)
 	env = NULL;
 	// int	fd[2];
 	// check for builtin or binary
-	printf("Parent\n");
-	printf("%s cmd->args[1]\n", (*command_list)->args[0]);
+	printf("\n#####Parent Loop#####");
+	printf("\ncmd->args[0]: %s\n", (*command_list)->args[0]);
+	printf("cmd->args[1]: %s\n", (*command_list)->args[1]);
+	// printf("cmd->args[2]: %s\n", (*command_list)->args[2]);
+	// printf("cmd->args[3]: %s\n", (*command_list)->args[3]);
+	printf("\n\n\n\n\n\n");
 	if (is_builtin((*command_list)->args[0]) == true)
-	{
-		printf("builtin check\n");
 		exec_builtin(command_list, envp);
-	}
 	// *cmd_check(*envp, args->arg[args]);
 	// safe_fork(NULL);
 	return (0);
@@ -37,29 +38,20 @@ void	exec_builtin(t_command **command_list, char **envp)
 	t_command	*cmd;
 
 	cmd = *command_list;
-	printf("builtin check 2\n");
-	printf("%s", cmd->args[0]);
 	if (ft_strcmp(cmd->args[0], "echo") == 0)
-	{
-		printf("echo check\n");
 		builtin_echo(cmd);
-	}
 	else if (ft_strcmp(cmd->args[0], "cd") == 0)
 		builtin_cd(cmd);
 	else if (ft_strcmp(cmd->args[0], "pwd") == 0)
 		builtin_pwd();
 	else if (ft_strcmp(cmd->args[0], "exit") == 0)
-		exit(0); // return 0?
+		return ;
 	else if (ft_strcmp(cmd->args[0], "env") == 0)
 		builtin_env(envp);
-	// if (args == "pwd")
-	// 	buildin_pwd(cmd);
 	// if (args == "unset")
 	// 	builtin_unset();
 	// if (args == "export")
 	// 	builtin_export();
-	// if (args == "exit")
-	// 	builtin_exit();
 }
 
 // int	not_main(int argc, char *argv[], char *envp[])

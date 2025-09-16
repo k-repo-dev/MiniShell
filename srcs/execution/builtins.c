@@ -7,7 +7,6 @@ int	builtin_echo(t_command *cmd)
 	int	i;
 	int	newline;
 
-	printf("echo pls\n");
 	i = 1;
 	newline = 1;
 	if (!cmd || !cmd->args || !cmd->args[0])
@@ -76,7 +75,6 @@ int	builtin_cd(t_command *cmd)
 	else
 	{
 		target_dir = cmd->args[1];
-		printf("test1");
 	}
 	if (chdir(target_dir) != 0)
 	{
