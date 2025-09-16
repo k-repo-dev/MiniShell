@@ -14,7 +14,7 @@ pid_t	safe_fork(int pipefd[2]);
 int		builtin_echo(t_command *cmd);
 int		builtin_pwd(void);
 int		builtin_env(char **envp);
-int		builtin_cd(t_command **cmd, char **envp);
+int		builtin_cd(t_command *cmd);
 // int		builtin_export(t_command **args, char ***envp);
 // int		builtin_unset(t_command **args, char ***envp);
 bool	is_builtin(const char *cmd);

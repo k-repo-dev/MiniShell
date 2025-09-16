@@ -34,13 +34,7 @@ void	exec_builtin(t_command **command_list, char **envp)
 	if (ft_strcmp(cmd->args[0], "echo") == 0)
 		builtin_echo(cmd);
 	else if (ft_strcmp(cmd->args[0], "cd") == 0)
-	// builtin_cd(cmd, envp);
-	{
-		if (cmd->args[1] == NULL)
-			chdir(getenv("HOME"));
-		else
-			chdir(cmd->args[1]);
-	}
+		builtin_cd(cmd);
 	else if (ft_strcmp(cmd->args[0], "pwd") == 0)
 		builtin_pwd();
 	else if (ft_strcmp(cmd->args[0], "exit") == 0)
@@ -49,10 +43,6 @@ void	exec_builtin(t_command **command_list, char **envp)
 		builtin_env(envp);
 	// if (args == "pwd")
 	// 	buildin_pwd(cmd);
-	// if (args == "env")
-	// 	buildin_env();
-	// if (args == "cd")
-	// 	builtin_cd();
 	// if (args == "unset")
 	// 	builtin_unset();
 	// if (args == "export")

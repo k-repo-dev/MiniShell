@@ -59,20 +59,31 @@ int	builtin_env(char **envp)
 }
 
 // Parent only
-// int	builtin_cd(t_command **cmd, char **envp)
-// {
-// 	const char	*directory = getenv("PATH");
+int	builtin_cd(t_command *cmd)
+{
+	const char	*target_dir;
 
-// 	(void)(envp);
-// 	if (directory)
-// 		printf("%s", directory);
-// 	else
-// 	{
-// 		ft_putstr_fd("cd: no such file or directory", 2);
-// 		ft_printf("%s", cmd);
-// 	}
-// 	return (0);
-// }
+	if (cmd->args[1] == NULL)
+	{
+		target_dir = getenv("HOME");
+		if (!target_dir)
+		{
+			printf("cd: Home not set\n");
+			return (1);
+		}
+	}
+	else
+	{
+		target_dir = cmd->args[1];
+		printf("test1");
+	}
+	if (chdir(target_dir) != 0)
+	{
+		printf("cd");
+		return (1);
+	}
+	return (0);
+}
 
 // int	builtin_export(t_command **args, char ***envp)
 // {
