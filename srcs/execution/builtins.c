@@ -7,6 +7,7 @@ int	builtin_echo(t_command *cmd)
 	int	i;
 	int	newline;
 
+	printf("echo pls\n");
 	i = 1;
 	newline = 1;
 	if (!cmd || !cmd->args || !cmd->args[0])
