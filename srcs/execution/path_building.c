@@ -29,7 +29,7 @@ char	*create_full_path(char *directory, char *cmd)
 	return (full_path);
 }
 
-char	*check_absolute_path(char *cmd)
+char	*check_absolute_path(const char *cmd)
 {
 	if (!cmd)
 		return (NULL);

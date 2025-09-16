@@ -20,10 +20,12 @@ int		builtin_cd(t_command *cmd);
 bool	is_builtin(const char *cmd);
 void	exec_builtin(t_command **args, char **envp);
 
+// Executables
+
 // Pathing
 // char	*cmd_findpath(char *envp[]);
 // char	*create_full_path(char *directory, char *cmd);
-// char	*check_absolute_path(char *cmd);
+char	*check_absolute_path(const char *cmd);
 // char	*cmd_path_search(char **paths, char *cmd);
 // char	*cmd_check(char *envp[], char *cmd);
 

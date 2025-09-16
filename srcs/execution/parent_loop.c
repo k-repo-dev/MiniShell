@@ -16,9 +16,10 @@ int	parent_loop(t_command **command_list, char **envp)
 	printf("\n\n\n\n\n\n");
 	if (is_builtin((*command_list)->args[0]) == true)
 		exec_builtin(command_list, envp);
-	// *cmd_check(*envp, args->arg[args]);
-	// safe_fork(NULL);
-	return (0);
+	if (is_executable((*command_list)->args[0], envp) == true)
+		// *cmd_check(*envp, args->arg[args]);
+		// safe_fork(NULL);
+		return (0);
 }
 
 // Builtin brains
@@ -31,6 +32,19 @@ bool	is_builtin(const char *cmd)
 		return (true);
 	else
 		return (false);
+}
+bool	is_executable(const char *cmd, char **envp)
+{
+	char	*result;
+	char	*env_path;
+
+	result = *check_absolute_path(cmd);
+	if (result)
+		return (true);
+	env_path = (cmd_findpath(envp));
+	if (!env_path)
+		return (false);
+	return (true);
 }
 
 void	exec_builtin(t_command **command_list, char **envp)
