@@ -11,10 +11,10 @@ int	builtin_echo(t_command *cmd)
 	newline = 1;
 	if (!cmd || !cmd->args || !cmd->args[0])
 		return (1);
-	while (cmd->args[1] && strcmp(cmd->args[1], "-n") == 0)
+	while (cmd->args[i] && strcmp(cmd->args[i], "-n") == 0)
 	{
 		newline = 0;
-		i = 2;
+		i++;
 	}
 	while (cmd->args[i])
 	{
