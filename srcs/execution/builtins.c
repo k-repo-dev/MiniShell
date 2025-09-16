@@ -83,51 +83,6 @@ int	builtin_env(t_env *env)
 // {
 // }
 
-// Builtin brains
-bool	is_builtin(const char *cmd)
-{
-	if (strcmp(cmd, "echo") == 0 || strcmp(cmd, "pwd") == 0 || strcmp(cmd,
-			"env") == 0 || strcmp(cmd, "cd") == 0 || strcmp(cmd, "unset") == 0
-		|| strcmp(cmd, "export") == 0 || strcmp(cmd, "exit") == 0)
-		return (true);
-	else
-		return (false);
-}
-
-void	exec_builtin(t_command **command_list, t_env *env)
-{
-	t_command	*cmd;
-
-	cmd = *command_list;
-	if (ft_strcmp(cmd->args[0], "echo") == 0)
-		builtin_echo(cmd);
-	else if (ft_strcmp(cmd->args[0], "cd") == 0)
-	{
-		if (cmd->args[1] == NULL)
-			chdir(getenv("HOME"));
-		else
-			chdir(cmd->args[1]);
-	}
-	else if (ft_strcmp(cmd->args[0], "pwd") == 0)
-		builtin_pwd(cmd);
-	else if (ft_strcmp(cmd->args[0], "exit") == 0)
-		exit(0);
-	else if (ft_strcmp(cmd->args[0], "env") == 0)
-		builtin_env(env);
-	// if (args == "pwd")
-	// 	buildin_pwd(cmd);
-	// if (args == "env")
-	// 	buildin_env();
-	// if (args == "cd")
-	// 	builtin_cd();
-	// if (args == "unset")
-	// 	builtin_unset();
-	// if (args == "export")
-	// 	builtin_export();
-	// if (args == "exit")
-	// 	builtin_exit();
-}
-
 // void	find_directory(char **envp, char *directory)
 // {
 // 	int i = 0;
