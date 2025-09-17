@@ -6,7 +6,10 @@ int	parent_loop(t_command **command_list, char **envp)
 	int			i;
 	t_command	*cmd;
 	char		*cmd_path;
+	pid_t		pid;
+	int			fd[2];
 
+	// int			status;
 	i = 0;
 	cmd = *command_list;
 	// int	fd[2];
@@ -16,15 +19,22 @@ int	parent_loop(t_command **command_list, char **envp)
 	printf("cmd->args[1]: %s\n", (*command_list)->args[1]);
 	// printf("cmd->args[2]: %s\n", (*command_list)->args[2]);
 	// printf("cmd->args[3]: %s\n", (*command_list)->args[3]);
-	printf("\n\n\n\n\n\n");
+	printf("#####################\n\n\n");
 	if (is_builtin((*command_list)->args[0]) == true)
 		exec_builtin(command_list, envp);
 	cmd_path = is_executable((*command_list)->args[0], envp);
 	if (cmd_path)
 	{
-		printf("working\n");
-		child((*command_list)->args[0], envp);
+		pid = safe_fork(fd);
+		if (pid == 0)
+		{
+			child((*command_list)->args, envp);
+			waitpid(pid, NULL, 0);
+			// WEXITSTATUS(status);
+		}
 	}
+	close(fd[0]);
+	close(fd[1]);
 	if (!cmd_path)
 		printf("no path\n");
 	return (0);
@@ -82,15 +92,19 @@ void	exec_builtin(t_command **command_list, char **envp)
 	// 	builtin_export();
 }
 
-void	child(char *cmd, char **envp)
+void	child(char **args, char **envp)
 {
 	char	*cmd_path;
 
-	if (!cmd)
+	printf("\n#####Child######\n");
+	if (!args)
+	{
 		printf("big rip\n");
-	printf("here? maybe inside child\n");
-	cmd_path = is_executable(cmd, envp);
-	execve(cmd_path, &cmd, envp);
+		return ;
+	}
+	printf("child arg: %s\n", args[0]);
+	cmd_path = is_executable(*args, envp);
+	execve(cmd_path, &args[0], envp);
 	perror("execve");
 	return ;
 }
