@@ -22,21 +22,24 @@ int	parent_loop(t_command **command_list, char **envp)
 	printf("#####################\n\n\n");
 	if (is_builtin((*command_list)->args[0]) == true)
 		exec_builtin(command_list, envp);
-	cmd_path = is_executable((*command_list)->args[0], envp);
-	if (cmd_path)
+	else
 	{
-		pid = safe_fork(fd);
-		if (pid == 0)
+		cmd_path = is_executable((*command_list)->args[0], envp);
+		if (cmd_path)
 		{
-			child((*command_list)->args, envp);
-			waitpid(pid, NULL, 0);
-			// WEXITSTATUS(status);
+			pid = safe_fork(fd);
+			if (pid == 0)
+			{
+				child((*command_list)->args, envp);
+				waitpid(pid, NULL, 0);
+				// WEXITSTATUS(status);
+			}
 		}
+		if (!cmd_path)
+			printf("no path\n");
 	}
 	close(fd[0]);
 	close(fd[1]);
-	if (!cmd_path)
-		printf("no path\n");
 	return (0);
 	// *cmd_check(*envp, args->arg[args]);
 	// safe_fork(NULL);
