@@ -1,6 +1,19 @@
 #include "execution.h"
 
-char	*cmd_findpath(char *envp[])
+char	*check_absolute_path(const char *cmd)
+{
+	if (!cmd)
+		return (NULL);
+	if (cmd[0] == '/' || cmd[0] == '.')
+	{
+		if (access(cmd, X_OK) == 0)
+			return (ft_strdup(cmd));
+		return (NULL);
+	}
+	return (NULL);
+}
+
+char	*cmd_findpath(char **envp)
 {
 	int	i;
 
@@ -27,19 +40,6 @@ char	*create_full_path(char *directory, char *cmd)
 	if (!full_path)
 		return (NULL);
 	return (full_path);
-}
-
-char	*check_absolute_path(const char *cmd)
-{
-	if (!cmd)
-		return (NULL);
-	if (cmd[0] == '/' || cmd[0] == '.')
-	{
-		if (access(cmd, X_OK) == 0)
-			return (ft_strdup(cmd));
-		return (NULL);
-	}
-	return (NULL);
 }
 
 char	*cmd_path_search(char **paths, char *cmd)

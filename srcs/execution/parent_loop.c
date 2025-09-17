@@ -3,9 +3,12 @@
 
 int	parent_loop(t_command **command_list, char **envp)
 {
-	t_env	*env;
+	int			i;
+	t_command	*cmd;
+	char		*cmd_path;
 
-	env = NULL;
+	i = 0;
+	cmd = *command_list;
 	// int	fd[2];
 	// check for builtin or binary
 	printf("\n#####Parent Loop#####");
@@ -16,10 +19,17 @@ int	parent_loop(t_command **command_list, char **envp)
 	printf("\n\n\n\n\n\n");
 	if (is_builtin((*command_list)->args[0]) == true)
 		exec_builtin(command_list, envp);
-	if (is_executable((*command_list)->args[0], envp) == true)
-		// *cmd_check(*envp, args->arg[args]);
-		// safe_fork(NULL);
-		return (0);
+	cmd_path = is_executable((*command_list)->args[0], envp);
+	if (cmd_path)
+	{
+		printf("working\n");
+		child((*command_list)->args[0], envp);
+	}
+	if (!cmd_path)
+		printf("no path\n");
+	return (0);
+	// *cmd_check(*envp, args->arg[args]);
+	// safe_fork(NULL);
 }
 
 // Builtin brains
@@ -33,18 +43,22 @@ bool	is_builtin(const char *cmd)
 	else
 		return (false);
 }
-bool	is_executable(const char *cmd, char **envp)
+char	*is_executable(char *cmd, char **envp)
 {
+	char	*path_env;
+	char	**paths;
 	char	*result;
-	char	*env_path;
 
-	result = *check_absolute_path(cmd);
+	result = check_absolute_path(cmd);
 	if (result)
-		return (true);
-	env_path = (cmd_findpath(envp));
-	if (!env_path)
-		return (false);
-	return (true);
+		return (result);
+	path_env = (cmd_findpath(envp));
+	if (!path_env)
+		return (NULL);
+	paths = ft_split(path_env, ':');
+	if (!paths)
+		return (free(result), NULL);
+	return (cmd_path_search(paths, cmd));
 }
 
 void	exec_builtin(t_command **command_list, char **envp)
@@ -66,6 +80,19 @@ void	exec_builtin(t_command **command_list, char **envp)
 	// 	builtin_unset();
 	// if (args == "export")
 	// 	builtin_export();
+}
+
+void	child(char *cmd, char **envp)
+{
+	char	*cmd_path;
+
+	if (!cmd)
+		printf("big rip\n");
+	printf("here? maybe inside child\n");
+	cmd_path = is_executable(cmd, envp);
+	execve(cmd_path, &cmd, envp);
+	perror("execve");
+	return ;
 }
 
 // int	not_main(int argc, char *argv[], char *envp[])
@@ -93,31 +120,4 @@ void	exec_builtin(t_command **command_list, char **envp)
 // 	if (WIFEXITED(status2))
 // 		return (WEXITSTATUS(status2));
 // 	return (1);
-// }
-
-// void	child(char *argv[], char *envp[], int *pipefd)
-// {
-// 	int		infile;
-// 	char	*cmd_path;
-// 	char	**cmd_args;
-
-// 	if (dup2(pipefd[1], STDOUT_FILENO) == -1)
-// 		bad_dup("dup2", 1);
-// 	close(pipefd[0]);
-// 	close(pipefd[1]);
-// 	cmd_args = cmd_parse(argv[2]);
-// 	if (!cmd_args)
-// 		cleanup_and_exit(NULL, NULL, 127);
-// 	cmd_path = cmd_check(envp, cmd_args[0]);
-// 	if (!cmd_path)
-// 		no_path(cmd_args, 127);
-// 	infile = open(argv[1], O_RDONLY);
-// 	if (infile == -1)
-// 		no_infile(argv[1], cmd_args, cmd_path, 1);
-// 	if (dup2(infile, STDIN_FILENO) == -1)
-// 		bad_dup("dup2", 1);
-// 	close(infile);
-// 	execve(cmd_path, cmd_args, envp);
-// 	perror("execve");
-// 	cleanup_and_exit(cmd_args, cmd_path, 1);
 // }
