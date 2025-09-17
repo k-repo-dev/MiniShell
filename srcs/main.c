@@ -25,7 +25,7 @@ static int	run_minishell_loop(char **envp)
 		line = readline("my_prompt> ");
 		if (line == NULL)
 		{
-			printf("exit\n");
+			printf("###Exit Read###\n");
 			break ;
 		}
 		if (*line)

@@ -3,21 +3,43 @@
 
 int	parent_loop(t_command **command_list, char **envp)
 {
-	t_env	*env;
+	int			i;
+	t_command	*cmd;
+	char		*cmd_path;
+	pid_t		pid;
+	int			fd[2];
 
-	env = NULL;
+	// int			status;
+	i = 0;
+	cmd = *command_list;
 	// int	fd[2];
 	// check for builtin or binary
-	printf("Parent\n");
-	printf("%s cmd->args[1]\n", (*command_list)->args[0]);
+	printf("\n#####Parent Loop#####");
+	printf("\ncmd->args[0]: %s\n", (*command_list)->args[0]);
+	printf("cmd->args[1]: %s\n", (*command_list)->args[1]);
+	// printf("cmd->args[2]: %s\n", (*command_list)->args[2]);
+	// printf("cmd->args[3]: %s\n", (*command_list)->args[3]);
+	printf("#####################\n\n\n");
 	if (is_builtin((*command_list)->args[0]) == true)
-	{
-		printf("builtin check\n");
 		exec_builtin(command_list, envp);
+	cmd_path = is_executable((*command_list)->args[0], envp);
+	if (cmd_path)
+	{
+		pid = safe_fork(fd);
+		if (pid == 0)
+		{
+			child((*command_list)->args, envp);
+			waitpid(pid, NULL, 0);
+			// WEXITSTATUS(status);
+		}
 	}
+	close(fd[0]);
+	close(fd[1]);
+	if (!cmd_path)
+		printf("no path\n");
+	return (0);
 	// *cmd_check(*envp, args->arg[args]);
 	// safe_fork(NULL);
-	return (0);
 }
 
 // Builtin brains
@@ -31,35 +53,60 @@ bool	is_builtin(const char *cmd)
 	else
 		return (false);
 }
+char	*is_executable(char *cmd, char **envp)
+{
+	char	*path_env;
+	char	**paths;
+	char	*result;
+
+	result = check_absolute_path(cmd);
+	if (result)
+		return (result);
+	path_env = (cmd_findpath(envp));
+	if (!path_env)
+		return (NULL);
+	paths = ft_split(path_env, ':');
+	if (!paths)
+		return (free(result), NULL);
+	return (cmd_path_search(paths, cmd));
+}
 
 void	exec_builtin(t_command **command_list, char **envp)
 {
 	t_command	*cmd;
 
 	cmd = *command_list;
-	printf("builtin check 2\n");
-	printf("%s", cmd->args[0]);
 	if (ft_strcmp(cmd->args[0], "echo") == 0)
-	{
-		printf("echo check\n");
 		builtin_echo(cmd);
-	}
 	else if (ft_strcmp(cmd->args[0], "cd") == 0)
 		builtin_cd(cmd);
 	else if (ft_strcmp(cmd->args[0], "pwd") == 0)
 		builtin_pwd();
 	else if (ft_strcmp(cmd->args[0], "exit") == 0)
-		exit(0); // return 0?
+		return ;
 	else if (ft_strcmp(cmd->args[0], "env") == 0)
 		builtin_env(envp);
-	// if (args == "pwd")
-	// 	buildin_pwd(cmd);
 	// if (args == "unset")
 	// 	builtin_unset();
 	// if (args == "export")
 	// 	builtin_export();
-	// if (args == "exit")
-	// 	builtin_exit();
+}
+
+void	child(char **args, char **envp)
+{
+	char	*cmd_path;
+
+	printf("\n#####Child######\n");
+	if (!args)
+	{
+		printf("big rip\n");
+		return ;
+	}
+	printf("child arg: %s\n", args[0]);
+	cmd_path = is_executable(*args, envp);
+	execve(cmd_path, &args[0], envp);
+	perror("execve");
+	return ;
 }
 
 // int	not_main(int argc, char *argv[], char *envp[])
@@ -87,31 +134,4 @@ void	exec_builtin(t_command **command_list, char **envp)
 // 	if (WIFEXITED(status2))
 // 		return (WEXITSTATUS(status2));
 // 	return (1);
-// }
-
-// void	child(char *argv[], char *envp[], int *pipefd)
-// {
-// 	int		infile;
-// 	char	*cmd_path;
-// 	char	**cmd_args;
-
-// 	if (dup2(pipefd[1], STDOUT_FILENO) == -1)
-// 		bad_dup("dup2", 1);
-// 	close(pipefd[0]);
-// 	close(pipefd[1]);
-// 	cmd_args = cmd_parse(argv[2]);
-// 	if (!cmd_args)
-// 		cleanup_and_exit(NULL, NULL, 127);
-// 	cmd_path = cmd_check(envp, cmd_args[0]);
-// 	if (!cmd_path)
-// 		no_path(cmd_args, 127);
-// 	infile = open(argv[1], O_RDONLY);
-// 	if (infile == -1)
-// 		no_infile(argv[1], cmd_args, cmd_path, 1);
-// 	if (dup2(infile, STDIN_FILENO) == -1)
-// 		bad_dup("dup2", 1);
-// 	close(infile);
-// 	execve(cmd_path, cmd_args, envp);
-// 	perror("execve");
-// 	cleanup_and_exit(cmd_args, cmd_path, 1);
 // }
