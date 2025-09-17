@@ -1,19 +1,16 @@
 #include "execution.h"
 #include "minishell.h"
 
-int	parent_loop(t_command **command_list, char **envp)
+void	parent_loop(t_command **command_list, char **envp)
 {
 	int			i;
 	t_command	*cmd;
 	char		*cmd_path;
 	pid_t		pid;
-	int			fd[2];
+	int			status;
 
-	// int			status;
 	i = 0;
 	cmd = *command_list;
-	// int	fd[2];
-	// check for builtin or binary
 	printf("\n#####Parent Loop#####");
 	printf("\ncmd->args[0]: %s\n", (*command_list)->args[0]);
 	printf("cmd->args[1]: %s\n", (*command_list)->args[1]);
@@ -27,20 +24,16 @@ int	parent_loop(t_command **command_list, char **envp)
 		cmd_path = is_executable((*command_list)->args[0], envp);
 		if (cmd_path)
 		{
-			pid = safe_fork(fd);
+			pid = fork();
 			if (pid == 0)
-			{
 				child((*command_list)->args, envp);
-				waitpid(pid, NULL, 0);
-				// WEXITSTATUS(status);
-			}
+			else
+				waitpid(pid, &status, 0);
 		}
 		if (!cmd_path)
 			printf("no path\n");
 	}
-	close(fd[0]);
-	close(fd[1]);
-	return (0);
+	// return (0);
 	// *cmd_check(*envp, args->arg[args]);
 	// safe_fork(NULL);
 }
@@ -109,7 +102,7 @@ void	child(char **args, char **envp)
 	cmd_path = is_executable(*args, envp);
 	execve(cmd_path, &args[0], envp);
 	perror("execve");
-	return ;
+	exit(1);
 }
 
 // int	not_main(int argc, char *argv[], char *envp[])
