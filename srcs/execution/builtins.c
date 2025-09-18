@@ -84,11 +84,12 @@ int	builtin_cd(t_command *cmd)
 	return (0);
 }
 
-int	builtin_export(t_command **args, char **envp)
-{
-	// sort by ascii
-}
+// int	builtin_export(t_command *cmd, char **envp)
+// {
+// 	// char	*new;
+// 	// char	*temp;
+// 	// sort by ascii
+// 	return (0);
+// }
 
-int	builtin_unset(t_command **args, char ***envp)
-{
-}
+// int	builtin_unset(t_command *cmd, char **envp);

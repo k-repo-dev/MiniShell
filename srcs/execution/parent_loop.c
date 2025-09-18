@@ -17,11 +17,11 @@ void	parent_loop(t_command **command_list, char **envp)
 	// printf("cmd->args[2]: %s\n", (*command_list)->args[2]);
 	// printf("cmd->args[3]: %s\n", (*command_list)->args[3]);
 	printf("#####################\n\n\n");
-	if (is_builtin((*command_list)->args[0]) == true)
+	if (is_builtin((*command_list)->args[i]) == true)
 		exec_builtin(command_list, envp);
 	else
 	{
-		cmd_path = is_executable((*command_list)->args[0], envp);
+		cmd_path = is_executable((*command_list)->args[i], envp);
 		if (cmd_path)
 		{
 			pid = fork();
@@ -33,6 +33,13 @@ void	parent_loop(t_command **command_list, char **envp)
 		if (!cmd_path)
 			printf("no path\n");
 	}
+	/*
+	after parent runs through all args
+	while(wait(&status) > 0);
+	to wait for all childs
+	//dup2() to redirect stdin/stdout
+	//close fds in child and parent
+	*/
 }
 
 // Builtin brains
@@ -79,10 +86,10 @@ void	exec_builtin(t_command **command_list, char **envp)
 		return ;
 	else if (ft_strcmp(cmd->args[0], "env") == 0)
 		builtin_env(envp);
-	else if (ft_strcmp(cmd->args[0], "unset") == 0)
-		builtin_unset(cmd->args[0], envp);
-	else if (ft_strcmp(cmd->args[0], "export") == 0)
-		builtin_export(cmd->args[0], envp);
+	// else if (ft_strcmp(cmd->args[0], "unset") == 0)
+	// 	builtin_unset(cmd, envp);
+	// else if (ft_strcmp(cmd, "export") == 0)
+	// 	builtin_export(cmd, envp);
 }
 
 void	child(char **args, char **envp)
@@ -98,6 +105,6 @@ void	child(char **args, char **envp)
 	printf("child arg: %s\n", args[0]);
 	cmd_path = is_executable(*args, envp);
 	execve(cmd_path, &args[0], envp);
-	perror("execve");
+	perror("execve failed");
 	exit(1);
 }
