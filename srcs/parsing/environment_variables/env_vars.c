@@ -1,10 +1,10 @@
 #include "../../../incls/prototypes.h"
 
-static size_t	get_expanded_len(const char *str, int exit_status);
-static char		*copy_expanded_str(const char *str, int exit_status,
+static char	*copy_expanded_str(const char *str, int exit_status,
 					t_arena *arena);
-static char		*get_variable_value(const char *var_name, int exit_status,
-					t_arena *arena);
+static void	handle_single_quote(const char **str, char **expand_str);
+static void	handle_var_expand(const char **str, char **expand_str, int exit_status, t_arena *arena);
+static void	expand_normal_var(const char **str, char **expand_str, t_arena *arena);
 
 void	expand_commands(t_command *cmd_list, t_arena *arena, int exit_status)
 {
@@ -24,64 +24,75 @@ void	expand_commands(t_command *cmd_list, t_arena *arena, int exit_status)
 	}
 }
 
-static size_t	get_expanded_len(const char *str, int exit_status)
+static char	*copy_expanded_str(const char *str, int exit_status, t_arena *arena)
 {
-	size_t	len;
-	int		i;
-	int		start;
-	char	*value;
-	char	var_name;
+	char	*expand_str;
+	char	*current_expand_pos;
+	const char	*current_str_pos;
 
-	i = 0;
-	start = 0;
-	var_name = i - start + 1;
-	len = 0;
-	while (str[i])
+	expand_str = alloc_arena(arena, get_expanded_len(str, exit_status) + 1);
+	current_expand_pos = expand_str;
+	current_str_pos = str;
+	while (*current_str_pos)
 	{
-		if (str[i] == '\'')
-		{
-			len++;
-			i++;
-			while (str[i] && str[i] != '\'')
-			{
-				len++;
-				i++;
-			}
-			if (str[i] == '\'')
-				len++;
-		}
-		else if (str[i] == '$' && str[i + 1] && (ft_isalnum(str[i + 1]) || str[i
-				+ 1] == '?'))
-		{
-			i++;
-			if (str[i] == '?')
-			{
-				value = get_variable_value("?", exit_status, NULL);
-				if (value)
-					len += ft_strlen(value);
-				i++;
-			}
-			else
-			{
-				start = i;
-				while (str[i] && ft_isalnum(str[i]))
-					i++;
-				ft_strlcpy(&var_name, &str[start], i - start + 1);
-				value = get_variable_value(&var_name, exit_status, NULL);
-				if (value)
-					len += ft_strlen(value);
-			}
-		}
+		if (*current_str_pos == '\'')
+			handle_single_quote(&current_str_pos, &current_expand_pos);
+		else if (*current_str_pos == '$' && *(current_str_pos + 1)
+				&& (ft_isalnum(*(current_str_pos + 1)) || *(current_str_pos + 1) == '?'))
+			handle_var_expand(&current_str_pos, &current_expand_pos, exit_status, arena);
 		else
-		{
-			len++;
-			i++;
-		}
+			*current_expand_pos++ = *current_str_pos++;
 	}
-	return (len);
+	*current_expand_pos = '\0';
+	return (expand_str);
 }
 
-static char	*copy_expanded_str(const char *str, int exit_status, t_arena *arena)
+static void	handle_single_quote(const char **str, char **expand_str)
+{
+	*(*expand_str)++ = *(*str)++;
+	while (**str && **str != '\'')
+		*(*expand_str)++ = *(*str)++;
+	if (**str == '\'')
+		*(*expand_str)++ = *(*str)++;
+}
+
+static void handle_var_expand(const char **str, char **expand_str, int exit_status, t_arena *arena)
+{
+	const char	*value;
+
+	(*str)++;
+	if (**str == '?')
+	{
+		value = get_variable_value("?", exit_status, arena);
+		if (value)
+		{
+			ft_memcpy(*expand_str, value, ft_strlen(value));
+			*expand_str += ft_strlen(value);
+		}
+		(*str)++;
+	}
+	else
+		expand_normal_var(str, expand_str, arena);
+}
+
+static void	expand_normal_var(const char **str, char **expand_str, t_arena *arena)
+{
+	const char	*value;
+	const char	*start;
+	char		var_name[256];
+
+	start = *str;
+	while (**str && ft_isalnum(**str))
+		(*str)++;
+	ft_strlcpy(var_name, start, *str - start + 1);
+	value = get_variable_value(var_name, 0, arena);
+	if (value)
+	{
+		ft_memcpy(*expand_str, value, ft_strlen(value));
+		*expand_str += ft_strlen(value);
+	}
+}
+/*static char	*copy_expanded_str(const char *str, int exit_status, t_arena *arena)
 {
 	size_t		i;
 	size_t		j;
@@ -138,23 +149,4 @@ static char	*copy_expanded_str(const char *str, int exit_status, t_arena *arena)
 	}
 	expanded_str[j] = '\0';
 	return (expanded_str);
-}
-
-static char	*get_variable_value(const char *var_name, int exit_status,
-		t_arena *arena)
-{
-	const char	*value;
-
-	if (var_name && var_name[0] == '?' && !var_name[1])
-	{
-		if (arena == NULL)
-			return (ft_itoa(exit_status));
-		return (arena_itoa(exit_status, arena));
-	}
-	value = getenv(var_name);
-	if (!value)
-		return (NULL);
-	if (arena == NULL)
-		return (ft_strdup(value));
-	return (arena_strdup(arena, value));
-}
+}*/
