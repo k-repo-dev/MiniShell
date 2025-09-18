@@ -33,9 +33,6 @@ void	parent_loop(t_command **command_list, char **envp)
 		if (!cmd_path)
 			printf("no path\n");
 	}
-	// return (0);
-	// *cmd_check(*envp, args->arg[args]);
-	// safe_fork(NULL);
 }
 
 // Builtin brains
@@ -82,10 +79,10 @@ void	exec_builtin(t_command **command_list, char **envp)
 		return ;
 	else if (ft_strcmp(cmd->args[0], "env") == 0)
 		builtin_env(envp);
-	// if (args == "unset")
-	// 	builtin_unset();
-	// if (args == "export")
-	// 	builtin_export();
+	else if (ft_strcmp(cmd->args[0], "unset") == 0)
+		builtin_unset(cmd->args[0], envp);
+	else if (ft_strcmp(cmd->args[0], "export") == 0)
+		builtin_export(cmd->args[0], envp);
 }
 
 void	child(char **args, char **envp)
@@ -104,30 +101,3 @@ void	child(char **args, char **envp)
 	perror("execve");
 	exit(1);
 }
-
-// int	not_main(int argc, char *argv[], char *envp[])
-// {
-// 	int		pipefd[2];
-// 	pid_t	pid1;
-// 	pid_t	pid2;
-// 	int		status1;
-// 	int		status2;
-
-// 	if (argc != 5)
-// 		cmd_error_msg("Usage: ./pipex file1 cmd1 cmd2 file2\n", 1);
-// 	if (pipe(pipefd) < 0)
-// 		bad_pipe("pipe");
-// 	pid1 = safe_fork(pipefd);
-// 	if (pid1 == 0)
-// 		kid_one(argv, envp, pipefd);
-// 	pid2 = safe_fork(pipefd);
-// 	if (pid2 == 0)
-// 		kid_two(argv, envp, pipefd);
-// 	close(pipefd[0]);
-// 	close(pipefd[1]);
-// 	waitpid(pid1, &status1, 0);
-// 	waitpid(pid2, &status2, 0);
-// 	if (WIFEXITED(status2))
-// 		return (WEXITSTATUS(status2));
-// 	return (1);
-// }

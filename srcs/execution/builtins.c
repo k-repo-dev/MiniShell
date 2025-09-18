@@ -84,23 +84,11 @@ int	builtin_cd(t_command *cmd)
 	return (0);
 }
 
-// int	builtin_export(t_command **args, char ***envp)
-// {
-// 	// sort by ascii
-// }
+int	builtin_export(t_command **args, char **envp)
+{
+	// sort by ascii
+}
 
-// int	builtin_unset(t_command **args, char ***envp)
-// {
-// }
-
-// void	find_directory(char **envp, char *directory)
-// {
-// 	int i = 0;
-// 	int arg_len = ft_strlen(directory);
-// 	while (envp[i])
-// 	{
-// 		if (ft_strncmp(envp[i]), directory, ft_strlen(directory) == 0)
-// 			return ((envp[i])i++);
-// 	}
-// 	return (1)
-// }
+int	builtin_unset(t_command **args, char ***envp)
+{
+}
