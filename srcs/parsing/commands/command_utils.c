@@ -88,38 +88,3 @@ static void	heredoc_warning(const char *delimiter)
 	ft_putstr_fd(delimiter, 2);
 	ft_putstr_fd("')\n", 2);
 }
-/*static char	*handle_heredoc(const char *delimiter, t_arena *arena)
-{
-	char	*line;
-	int		fd;
-	char	*tmp_filename;
-
-	tmp_filename = arena_strdup(arena, "/tmp/heredoc_XXXXXX");
-	fd = mkstemp(tmp_filename);
-	if (fd == -1)
-	{
-		perror("mkstemp");
-		return (NULL);
-	}
-	while (1)
-	{
-		line = readline("> ");
-		if (!line)
-		{
-			ft_putstr_fd("minihell: warning: here-document at line 1 delimited by by end-of0file (wanted '", 2);
-			ft_putstr_fd(delimiter, 2);
-			ft_putstr_fd("')\n", 2);
-			break ;
-		}
-		if (!ft_strcmp(line, delimiter))
-		{
-			free(line);
-			break ;
-		}
-		ft_putstr_fd(line, fd);
-		ft_putstr_fd("\n", fd);
-		free(line);
-	}
-	close(fd);
-	return (tmp_filename);
-}*/
