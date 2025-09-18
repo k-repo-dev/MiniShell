@@ -8,6 +8,7 @@ void	parent_loop(t_command **command_list, char **envp)
 	char		*cmd_path;
 	pid_t		pid;
 	int			status;
+	int			pipe_fd[2];
 
 	i = 0;
 	cmd = *command_list;
@@ -17,6 +18,11 @@ void	parent_loop(t_command **command_list, char **envp)
 	// printf("cmd->args[2]: %s\n", (*command_list)->args[2]);
 	// printf("cmd->args[3]: %s\n", (*command_list)->args[3]);
 	printf("#####################\n\n\n");
+	while (cmd)
+	{
+		if (cmd->next)
+			pipe(pipe_fd);
+	}
 	if (is_builtin((*command_list)->args[i]) == true)
 		exec_builtin(command_list, envp);
 	else
