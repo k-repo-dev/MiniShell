@@ -17,8 +17,8 @@ typedef enum e_token_type
 	PIPE_TOKEN,
 	LESS_TOKEN,
 	GREAT_TOKEN,
-	DLESS_TOKEN,
-	DGREAT_TOKEN
+	HEREDOC_TOKEN,
+	APPEND_TOKEN
 }							t_token_type;
 
 typedef struct s_token

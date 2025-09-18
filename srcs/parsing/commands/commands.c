@@ -37,7 +37,7 @@ t_command	*parse_commands(t_token *token_head, t_arena *arena)
 		if (current_token->type == PIPE_TOKEN)
 			current_cmd = current_cmd->next;
 		else if (current_token->type == LESS_TOKEN || current_token->type == GREAT_TOKEN
-					|| current_token->type == DLESS_TOKEN || current_token->type == DGREAT_TOKEN)
+					|| current_token->type == HEREDOC_TOKEN || current_token->type == APPEND_TOKEN)
 			add_redir_to_cmd(current_cmd, &current_token, arena);
 		else
 			add_arg_to_cmd(current_cmd, current_token, arena);
@@ -82,7 +82,7 @@ static void add_redir_to_cmd(t_command *cmd, t_token **token, t_arena *arena)
 		ft_putstr_fd("syntax error near unexpected token 'newine'\n", 2);
 		return ;
 	}
-	if (new_redir->type == DLESS_TOKEN)
+	if (new_redir->type == HEREDOC_TOKEN)
 		new_redir->filename = handle_heredoc((*token)->value, arena);
 	else
 		new_redir->filename = arena_strdup(arena, (*token)->value);
