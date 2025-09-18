@@ -19,7 +19,7 @@ char		*arena_itoa(int n, t_arena *arena);
 
 // Function prortypes from memory_utils.c
 size_t		ft_counter(long long n);
-char	*arena_strndup(t_arena *arena, const char *s1, size_t n);
+char		*arena_strndup(t_arena *arena, const char *s1, size_t n);
 
 // Function prototypes from tokenizer.c
 t_token		*tokenizer(const char *line, t_arena *arena);
@@ -28,8 +28,15 @@ const char	*find_token_end(const char *start);
 // Function prototypes from commands.c
 t_command	*parse_commands(t_token *token_head, t_arena *arena);
 
-// Function prortypes from env_vars.c
+// Function prototypes from command_utils.c
+void		add_arg_to_cmd(t_command *cmd, t_token *token, t_arena *arena);
+void		add_redir_to_cmd(t_command *cmd, t_token **token, t_arena *arena);
+
+// Function prototypes from env_vars.c
 void		expand_commands(t_command *cmd_list, t_arena *arena,
 				int exit_status);
 
+// Function prototypes from env_vars_utils.c
+size_t		get_expanded_len(const char *str, int exit_status);
+char		*get_variable_value(const char *vr_name, int exit_status, t_arena *arena);
 #endif
