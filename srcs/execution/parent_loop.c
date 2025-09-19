@@ -3,49 +3,47 @@
 
 void	parent_loop(t_command **command_list, char **envp)
 {
-	int			i;
 	t_command	*cmd;
-	char		*cmd_path;
 	pid_t		pid;
 	int			status;
 	int			pipe_fd[2];
+	int			prev_fd;
 
-	i = 0;
+	prev_fd = -1;
 	cmd = *command_list;
-	printf("\n#####Parent Loop#####");
-	printf("\ncmd->args[0]: %s\n", (*command_list)->args[0]);
-	printf("cmd->args[1]: %s\n", (*command_list)->args[1]);
-	// printf("cmd->args[2]: %s\n", (*command_list)->args[2]);
-	// printf("cmd->args[3]: %s\n", (*command_list)->args[3]);
-	printf("#####################\n\n\n");
+	test_print(command_list);
 	while (cmd)
 	{
 		if (cmd->next)
 			pipe(pipe_fd);
-	}
-	if (is_builtin((*command_list)->args[i]) == true)
-		exec_builtin(command_list, envp);
-	else
-	{
-		cmd_path = is_executable((*command_list)->args[i], envp);
-		if (cmd_path)
+		pid = fork();
+		if (pid == 0) // Child process
 		{
-			pid = fork();
-			if (pid == 0)
-				child((*command_list)->args, envp);
-			else
-				waitpid(pid, &status, 0);
+			if (prev_fd != -1)
+				dup2(prev_fd, STDIN_FILENO);
+			if (cmd->next)
+				dup2(pipe_fd[1], STDOUT_FILENO);
+			if (prev_fd != -1)
+				close(prev_fd);
+			if (cmd->next)
+			{
+				close(pipe_fd[0]);
+				close(pipe_fd[1]);
+			}
+			execve_wrapper(cmd, envp);
+			exit(1);
 		}
-		if (!cmd_path)
-			printf("no path\n");
+		if (prev_fd != -1)
+			close(prev_fd);
+		if (cmd->next)
+		{
+			close(pipe_fd[1]);
+			prev_fd = pipe_fd[0];
+		}
+		cmd = cmd->next;
 	}
-	/*
-	after parent runs through all args
-	while(wait(&status) > 0);
-	to wait for all childs
-	//dup2() to redirect stdin/stdout
-	//close fds in child and parent
-	*/
+	while (wait(&status) > 0)
+		;
 }
 
 // Builtin brains
@@ -96,21 +94,4 @@ void	exec_builtin(t_command **command_list, char **envp)
 	// 	builtin_unset(cmd, envp);
 	// else if (ft_strcmp(cmd, "export") == 0)
 	// 	builtin_export(cmd, envp);
-}
-
-void	child(char **args, char **envp)
-{
-	char	*cmd_path;
-
-	printf("\n#####Child######\n");
-	if (!args)
-	{
-		printf("big rip\n");
-		return ;
-	}
-	printf("child arg: %s\n", args[0]);
-	cmd_path = is_executable(*args, envp);
-	execve(cmd_path, &args[0], envp);
-	perror("execve failed");
-	exit(1);
 }
