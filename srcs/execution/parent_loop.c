@@ -82,6 +82,7 @@ void	exec_builtin(t_command **command_list, char **envp)
 	cmd = *command_list;
 	if (ft_strcmp(cmd->args[0], "echo") == 0)
 		builtin_echo(cmd);
+	// cd parent only
 	else if (ft_strcmp(cmd->args[0], "cd") == 0)
 		builtin_cd(cmd);
 	else if (ft_strcmp(cmd->args[0], "pwd") == 0)
