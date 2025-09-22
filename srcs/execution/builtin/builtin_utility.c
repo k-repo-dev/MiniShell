@@ -25,7 +25,7 @@ void	exec_builtin(t_command **command_list, char **envp)
 	else if (ft_strcmp(cmd->args[0], "pwd") == 0)
 		builtin_pwd();
 	else if (ft_strcmp(cmd->args[0], "exit") == 0)
-		return ;
+		exit(1);
 	else if (ft_strcmp(cmd->args[0], "env") == 0)
 		builtin_env(envp);
 	// else if (ft_strcmp(cmd->args[0], "unset") == 0)

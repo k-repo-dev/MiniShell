@@ -14,6 +14,8 @@ void	parent_loop(t_command **command_list, char **envp)
 	test_print(command_list);
 	while (cmd)
 	{
+		if (!cmd->next && is_builtin(cmd->args[0]))
+			exec_builtin(&cmd, envp);
 		if (cmd->next)
 			pipe(pipe_fd);
 		pid = fork();
