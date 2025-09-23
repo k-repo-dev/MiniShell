@@ -41,7 +41,7 @@ static t_command	*create_and_link_cmd(t_command **cmd_head, t_arena *arena)
 		return (NULL);
 	new_cmd->next = NULL;
 	new_cmd->args = NULL;
-	new_cmd->redirects = NULL;
+	new_cmd->redirs = NULL;
 	if (!*cmd_head)
 		*cmd_head = new_cmd;
 	else

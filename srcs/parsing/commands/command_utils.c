@@ -42,11 +42,11 @@ void add_redir_to_cmd(t_command *cmd, t_token **token, t_arena *arena)
 		new_redir->filename = handle_heredoc((*token)->value, arena);
 	else
 		new_redir->filename = arena_strdup(arena, (*token)->value);
-	if (!cmd->redirects)
-		cmd->redirects = new_redir;
+	if (!cmd->redirs)
+		cmd->redirs = new_redir;
 	else
 	{
-		current_redir = cmd->redirects;
+		current_redir = cmd->redirs;
 		while (current_redir->next)
 			current_redir = current_redir->next;
 		current_redir->next = new_redir;

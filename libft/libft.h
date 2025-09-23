@@ -6,7 +6,7 @@
 /*   By: krepo <krepo@student.hive.fi>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/16 11:12:15 by krepo             #+#    #+#             */
-/*   Updated: 2025/09/10 13:01:16 by krepo            ###   ########.fr       */
+/*   Updated: 2025/09/23 10:58:04 by krepo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,7 @@ char	*ft_strrchr(const char *s, int c);
 char	*ft_strtrim(char const *s1, char const *set);
 char	*ft_substr(char const *s, unsigned int start, size_t len);
 int		ft_strcmp(const char *s1, const char *s2);
+char	*ft_strndup(const char *s1, size_t n);
 
 // Memory function prototypes
 void	ft_bzero(void *s, size_t n);

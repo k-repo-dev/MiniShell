@@ -14,6 +14,12 @@ void		handle_sigint(int sig);
 t_env		*init_env_list(char	**envp);
 void		free_env_list(t_env *head);
 
+// Function prototypes from env_utils.c
+void		add_env_node(t_env **env_list, const char *key, const char *value);
+void		remove_env_node(t_env **head, const char *key);
+char		**env_list_to_array(t_env *head, t_arena *arena);
+char		*get_env_value(t_env *env_list, const char *key);
+
 // Function prototypes from memory_arena.c
 void		*alloc_arena(t_arena *arena, size_t size);
 int			init_arena(t_arena *arena, size_t size);
@@ -38,7 +44,7 @@ void		add_redir_to_cmd(t_command *cmd, t_token **token, t_arena *arena);
 
 // Function prototypes from env_vars.c
 void		expand_commands(t_command *cmd_list, t_arena *arena,
-				int exit_status);
+				int exit_status, t_env *env_list);
 
 // Function prototypes from env_vars_utils.c
 size_t		get_expanded_len(const char *str, int exit_status);

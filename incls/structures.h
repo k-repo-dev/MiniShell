@@ -38,7 +38,7 @@ typedef struct s_redir
 typedef struct s_command
 {
 	char					**args;
-	t_redir					*redirects;
+	t_redir					*redirs;
 	struct s_command		*next;
 }							t_command;
 
@@ -48,6 +48,7 @@ typedef struct s_arena
 	size_t					size;
 	size_t					offset;
 }							t_arena;
+
 typedef struct s_env
 {
 	char					*key;
