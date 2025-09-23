@@ -107,7 +107,7 @@ char	**env_list_to_array(t_env *head, t_arena *arena)
 	return (env_array);
 }
 
-char	*get_env_value(const char *key, t_env *env_list)
+char	*get_env_value(t_env *env_list, const char	*key)
 {
 	while (env_list)
 	{

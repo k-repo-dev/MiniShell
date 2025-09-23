@@ -8,7 +8,7 @@ t_env	*init_env_list(char **envp)
 	head = NULL;
 	while (*envp)
 	{
-		equals_sign = ft_strcr(*envp, '=');
+		equals_sign = ft_strchr(*envp, '=');
 		if (equals_sign)
 			add_env_node(&head, ft_strndup(*envp, equals_sign - *envp), equals_sign + 1);
 		else

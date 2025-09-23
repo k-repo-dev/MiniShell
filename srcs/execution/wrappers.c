@@ -1,4 +1,4 @@
-#include "execution.h"
+/*#include "execution.h"
 #include "minishell.h"
 
 pid_t	fork_wrapper(int pipefd[2])
@@ -34,4 +34,4 @@ void	execve_wrapper(t_command *cmd, char **envp)
 	execve(cmd_path, cmd->args, envp);
 	perror("execve failed");
 	exit(1);
-}
+}*/

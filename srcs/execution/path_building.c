@@ -1,4 +1,4 @@
-#include "execution.h"
+/*#include "execution.h"
 
 char	*check_absolute_path(const char *cmd)
 {
@@ -82,4 +82,4 @@ char	*cmd_check(char *envp[], char *cmd)
 	if (!paths)
 		return (free(result), NULL);
 	return (cmd_path_search(paths, cmd));
-}
+}*/

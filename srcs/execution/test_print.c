@@ -1,4 +1,4 @@
-#include "execution.h"
+/*#include "execution.h"
 #include "minishell.h"
 
 void	test_print(t_command **command_list)
@@ -20,4 +20,4 @@ void	test_print(t_command **command_list)
 		// printf("####################\n\n");
 		cmd = cmd->next;
 	}
-}
+}*/
