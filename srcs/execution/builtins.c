@@ -93,3 +93,69 @@ int	builtin_cd(t_command *cmd)
 // }
 
 // int	builtin_unset(t_command *cmd, char **envp);
+
+/*int	handle_builtins(t_command *cmd, t_env **env_list)
+{
+	if (!cmd->args[0])
+		return (0);
+	if (ft_strcmp(cmd->args[0]. "echo") == 0)
+		return (ft_echo);
+	else if (ft_strcmp(cmd->args[0], "cd") == 0)
+		return (ft_cd(cmd, env_list));
+	else if (ft_strcmp(cmd->args[0], "pwd") == 0)
+		return (ft_pwd());
+	else if (ft_strcmp(cmd->rgs[0], "export") == 0)
+		return (ft_export(cmd, env_list));
+	else if (ft_strcmp(cmd->args[0], "unset") == 0)
+		return (ft_unset(cmd, env_list));
+	else if (ft_strcmp(cmd->args[0], "env") == 0)
+		return (ft_env(*env_list));
+	else if (ft_strcmp(cmd->args[0], "exit") == 0)
+		return (ft_exit(cmd));
+	return (1);
+}*/
+
+int	ft_export(t_command *cmd, t_env **env_list)
+{
+	int		i;
+	char	*equals_sign;
+	int		exit_status;
+
+	i  = 1;
+	exit_status = 0;
+	if (!cmd->args[i])
+	{
+		print_exported_env(*env_list);
+		return (0);
+	}
+	while (cmd->args[i])
+	{
+		equals_sign = ft_strchr(cmd->args[i], '=');
+		if (!equals_sign)
+		{
+			// TODO: add logic for exporting a var without a value
+		}
+		else
+		{
+			*equals_sign = '\0';
+			set_env_node(env_list, cmd->args[i], equals_sign + 1);
+		}
+		i++;
+	}
+	return (exit_status);
+}
+
+/*static void	print_exported_env(t_env *env_list)
+{
+	t_env	*current;
+
+	current = env_list;
+	while (current)
+	{
+		printf("declare -x %s", current->key);
+		if (current->value)
+			printf("=\"%s\"", current->value);
+		printf("\n");
+		current = current->next;
+	}
+}*/
