@@ -25,7 +25,7 @@ void	execve_wrapper(t_command *cmd, char **envp)
 
 	if (is_builtin(cmd->args[0]))
 	{
-		exec_builtin(&cmd, envp);
+		child_builtin(&cmd, envp);
 		exit(0);
 	}
 	cmd_path = is_executable(cmd->args[0], envp);

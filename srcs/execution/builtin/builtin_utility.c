@@ -11,8 +11,22 @@ bool	is_builtin(const char *cmd)
 	else
 		return (false);
 }
+void	parent_builtin(t_command **command_list, char **envp)
+{
+	t_command	*cmd;
 
-void	exec_builtin(t_command **command_list, char **envp)
+	cmd = *command_list;
+	// cd parent only
+	if (ft_strcmp(cmd->args[0], "cd") == 0)
+		builtin_cd(cmd);
+	(void)envp;
+	// else if (ft_strcmp(cmd->args[0], "unset") == 0)
+	// 	builtin_unset(cmd, envp);
+	// else if (ft_strcmp(cmd, "export") == 0)
+	// 	builtin_export(cmd, envp);
+}
+
+void	child_builtin(t_command **command_list, char **envp)
 {
 	t_command	*cmd;
 

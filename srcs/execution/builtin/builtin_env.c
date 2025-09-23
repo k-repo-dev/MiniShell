@@ -26,11 +26,12 @@ int	builtin_cd(t_command *cmd)
 	return (0);
 }
 
+// sort by ascii
 // int	builtin_export(t_command *cmd, char **envp)
 // {
-// 	// char	*new;
-// 	// char	*temp;
-// 	// sort by ascii
+// 	char	*new;
+// 	char	*temp;
+
 // 	return (0);
 // }
 

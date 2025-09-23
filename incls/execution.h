@@ -7,7 +7,6 @@
 
 // Execution
 void	parent_loop(t_command **command_list, char **envp);
-void	child(char **args, char **envp);
 pid_t	fork_wrapper(int pipefd[2]); // currently unused
 void	execve_wrapper(t_command *cmd, char **envp);
 
@@ -19,7 +18,8 @@ int		builtin_cd(t_command *cmd);
 int		builtin_export(t_command *cmd, char **envp);
 int		builtin_unset(t_command *cmd, char **envp);
 bool	is_builtin(const char *cmd);
-void	exec_builtin(t_command **args, char **envp);
+void	child_builtin(t_command **args, char **envp);
+void	parent_builtin(t_command **command_list, char **envp);
 
 // Executables
 char	*is_executable(char *cmd, char **envp);
