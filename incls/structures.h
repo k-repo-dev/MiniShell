@@ -50,8 +50,8 @@ typedef struct s_arena
 }							t_arena;
 typedef struct s_env
 {
-	char					**envp;
-	char					**value;
+	char					*key;
+	char					*value;
 	struct s_env			*next;
 }							t_env;
 

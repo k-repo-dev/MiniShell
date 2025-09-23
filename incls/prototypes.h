@@ -10,6 +10,10 @@
 int			init_sigaction(void (*handler)(int));
 void		handle_sigint(int sig);
 
+// Function Prototypes from env_list.c
+t_env		*init_env_list(char	**envp);
+void		free_env_list(t_env *head);
+
 // Function prototypes from memory_arena.c
 void		*alloc_arena(t_arena *arena, size_t size);
 int			init_arena(t_arena *arena, size_t size);
