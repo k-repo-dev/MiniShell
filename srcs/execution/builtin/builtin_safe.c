@@ -43,17 +43,17 @@ int	builtin_pwd(void)
 	return (0);
 }
 
-int	builtin_env(char **envp)
+int	builtin_env(t_env *env)
 {
 	int	i;
 
 	i = 0;
-	if (!envp)
+	if (!env)
 		return (1);
-	while (envp[i])
+	while (env)
 	{
-		printf("%s\n", envp[i]);
-		i++;
+		printf("%s\n", env->value);
+		env = env->next;
 	}
 	return (0);
 }

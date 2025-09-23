@@ -11,7 +11,7 @@ bool	is_builtin(const char *cmd)
 	else
 		return (false);
 }
-void	parent_builtin(t_command **command_list, char **envp)
+void	parent_builtin(t_command **command_list, t_env **env)
 {
 	t_command	*cmd;
 
@@ -19,14 +19,14 @@ void	parent_builtin(t_command **command_list, char **envp)
 	// cd parent only
 	if (ft_strcmp(cmd->args[0], "cd") == 0)
 		builtin_cd(cmd);
-	(void)envp;
+	(void)env;
 	// else if (ft_strcmp(cmd->args[0], "unset") == 0)
 	// 	builtin_unset(cmd, envp);
 	// else if (ft_strcmp(cmd, "export") == 0)
 	// 	builtin_export(cmd, envp);
 }
 
-void	child_builtin(t_command **command_list, char **envp)
+void	child_builtin(t_command **command_list, t_env **env)
 {
 	t_command	*cmd;
 
@@ -41,7 +41,7 @@ void	child_builtin(t_command **command_list, char **envp)
 	else if (ft_strcmp(cmd->args[0], "exit") == 0)
 		exit(1);
 	else if (ft_strcmp(cmd->args[0], "env") == 0)
-		builtin_env(envp);
+		builtin_env(*env);
 	// else if (ft_strcmp(cmd->args[0], "unset") == 0)
 	// 	builtin_unset(cmd, envp);
 	// else if (ft_strcmp(cmd, "export") == 0)

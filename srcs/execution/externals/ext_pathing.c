@@ -13,16 +13,13 @@ char	*check_absolute_path(const char *cmd)
 	return (NULL);
 }
 
-char	*cmd_findpath(char **envp)
+char	*cmd_findpath(t_env *env)
 {
-	int	i;
-
-	i = 0;
-	while (envp[i])
+	while (env)
 	{
-		if (ft_strncmp(envp[i], "PATH=", 5) == 0)
-			return (envp[i] + 5);
-		i++;
+		if (env->key && ft_strncmp(env->key, "PATH=", 5) == 0)
+			return (env->value);
+		env = env->next;
 	}
 	return (NULL);
 }
@@ -66,7 +63,8 @@ char	*cmd_path_search(char **paths, char *cmd)
 	return (NULL);
 }
 
-char	*cmd_check(char *envp[], char *cmd)
+// unused
+char	*cmd_check(t_env *env, char *cmd)
 {
 	char	*path_env;
 	char	**paths;
@@ -75,7 +73,7 @@ char	*cmd_check(char *envp[], char *cmd)
 	result = check_absolute_path(cmd);
 	if (result)
 		return (result);
-	path_env = (cmd_findpath(envp));
+	path_env = (cmd_findpath(env));
 	if (!path_env)
 		return (NULL);
 	paths = ft_split(path_env, ':');

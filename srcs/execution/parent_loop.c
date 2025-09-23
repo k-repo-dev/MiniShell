@@ -1,9 +1,9 @@
-#include "execution.h"
-#include "minishell.h"
+#include "prototypes.h"
 
-static void	child(int prev_fd, int pipe_fd[2], t_command *cmd, char **envp);
+static void	child(int prev_fd, int pipe_fd[2], t_command *cmd, t_env **envp,
+				t_arena *arena);
 
-void	parent_loop(t_command **command_list, char **envp)
+void	parent_loop(t_command **command_list, t_env **env, t_arena *arena)
 {
 	t_command	*cmd;
 	pid_t		pid;
@@ -17,11 +17,11 @@ void	parent_loop(t_command **command_list, char **envp)
 	while (cmd)
 	{
 		if (!cmd->next && is_builtin(cmd->args[0]))
-			parent_builtin(&cmd, envp);
+			parent_builtin(&cmd, env);
 		if (cmd->next)
 			pipe(pipe_fd);
 		if ((pid = fork()) == 0) // Child process
-			child(prev_fd, pipe_fd, cmd, envp);
+			child(prev_fd, pipe_fd, cmd, env, arena);
 		if (prev_fd != -1)
 			close(prev_fd);
 		if (cmd->next)
@@ -35,7 +35,8 @@ void	parent_loop(t_command **command_list, char **envp)
 		;
 }
 
-static void	child(int prev_fd, int pipe_fd[2], t_command *cmd, char **envp)
+static void	child(int prev_fd, int pipe_fd[2], t_command *cmd, t_env **env,
+		t_arena *arena)
 {
 	if (prev_fd != -1)
 		dup2(prev_fd, STDIN_FILENO);
@@ -48,6 +49,6 @@ static void	child(int prev_fd, int pipe_fd[2], t_command *cmd, char **envp)
 		close(pipe_fd[0]);
 		close(pipe_fd[1]);
 	}
-	execve_wrapper(cmd, envp);
+	execve_wrapper(cmd, env, arena);
 	exit(1);
 }
