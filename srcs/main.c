@@ -42,9 +42,9 @@ static int	run_minishell_loop(t_env **env_list)
 			{
 				expand_commands(command_list, &arena, exit_status);
 				// updated expand_commands(command_list, &arena, exit_status,
-					*env_list);
+				// *env_list);
 				// parent_loop(&command_list, envp); // Execution starts here
-				parent_loop(command_list, env_list);
+				parent_loop(command_list, env_list, &arena);
 			}
 		}
 		free(line);
