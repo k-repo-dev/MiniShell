@@ -1,5 +1,4 @@
-#include "execution.h"
-#include "minishell.h"
+#include "../../incls/prototypes.h"
 
 // Child safe
 int	builtin_echo(t_command *cmd)
@@ -99,7 +98,7 @@ int	builtin_cd(t_command *cmd)
 	if (!cmd->args[0])
 		return (0);
 	if (ft_strcmp(cmd->args[0]. "echo") == 0)
-		return (ft_echo);
+		return (builtin_echo);
 	else if (ft_strcmp(cmd->args[0], "cd") == 0)
 		return (ft_cd(cmd, env_list));
 	else if (ft_strcmp(cmd->args[0], "pwd") == 0)
@@ -115,7 +114,7 @@ int	builtin_cd(t_command *cmd)
 	return (1);
 }*/
 
-int	ft_export(t_command *cmd, t_env **env_list)
+/*int	ft_export(t_command *cmd, t_env **env_list)
 {
 	int		i;
 	char	*equals_sign;
@@ -133,17 +132,18 @@ int	ft_export(t_command *cmd, t_env **env_list)
 		equals_sign = ft_strchr(cmd->args[i], '=');
 		if (!equals_sign)
 		{
-			// TODO: add logic for exporting a var without a value
+			if (get_env_value(*env_list, cmd->args[i]) == NULL)
+				add_env_node(env_list, cmd->args[i], NULL);
 		}
 		else
 		{
 			*equals_sign = '\0';
-			set_env_node(env_list, cmd->args[i], equals_sign + 1);
+			add_env_node(env_list, cmd->args[i], equals_sign + 1);
 		}
 		i++;
 	}
 	return (exit_status);
-}
+}*/
 
 /*static void	print_exported_env(t_env *env_list)
 {
@@ -158,4 +158,124 @@ int	ft_export(t_command *cmd, t_env **env_list)
 		printf("\n");
 		current = current->next;
 	}
+}*/
+
+/*int	ft_unset(t_command *cmd, t_env **env_list)
+{
+	int	i;
+
+	i = 1;
+	while (cmd->args[i])
+	{
+		remove_env_node(env_list, cmd->args[i]);
+		i++;
+	}
+	return (0);
+}*/
+
+/*int	ft_pwd(void)
+{
+	char	cwd[1024];
+
+	if (getcwd(cwd, sizeof(cwd)) != NULL)
+	{
+		printf("%s\n", cwd);
+		return (0);
+	}
+	else
+	{
+		perror("minishell: pwd");
+		return (1);
+	}
+}*/
+
+/*int	ft_env(t_env *envlist)
+{
+	while (env_list)
+	{
+		printf("%s=%s\n", env_list->key, env_list->value);
+		env_list =env_list->next;
+	}
+	return (0);
+}*/
+
+/*int	fd_cd(t_command *cmd, t_env **env_list)
+{
+	char	old_cwd[1024];
+	char	*path;
+	int		status;
+	if (getcwd(old_cwd, sizeof(old_cwd)) == NULL)
+		return (1);
+	path = cmd->args[1];
+	if (!path || ft_strcmp(path, "~") == 0)
+		path = get_env_value(*env_list, "HOME");
+	else if (ft_strcmp(path, "-") == 0)
+	{
+		path = get_env_value(*env_list, "OLDPWD");
+		if (!path)
+		{
+			printf("minishell: cd: OLDPWD nor set\n");
+		return (1);
+		}
+		printf("%s\n", path);
+	}
+	else if (cmd->args[2])
+	{
+		printf("minishell: cd: too many arguments\n");
+		return (1);
+	}
+	status = chdir(path);
+	if (status == -1)
+	{
+		perror("minishell: cd");
+		return (1);
+	}
+	add_env_node(env_list, ft_strdup("OLDPWD"), old_cwd);
+	if (getcwd(old_cwd, sizeof(old_cwd)) != NULL)
+		add_env_node(env_list, ft_strdup("PWD"), old_cwd);
+	return (0);
+}*/
+
+//static int	is_numeric(const char *str);
+
+/*int	ft_exit(t_command *cmd, int last_status)
+{
+	long	status;
+
+	printf("exit\n");
+	if (cmd->args[1])
+	{
+		if (cmd->args[2])
+		{
+			printf("minishell: exit: too many arguments\n");
+			return (1);
+		}
+		if (!is_numeric(cmd->args[1]))
+		{
+			printf("minishell: exit: %s: numeric argument required\n", cmd->args[1]);
+			exit(2);
+		}
+		status = ft_atoi(cmd->args[1]);
+		exit(status);
+	}
+	exit(last_status);
+	return (0);
+}*/
+
+/*static int	is_numeric(const char *str)
+{
+	int	i;
+
+	i = 0;
+	if (!str)
+		return (0);
+	if (str[i] == '-' || str[i] == '+')
+		i++;
+	while (str[i])
+	{
+		if (!ft_isdigit(str[i]))
+			return (0);
+		i++;
+	}
+	return (1);
 }*/

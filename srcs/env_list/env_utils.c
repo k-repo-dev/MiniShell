@@ -1,30 +1,47 @@
 #include "../../incls/prototypes.h"
 
-int	add_env_node(t_env **head, const char *key, const char *value)
-{
-	t_env	*current;
-	t_env	*new_node;
+static t_env	*find_env_node(t_env *env_list, const char *key);
 
-	current = *head;
-	while (current)
+void	add_env_node(t_env **env_list, const char *key, const char *value)
+{
+	t_env	*node;
+	char	*new_key;
+	char	*new_value;
+
+	node = find_env_node(*env_list, key);
+	if (node)
 	{
-		if (ft_strcmp(current->key, key) == 0)
-		{
-			if (current->value)
-				free(current->value);
-			current->value = ft_strdup(value);
-			return (0);
-		}
-		current = current->next;
+		free(node->value);
+		if (value)
+			node->value = ft_strdup(value);
+		else
+			node->value = NULL;
 	}
-	new_node = malloc(sizeof(t_env));
-	if (!new_node)
-		return (-1);
-	new_node->key = ft_strdup(key);
-	new_node->value = ft_strdup(value);
-	new_node->next = *head;
-	*head = new_node;
-	return (0);
+	else
+	{
+		node = malloc(sizeof(t_env));
+		if (!node)
+			return ;
+		new_key = ft_strdup(key);
+		new_value = NULL;
+		if (value)
+			new_value = ft_strdup(value);
+		node->key = new_key;
+		node->value = new_value;
+		node->next = *env_list;
+		*env_list = node;
+	}
+}
+
+static t_env	*find_env_node(t_env *env_list, const char *key)
+{
+	while (env_list)
+	{
+		if (ft_strcmp(env_list->key, key) == 0)
+			return (env_list);
+		env_list = env_list->next;
+	}
+	return (NULL);
 }
 
 void	remove_env_node(t_env **head, const char *key)
