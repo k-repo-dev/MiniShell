@@ -1,49 +1,22 @@
 #include "execution.h"
 
-// Builtin brains
-bool	is_builtin(const char *cmd)
+int	handle_builtins(t_command *cmd, t_env **env_list, int last_status)
 {
-	if (ft_strcmp(cmd, "echo") == 0 || ft_strcmp(cmd, "pwd") == 0
-		|| ft_strcmp(cmd, "env") == 0 || ft_strcmp(cmd, "cd") == 0
-		|| ft_strcmp(cmd, "unset") == 0 || ft_strcmp(cmd, "export") == 0
-		|| ft_strcmp(cmd, "exit") == 0)
-		return (true);
-	else
-		return (false);
-}
-void	parent_builtin(t_command **command_list, t_env **env)
-{
-	t_command	*cmd;
-
-	cmd = *command_list;
-	// cd parent only
-	if (ft_strcmp(cmd->args[0], "cd") == 0)
-		builtin_cd(cmd);
-	(void)env;
-	// else if (ft_strcmp(cmd->args[0], "unset") == 0)
-	// 	builtin_unset(cmd, envp);
-	// else if (ft_strcmp(cmd, "export") == 0)
-	// 	builtin_export(cmd, envp);
-}
-
-void	child_builtin(t_command **command_list, t_env **env)
-{
-	t_command	*cmd;
-
-	cmd = *command_list;
+	if (!cmd->args[0])
+		return (0);
 	if (ft_strcmp(cmd->args[0], "echo") == 0)
-		builtin_echo(cmd);
-	// cd parent only
+		return (builtin_echo(cmd));
 	else if (ft_strcmp(cmd->args[0], "cd") == 0)
-		builtin_cd(cmd);
+		return (ft_cd(cmd, env_list));
 	else if (ft_strcmp(cmd->args[0], "pwd") == 0)
-		builtin_pwd();
-	else if (ft_strcmp(cmd->args[0], "exit") == 0)
-		exit(1);
+		return (ft_pwd());
+	else if (ft_strcmp(cmd->args[0], "export") == 0)
+		return (ft_export(cmd, env_list));
+	else if (ft_strcmp(cmd->args[0], "unset") == 0)
+		return (ft_unset(cmd, env_list));
 	else if (ft_strcmp(cmd->args[0], "env") == 0)
-		builtin_env(*env);
-	// else if (ft_strcmp(cmd->args[0], "unset") == 0)
-	// 	builtin_unset(cmd, envp);
-	// else if (ft_strcmp(cmd, "export") == 0)
-	// 	builtin_export(cmd, envp);
+		return (ft_env(*env_list));
+	else if (ft_strcmp(cmd->args[0], "exit") == 0)
+		return (ft_exit(cmd, last_status));
+	return (1);
 }

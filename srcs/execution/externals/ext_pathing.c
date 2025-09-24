@@ -17,7 +17,8 @@ char	*cmd_findpath(t_env *env)
 {
 	while (env)
 	{
-		if (env->key && ft_strncmp(env->key, "PATH=", 5) == 0)
+		// printf("KEY: %s, VALUE: %s\n", env->key, env->value);
+		if (env->key && ft_strcmp(env->key, "PATH") == 0)
 			return (env->value);
 		env = env->next;
 	}
@@ -64,7 +65,7 @@ char	*cmd_path_search(char **paths, char *cmd)
 }
 
 // unused
-char	*cmd_check(t_env *env, char *cmd)
+char	*cmd_check(char *cmd, t_env **env)
 {
 	char	*path_env;
 	char	**paths;
@@ -73,7 +74,7 @@ char	*cmd_check(t_env *env, char *cmd)
 	result = check_absolute_path(cmd);
 	if (result)
 		return (result);
-	path_env = (cmd_findpath(env));
+	path_env = cmd_findpath(*env);
 	if (!path_env)
 		return (NULL);
 	paths = ft_split(path_env, ':');

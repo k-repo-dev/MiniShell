@@ -1,30 +1,47 @@
 #include "../../incls/prototypes.h"
 
-int	add_env_node(t_env **head, const char *key, const char *value)
-{
-	t_env	*current;
-	t_env	*new_node;
+static t_env	*find_env_node(t_env *env_list, const char *key);
 
-	current = *head;
-	while (current)
+void	add_env_node(t_env **env_list, const char *key, const char *value)
+{
+	t_env	*node;
+	char	*new_key;
+	char	*new_value;
+
+	node = find_env_node(*env_list, key);
+	if (node)
 	{
-		if (ft_strcmp(current->key, key) == 0)
-		{
-			if (current->value)
-				free(current->value);
-			current->value = ft_strdup(value);
-			return (0);
-		}
-		current = current->next;
+		free(node->value);
+		if (value)
+			node->value = ft_strdup(value);
+		else
+			node->value = NULL;
 	}
-	new_node = malloc(sizeof(t_env));
-	if (!new_node)
-		return (-1);
-	new_node->key = ft_strdup(key);
-	new_node->value = ft_strdup(value);
-	new_node->next = *head;
-	*head = new_node;
-	return (0);
+	else
+	{
+		node = malloc(sizeof(t_env));
+		if (!node)
+			return ;
+		new_key = ft_strdup(key);
+		new_value = NULL;
+		if (value)
+			new_value = ft_strdup(value);
+		node->key = new_key;
+		node->value = new_value;
+		node->next = *env_list;
+		*env_list = node;
+	}
+}
+
+static t_env	*find_env_node(t_env *env_list, const char *key)
+{
+	while (env_list)
+	{
+		if (ft_strcmp(env_list->key, key) == 0)
+			return (env_list);
+		env_list = env_list->next;
+	}
+	return (NULL);
 }
 
 void	remove_env_node(t_env **head, const char *key)
@@ -59,6 +76,8 @@ char	**env_list_to_array(t_env *head, t_arena *arena)
 	t_env	*current;
 	int		count;
 	int		i;
+	size_t	total_len;
+	char	*combined_str;
 
 	count = 0;
 	current = head;
@@ -74,9 +93,10 @@ char	**env_list_to_array(t_env *head, t_arena *arena)
 	{
 		if (current->next)
 		{
-			size_t	total_len = ft_strlen(current->key) + ft_strlen(current->value) + 2;
-			char	*combined_str = alloc_arena(arena, total_len);
-			ft_strlcpy(combined_str, current->value, ft_strlen(current->key) + 1);
+			total_len = ft_strlen(current->key) + ft_strlen(current->value) + 2;
+			combined_str = alloc_arena(arena, total_len);
+			ft_strlcpy(combined_str, current->value, ft_strlen(current->key)
+				+ 1);
 			ft_strlcat(combined_str, current->key, ft_strlen(current->key) + 1);
 			ft_strlcat(combined_str, current->value, total_len);
 			env_array[i] = combined_str;
@@ -90,7 +110,7 @@ char	**env_list_to_array(t_env *head, t_arena *arena)
 	return (env_array);
 }
 
-char	*get_env_value(const char *key, t_env *env_list)
+char	*get_env_value(t_env *env_list, const char *key)
 {
 	while (env_list)
 	{

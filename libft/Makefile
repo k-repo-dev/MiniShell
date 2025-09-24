@@ -10,7 +10,7 @@ SRCS = ascii/ft_isalnum.c ascii/ft_isalpha.c ascii/ft_isascii.c \
 				string/ft_strjoin.c string/ft_strlcat.c string/ft_strlcpy.c \
 				string/ft_strlen.c string/ft_strmapi.c string/ft_strncmp.c \
 				string/ft_strnstr.c string/ft_strrchr.c string/ft_strtrim.c \
-				string/ft_substr.c string/ft_strcmp.c \
+				string/ft_substr.c string/ft_strcmp.c string/ft_strndup.c \
 				memory/ft_bzero.c memory/ft_calloc.c memory/ft_memchr.c \
 				memory/ft_memcmp.c memory/ft_memcpy.c memory/ft_memmove.c \
 				memory/ft_memset.c \
