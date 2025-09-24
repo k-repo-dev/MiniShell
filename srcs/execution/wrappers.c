@@ -24,18 +24,6 @@ void	execve_wrapper(t_command *cmd, t_env **env_list)
 	init_arena(&arena, 4096);
 	envp = env_list_to_array(*env_list, &arena);
 	cmd_path = cmd_check(cmd->args[0], env_list);
-	printf("execve_wrapper: Checking arguments before execve\n");
-	printf("execve_wrapper: cmd_path = '%s'", cmd_path);
-	printf("execve_wrapper: Environment (envp) = []");
-	int i = 0;
-	while (envp[i])
-	{
-		printf("'%s'", envp[i]);
-		if (envp[i + 1])
-			printf(", ");
-		i++;
-	}
-	printf("]\n");
 	if (!cmd_path)
 	{
 		perror("command not found");

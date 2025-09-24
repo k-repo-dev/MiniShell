@@ -10,16 +10,13 @@ static int	count_cmds(t_command *cmd_list);
 int	parent_loop(t_command *cmd_list, t_env **env_list, int last_status)
 {
 	int	exit_status;
-	printf("Entered parent_loop\n");
 	if (is_builtin(cmd_list->args[0]))
 	{
-		printf("parent_loop: Going to execute built-in\n");
 		exit_status = execute_builtins(cmd_list, env_list, last_status);
 		return (exit_status);
 	}
 	else
 	{
-		printf("parent_loop: Going to executut pipeine\n");
 		exit_status = execute_pipeline(cmd_list, env_list);
 		return (exit_status);
 	}
@@ -56,7 +53,6 @@ static int	execute_pipeline(t_command *cmd_list, t_env **env_list)
 				return (-1);
 			}
 		}
-		printf("Parent: Processing ccommand '%s' with in_fd %d\n", cmd_list->args[0], in_fd);
 		pid = fork();
 				if (pid == -1)
 		{
@@ -66,39 +62,32 @@ static int	execute_pipeline(t_command *cmd_list, t_env **env_list)
 		}
 		if (pid == 0)
 		{
-			printf("Child %d: in_fd is %d\n", getpid(), in_fd);
 			if (in_fd != 0)
 			{
-				printf("Child %d: Redirecting STDIN (0) to in_fd %d\n", getpid(), in_fd);
 				dup2(in_fd, STDIN_FILENO);
 				close(in_fd);
 			}
 			if (cmd_list->next)
 			{
-				printf("Child %d: Redirecting STDOUT (1) to pipe write end %d\n", getpid(), pipe_fds[1]);
 				dup2(pipe_fds[1], STDOUT_FILENO);
-				printf("Child %d: Closing unused pipe ends %d and %d\n", getpid(), pipe_fds[0], pipe_fds[1]);
 				close(pipe_fds[0]);
 				close(pipe_fds[1]);
 			}
 			handle_redirs(cmd_list->redirs);
-			// execve(cmd_list->args[0], cmd_list->args, envp);
 			execve_wrapper(cmd_list, env_list);
 			perror("minishell");
 			exit(127);
 		}
 		else
 		{
-			printf("Parent: Forked child with PID %d\n", pid);
+
 			pids[i++] = pid;
 			if (in_fd != 0)
 			{
-				printf("Parent: Closing old in_fd %d\n", in_fd);
 				close(in_fd);
 			}
 			if (cmd_list->next)
 			{
-				printf("Parent: Creating pipe [%d, %d] and closing write end %d\n", pipe_fds[0], pipe_fds[1], pipe_fds[1]);
 				close(pipe_fds[1]);
 				in_fd = pipe_fds[0];
 			}
@@ -107,14 +96,12 @@ static int	execute_pipeline(t_command *cmd_list, t_env **env_list)
 	}
 	if (in_fd != 0)
 		close(in_fd);
-	printf("Parent: All children forked. Waiting for them to finish...\n");
 	int j = 0;
 	while (j < num_cmds)
 	{
 			waitpid(pids[j], &exit_status, 0);
 		j++;
 	}
-	printf("Parent: All children finished. Exiting pipeline.\n");
 	return (WEXITSTATUS(exit_status));
 }
 
