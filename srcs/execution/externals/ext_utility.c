@@ -1,4 +1,4 @@
-#include "prototypes.h"
+#include "../../../incls/prototypes.h"
 
 // char	*is_executable(char *cmd, t_env **env)
 // {

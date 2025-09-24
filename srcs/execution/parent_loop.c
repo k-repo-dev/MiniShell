@@ -1,23 +1,25 @@
-#include "prototypes.h"
+#include "../../incls/prototypes.h"
 
 static int	execute_pipeline(t_command *md_list, t_env **env_list);
 static void	handle_redirs(t_redir *redirs);
 static int	execute_builtins(t_command *cmd_list, t_env **env_list,
 				int last_status);
 static int	is_builtin(const char *cmd);
+static int	count_cmds(t_command *cmd_list);
 
 int	parent_loop(t_command *cmd_list, t_env **env_list, int last_status)
 {
 	int	exit_status;
-
+	printf("Entered parent_loop\n");
 	if (is_builtin(cmd_list->args[0]))
 	{
+		printf("parent_loop: Going to execute built-in\n");
 		exit_status = execute_builtins(cmd_list, env_list, last_status);
 		return (exit_status);
 	}
 	else
 	{
-		printf("parent loop external\n");
+		printf("parent_loop: Going to executut pipeine\n");
 		exit_status = execute_pipeline(cmd_list, env_list);
 		return (exit_status);
 	}
@@ -26,56 +28,107 @@ int	parent_loop(t_command *cmd_list, t_env **env_list, int last_status)
 
 static int	execute_pipeline(t_command *cmd_list, t_env **env_list)
 {
-	pid_t	pid;
+	pid_t	*pids;
+	int		pid;
 	int		pipe_fds[2];
 	int		in_fd;
 	int		exit_status;
-	t_arena	arena;
+	int		num_cmds;
+	int		i;
 
+	i = 0;
+	num_cmds = count_cmds(cmd_list);
 	in_fd = 0;
+	pids = malloc(sizeof(pid_t) * num_cmds);
+	if (!pids)
+	{
+		perror("malloc");
+		return (-1);
+	}
 	while (cmd_list)
 	{
-		init_arena(&arena, 1024);
 		if (cmd_list->next)
-			pipe(pipe_fds);
+		{
+			if (pipe(pipe_fds) == -1)
+			{
+				perror("pipe");
+				free(pids);
+				return (-1);
+			}
+		}
+		printf("Parent: Processing ccommand '%s' with in_fd %d\n", cmd_list->args[0], in_fd);
 		pid = fork();
-		if (pid == -1)
+				if (pid == -1)
+		{
+			perror("fork");
+			free(pids);
 			return (-1);
+		}
 		if (pid == 0)
 		{
-			printf("pid 0\n");
+			printf("Child %d: in_fd is %d\n", getpid(), in_fd);
 			if (in_fd != 0)
 			{
+				printf("Child %d: Redirecting STDIN (0) to in_fd %d\n", getpid(), in_fd);
 				dup2(in_fd, STDIN_FILENO);
 				close(in_fd);
 			}
 			if (cmd_list->next)
 			{
+				printf("Child %d: Redirecting STDOUT (1) to pipe write end %d\n", getpid(), pipe_fds[1]);
 				dup2(pipe_fds[1], STDOUT_FILENO);
+				printf("Child %d: Closing unused pipe ends %d and %d\n", getpid(), pipe_fds[0], pipe_fds[1]);
 				close(pipe_fds[0]);
 				close(pipe_fds[1]);
 			}
-			printf("pre redir\n");
 			handle_redirs(cmd_list->redirs);
-			printf("post redir\n");
 			// execve(cmd_list->args[0], cmd_list->args, envp);
 			execve_wrapper(cmd_list, env_list);
-			printf("post exec\n");
 			perror("minishell");
 			exit(127);
 		}
-		waitpid(pid, &exit_status, 0);
-		if (in_fd != 0)
-			close(in_fd);
-		if (cmd_list->next)
+		else
 		{
-			close(pipe_fds[1]);
-			in_fd = pipe_fds[0];
+			printf("Parent: Forked child with PID %d\n", pid);
+			pids[i++] = pid;
+			if (in_fd != 0)
+			{
+				printf("Parent: Closing old in_fd %d\n", in_fd);
+				close(in_fd);
+			}
+			if (cmd_list->next)
+			{
+				printf("Parent: Creating pipe [%d, %d] and closing write end %d\n", pipe_fds[0], pipe_fds[1], pipe_fds[1]);
+				close(pipe_fds[1]);
+				in_fd = pipe_fds[0];
+			}
 		}
-		free_arena(&arena);
 		cmd_list = cmd_list->next;
 	}
-	return (exit_status);
+	if (in_fd != 0)
+		close(in_fd);
+	printf("Parent: All children forked. Waiting for them to finish...\n");
+	int j = 0;
+	while (j < num_cmds)
+	{
+			waitpid(pids[j], &exit_status, 0);
+		j++;
+	}
+	printf("Parent: All children finished. Exiting pipeline.\n");
+	return (WEXITSTATUS(exit_status));
+}
+
+static int	count_cmds(t_command *cmd_list)
+{
+	int	count;
+
+	count = 0;
+	while (cmd_list)
+	{
+		count++;
+		cmd_list = cmd_list->next;
+	}
+	return (count);
 }
 
 static void	handle_redirs(t_redir *redirs)

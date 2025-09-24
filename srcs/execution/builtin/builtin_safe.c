@@ -1,4 +1,4 @@
-#include "prototypes.h"
+#include "../../../incls/prototypes.h"
 
 static void	print_exported_env(t_env *env_list);
 

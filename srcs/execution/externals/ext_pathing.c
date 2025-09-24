@@ -1,4 +1,4 @@
-#include "execution.h"
+#include "../../../incls/prototypes.h"
 
 char	*check_absolute_path(const char *cmd)
 {
@@ -15,12 +15,15 @@ char	*check_absolute_path(const char *cmd)
 
 char	*cmd_findpath(t_env *env)
 {
-	while (env)
+	t_env	*tmp;
+
+	tmp = env;
+	while (tmp)
 	{
 		// printf("KEY: %s, VALUE: %s\n", env->key, env->value);
-		if (env->key && ft_strcmp(env->key, "PATH") == 0)
-			return (env->value);
-		env = env->next;
+		if (tmp->key && ft_strcmp(tmp->key, "PATH") == 0)
+			return (tmp->value);
+		tmp = tmp->next;
 	}
 	return (NULL);
 }

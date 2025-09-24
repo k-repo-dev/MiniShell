@@ -86,29 +86,35 @@ char	**env_list_to_array(t_env *head, t_arena *arena)
 		count++;
 		current = current->next;
 	}
+	printf("Counted %d environment variables.\n", count);
 	env_array = alloc_arena(arena, sizeof(char *) * (count + 1));
+	if (!env_array)
+	{
+		printf("Error: alloc_arena failed for env_array.\n");
+		return (NULL);
+	}
 	i = 0;
 	current = head;
+	printf("Starting env_list_to_array conversion loop.\n");
 	while (current)
 	{
-		if (current->next)
+		printf("Loop %d: Processing key '%s' and value '%s'.\n", i, current->key, current->value);
+		total_len = ft_strlen(current->key) + ft_strlen(current->value) + 2;
+		combined_str = alloc_arena(arena, total_len);
+		if (!combined_str)
 		{
-			total_len = ft_strlen(current->key) + ft_strlen(current->value) + 2;
-			combined_str = alloc_arena(arena, total_len);
-			ft_strlcpy(combined_str, current->value, ft_strlen(current->key)
-				+ 1);
-			ft_strlcat(combined_str, current->key, ft_strlen(current->key) + 1);
-			ft_strlcat(combined_str, current->value, total_len);
-			env_array[i] = combined_str;
-			printf("post current loop\n");
+			printf("Error: alloc_arena failed for combined_str.\n");
+			return (NULL);
 		}
-		else
-			env_array[i] = arena_strdup(arena, current->key);
-		printf("%s\n", env_array[i]);
+		ft_strlcpy(combined_str, current->key, total_len);
+		ft_strlcat(combined_str, "=", total_len);
+		ft_strlcat(combined_str, current->value, total_len);
+		env_array[i] = combined_str;
+		printf("Created string: '%s'\n", env_array[i]);
 		current = current->next;
 		i++;
 	}
-	printf("end of list func\n");
+	printf("Successfully converted all environment variables.\n");
 	env_array[i] = NULL;
 	return (env_array);
 }
