@@ -22,13 +22,18 @@ void	execve_wrapper(t_command *cmd, t_env **env_list)
 	t_arena	arena;
 
 	init_arena(&arena, 1024);
+	printf("post arena\n");
+	envp = env_list_to_array(*env_list, &arena);
+	printf("post envp list\n");
 	cmd_path = cmd_check(cmd->args[0], env_list);
+	printf("asdasdasd");
+	printf("%s", cmd_path);
+	// printf("%s", envp);
 	if (!cmd_path)
 	{
 		perror("command not found");
 		exit(127);
 	}
-	envp = env_list_to_array(*env_list, &arena);
 	execve(cmd_path, cmd->args, envp);
 	perror("execve failed");
 	exit(1);

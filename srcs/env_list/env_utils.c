@@ -100,12 +100,15 @@ char	**env_list_to_array(t_env *head, t_arena *arena)
 			ft_strlcat(combined_str, current->key, ft_strlen(current->key) + 1);
 			ft_strlcat(combined_str, current->value, total_len);
 			env_array[i] = combined_str;
+			printf("post current loop\n");
 		}
 		else
 			env_array[i] = arena_strdup(arena, current->key);
+		printf("%s\n", env_array[i]);
 		current = current->next;
 		i++;
 	}
+	printf("end of list func\n");
 	env_array[i] = NULL;
 	return (env_array);
 }

@@ -17,6 +17,7 @@ int	parent_loop(t_command *cmd_list, t_env **env_list, int last_status)
 	}
 	else
 	{
+		printf("parent loop external\n");
 		exit_status = execute_pipeline(cmd_list, env_list);
 		return (exit_status);
 	}
@@ -42,6 +43,7 @@ static int	execute_pipeline(t_command *cmd_list, t_env **env_list)
 			return (-1);
 		if (pid == 0)
 		{
+			printf("pid 0\n");
 			if (in_fd != 0)
 			{
 				dup2(in_fd, STDIN_FILENO);
@@ -53,9 +55,12 @@ static int	execute_pipeline(t_command *cmd_list, t_env **env_list)
 				close(pipe_fds[0]);
 				close(pipe_fds[1]);
 			}
+			printf("pre redir\n");
 			handle_redirs(cmd_list->redirs);
+			printf("post redir\n");
 			// execve(cmd_list->args[0], cmd_list->args, envp);
 			execve_wrapper(cmd_list, env_list);
+			printf("post exec\n");
 			perror("minishell");
 			exit(127);
 		}

@@ -77,6 +77,7 @@ char	*cmd_check(char *cmd, t_env **env)
 	path_env = cmd_findpath(*env);
 	if (!path_env)
 		return (NULL);
+	return (path_env);
 	paths = ft_split(path_env, ':');
 	if (!paths)
 		return (free(result), NULL);
