@@ -8,7 +8,7 @@ typedef struct sigaction	t_sa;
 typedef struct s_signal
 {
 	volatile sig_atomic_t	signal_received;
-}	t_signal;
+}							t_signal;
 
 typedef enum e_token_type
 {

@@ -1,4 +1,4 @@
-/*#include "execution.h"
+#include "../../../incls/prototypes.h"
 
 char	*check_absolute_path(const char *cmd)
 {
@@ -13,16 +13,17 @@ char	*check_absolute_path(const char *cmd)
 	return (NULL);
 }
 
-char	*cmd_findpath(char **envp)
+char	*cmd_findpath(t_env *env)
 {
-	int	i;
+	t_env	*tmp;
 
-	i = 0;
-	while (envp[i])
+	tmp = env;
+	while (tmp)
 	{
-		if (ft_strncmp(envp[i], "PATH=", 5) == 0)
-			return (envp[i] + 5);
-		i++;
+		// printf("KEY: %s, VALUE: %s\n", env->key, env->value);
+		if (tmp->key && ft_strcmp(tmp->key, "PATH") == 0)
+			return (tmp->value);
+		tmp = tmp->next;
 	}
 	return (NULL);
 }
@@ -66,7 +67,8 @@ char	*cmd_path_search(char **paths, char *cmd)
 	return (NULL);
 }
 
-char	*cmd_check(char *envp[], char *cmd)
+// unused
+char	*cmd_check(char *cmd, t_env **env)
 {
 	char	*path_env;
 	char	**paths;
@@ -75,11 +77,11 @@ char	*cmd_check(char *envp[], char *cmd)
 	result = check_absolute_path(cmd);
 	if (result)
 		return (result);
-	path_env = (cmd_findpath(envp));
+	path_env = cmd_findpath(*env);
 	if (!path_env)
 		return (NULL);
 	paths = ft_split(path_env, ':');
 	if (!paths)
 		return (free(result), NULL);
 	return (cmd_path_search(paths, cmd));
-}*/
+}

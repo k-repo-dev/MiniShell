@@ -11,7 +11,7 @@ int			init_sigaction(void (*handler)(int));
 void		handle_sigint(int sig);
 
 // Function Prototypes from env_list.c
-t_env		*init_env_list(char	**envp);
+t_env		*init_env_list(char **envp);
 void		free_env_list(t_env *head);
 
 // Function prototypes from env_utils.c
@@ -48,5 +48,6 @@ void		expand_commands(t_command *cmd_list, t_arena *arena,
 
 // Function prototypes from env_vars_utils.c
 size_t		get_expanded_len(const char *str, int exit_status);
-char		*get_variable_value(const char *vr_name, int exit_status, t_arena *arena);
+char		*get_variable_value(const char *vr_name, int exit_status,
+				t_arena *arena);
 #endif

@@ -76,6 +76,8 @@ char	**env_list_to_array(t_env *head, t_arena *arena)
 	t_env	*current;
 	int		count;
 	int		i;
+	size_t	total_len;
+	char	*combined_str;
 
 	count = 0;
 	current = head;
@@ -85,21 +87,26 @@ char	**env_list_to_array(t_env *head, t_arena *arena)
 		current = current->next;
 	}
 	env_array = alloc_arena(arena, sizeof(char *) * (count + 1));
+	if (!env_array)
+	{
+		printf("Error: alloc_arena failed for env_array.\n");
+		return (NULL);
+	}
 	i = 0;
 	current = head;
 	while (current)
 	{
-		if (current->next)
+		total_len = ft_strlen(current->key) + ft_strlen(current->value) + 2;
+		combined_str = alloc_arena(arena, total_len);
+		if (!combined_str)
 		{
-			size_t	total_len = ft_strlen(current->key) + ft_strlen(current->value) + 2;
-			char	*combined_str = alloc_arena(arena, total_len);
-			ft_strlcpy(combined_str, current->value, ft_strlen(current->key) + 1);
-			ft_strlcat(combined_str, current->key, ft_strlen(current->key) + 1);
-			ft_strlcat(combined_str, current->value, total_len);
-			env_array[i] = combined_str;
+			printf("Error: alloc_arena failed for combined_str.\n");
+			return (NULL);
 		}
-		else
-			env_array[i] = arena_strdup(arena, current->key);
+		ft_strlcpy(combined_str, current->key, total_len);
+		ft_strlcat(combined_str, "=", total_len);
+		ft_strlcat(combined_str, current->value, total_len);
+		env_array[i] = combined_str;
 		current = current->next;
 		i++;
 	}
@@ -107,7 +114,7 @@ char	**env_list_to_array(t_env *head, t_arena *arena)
 	return (env_array);
 }
 
-char	*get_env_value(t_env *env_list, const char	*key)
+char	*get_env_value(t_env *env_list, const char *key)
 {
 	while (env_list)
 	{

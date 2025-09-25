@@ -1,12 +1,15 @@
 #include "../../../incls/prototypes.h"
 
-static char	*copy_expanded_str(const char *str, int exit_status,
-					t_arena *arena, t_env *env_list);
+static char	*copy_expanded_str(const char *str, int exit_status, t_arena *arena,
+				t_env *env_list);
 static void	handle_single_quote(const char **str, char **expand_str);
-static void	handle_var_expand(const char **str, char **expand_str, int exit_status, t_arena *arena, t_env *env_list);
-static void	expand_normal_var(const char **str, char **expand_str, t_arena *arena, t_env *env_list);
+static void	handle_var_expand(const char **str, char **expand_str,
+				int exit_status, t_arena *arena, t_env *env_list);
+static void	expand_normal_var(const char **str, char **expand_str,
+				t_arena *arena, t_env *env_list);
 
-void	expand_commands(t_command *cmd_list, t_arena *arena, int exit_status, t_env *env_list)
+void	expand_commands(t_command *cmd_list, t_arena *arena, int exit_status,
+		t_env *env_list)
 {
 	t_command	*current_cmd;
 	t_redir		*current_redir;
@@ -18,28 +21,31 @@ void	expand_commands(t_command *cmd_list, t_arena *arena, int exit_status, t_env
 		tmp_args = current_cmd->args;
 		while (tmp_args && *tmp_args)
 		{
-			*tmp_args = copy_expanded_str(*tmp_args, exit_status, arena, env_list);
+			*tmp_args = copy_expanded_str(*tmp_args, exit_status, arena,
+					env_list);
 			tmp_args++;
 		}
 		current_redir = current_cmd->redirs;
 		while (current_redir)
 		{
-			current_redir->filename = copy_expanded_str(current_redir->filename, exit_status, arena, env_list);
+			current_redir->filename = copy_expanded_str(current_redir->filename,
+					exit_status, arena, env_list);
 			current_redir = current_redir->next;
 		}
 		current_cmd = current_cmd->next;
 	}
 }
 
-static char	*copy_expanded_str(const char *str, int exit_status, t_arena *arena, t_env *env_list)
+static char	*copy_expanded_str(const char *str, int exit_status, t_arena *arena,
+		t_env *env_list)
 {
 	char		*expand_str;
 	char		*current_expand_pos;
 	const char	*current_str_pos;
 	size_t		len;
 
-	len = ft_strlen(str + 1);
-	expand_str = alloc_arena(arena, len * 2);
+	len = ft_strlen(str);
+	expand_str = alloc_arena(arena, (len * 2) + 1);
 	if (!expand_str)
 		return (NULL);
 	current_expand_pos = expand_str;
@@ -49,8 +55,10 @@ static char	*copy_expanded_str(const char *str, int exit_status, t_arena *arena,
 		if (*current_str_pos == '\'')
 			handle_single_quote(&current_str_pos, &current_expand_pos);
 		else if (*current_str_pos == '$' && *(current_str_pos + 1)
-				&& (ft_isalnum(*(current_str_pos + 1)) || *(current_str_pos + 1) == '?'))
-			handle_var_expand(&current_str_pos, &current_expand_pos, exit_status, arena, env_list);
+			&& (ft_isalnum(*(current_str_pos + 1)) || *(current_str_pos
+					+ 1) == '?'))
+			handle_var_expand(&current_str_pos, &current_expand_pos,
+				exit_status, arena, env_list);
 		else
 			*current_expand_pos++ = *current_str_pos++;
 	}
@@ -67,7 +75,8 @@ static void	handle_single_quote(const char **str, char **expand_str)
 		*(*expand_str)++ = *(*str)++;
 }
 
-static void handle_var_expand(const char **str, char **expand_str, int exit_status, t_arena *arena, t_env *env_list)
+static void	handle_var_expand(const char **str, char **expand_str,
+		int exit_status, t_arena *arena, t_env *env_list)
 {
 	const char	*value;
 	char		*tmp_value;
@@ -86,7 +95,8 @@ static void handle_var_expand(const char **str, char **expand_str, int exit_stat
 		expand_normal_var(str, expand_str, arena, env_list);
 }
 
-static void	expand_normal_var(const char **str, char **expand_str, t_arena *arena, t_env *env_list)
+static void	expand_normal_var(const char **str, char **expand_str,
+		t_arena *arena, t_env *env_list)
 {
 	const char	*value;
 	const char	*start;
@@ -106,7 +116,8 @@ static void	expand_normal_var(const char **str, char **expand_str, t_arena *aren
 			*(*expand_str)++ = *value++;
 	}
 }
-/*static char	*copy_expanded_str(const char *str, int exit_status, t_arena *arena)
+/*static char	*copy_expanded_str(const char *str, int exit_status,
+		t_arena *arena)
 {
 	size_t		i;
 	size_t		j;

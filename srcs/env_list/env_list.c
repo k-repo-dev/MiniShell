@@ -10,7 +10,8 @@ t_env	*init_env_list(char **envp)
 	{
 		equals_sign = ft_strchr(*envp, '=');
 		if (equals_sign)
-			add_env_node(&head, ft_strndup(*envp, equals_sign - *envp), equals_sign + 1);
+			add_env_node(&head, ft_strndup(*envp, equals_sign - *envp),
+				equals_sign + 1);
 		else
 			add_env_node(&head, ft_strdup(*envp), NULL);
 		envp++;
@@ -25,7 +26,7 @@ void	free_env_list(t_env *head)
 	while (head)
 	{
 		tmp = head;
-		head = head ->next;
+		head = head->next;
 		free(tmp->key);
 		if (tmp->value)
 			free(tmp->value);
