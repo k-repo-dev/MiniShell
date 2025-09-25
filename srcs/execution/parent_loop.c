@@ -6,11 +6,12 @@ static int	execute_builtins(t_command *cmd_list, t_env **env_list,
 				int last_status);
 static int	is_builtin(const char *cmd);
 static int	count_cmds(t_command *cmd_list);
+static int	is_parent_builtin(const char *cmd);
 
 int	parent_loop(t_command *cmd_list, t_env **env_list, int last_status)
 {
 	int	exit_status;
-	if (is_builtin(cmd_list->args[0]))
+	if (is_parent_builtin(cmd_list->args[0]) && cmd_list->next == NULL)
 	{
 		exit_status = execute_builtins(cmd_list, env_list, last_status);
 		return (exit_status);
@@ -74,6 +75,11 @@ static int	execute_pipeline(t_command *cmd_list, t_env **env_list)
 				close(pipe_fds[1]);
 			}
 			handle_redirs(cmd_list->redirs);
+			if (is_builtin(cmd_list->args[0]))
+			{
+				exit_status = handle_builtins(cmd_list, env_list, 0);
+				exit(exit_status);
+			}
 			execve_wrapper(cmd_list, env_list);
 			perror("minishell");
 			exit(127);
@@ -159,6 +165,16 @@ static int	is_builtin(const char *cmd)
 		|| ft_strcmp(cmd, "pwd") == 0 || ft_strcmp(cmd, "export") == 0
 		|| ft_strcmp(cmd, "unset") == 0 || ft_strcmp(cmd, "env") == 0
 		|| ft_strcmp(cmd, "exit") == 0)
+		return (1);
+	return (0);
+}
+
+static int	is_parent_builtin(const char *cmd)
+{
+	if (!cmd)
+		return (0);
+	if (ft_strcmp(cmd, "cd") == 0 || ft_strcmp(cmd, "export") == 0
+		|| ft_strcmp(cmd, "unset") == 0 || ft_strcmp(cmd, "exit") == 0)
 		return (1);
 	return (0);
 }
