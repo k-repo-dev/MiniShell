@@ -25,18 +25,24 @@ void	add_arg_to_cmd(t_command *cmd, t_token *token, t_arena *arena)
 	cmd->args = new_args;
 }
 
-void add_redir_to_cmd(t_command *cmd, t_token **token, t_arena *arena)
+int add_redir_to_cmd(t_command *cmd, t_token **token, t_arena *arena)
 {
 	t_redir	*new_redir;
 	t_redir	*current_redir;
 
 	new_redir = alloc_arena(arena, sizeof(t_redir));
+	if (!new_redir)
+		return (1);
+	ft_memset(new_redir, 0, sizeof(t_redir));
 	new_redir->type = (*token)->type;
+	printf("DEBUG C2-A: Redir operator: %s. Checking next token...\n", (*token)->value);
 	*token = (*token)->next;
 	if (!*token)
 	{
-		ft_putstr_fd("syntax error near unexpected token 'newine'\n", 2);
-		return ;
+		printf("DEBUG C2-C: Error handling reached. testing Safe output.\n");
+		printf("DEBUG C2-B: Next token is NULL. Pointer: %p\n", (void*)*token);
+		ft_putstr_fd("syntax error\n", 2);
+		return (1);
 	}
 	if (new_redir->type == HEREDOC_TOKEN)
 		new_redir->filename = handle_heredoc((*token)->value, arena);
@@ -51,6 +57,7 @@ void add_redir_to_cmd(t_command *cmd, t_token **token, t_arena *arena)
 			current_redir = current_redir->next;
 		current_redir->next = new_redir;
 	}
+	return (0);
 }
 
 static char	*handle_heredoc(const char *delimiter, t_arena *arena)

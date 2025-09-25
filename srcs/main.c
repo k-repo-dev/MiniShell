@@ -33,13 +33,23 @@ static int	run_minishell_loop(t_env **env_list)
 		}
 		if (*line)
 			add_history(line);
-		init_arena(&arena, (ft_strlen(line) * 2) + 1024);
+		init_arena(&arena, (ft_strlen(line) * 2) + 4096);
 		token_list = tokenizer(line, &arena);
 		if (token_list)
 		{
 			command_list = parse_commands(token_list, &arena);
 			if (command_list)
 			{
+				//DEBUG STARTS
+				t_token *tmp = token_list;
+				printf("DEBUG C1-A: Token list: ");
+				while (tmp)
+				{
+					printf("[%s(T%d)] ", tmp->value, tmp->type);
+					tmp = tmp->next;
+				}
+				printf("\n");
+				//DEBUG ENDS
 				// expand_commands(command_list, &arena, exit_status);
 				expand_commands(command_list, &arena, exit_status, *env_list);
 				// parent_loop(&command_list, envp); // Execution starts here

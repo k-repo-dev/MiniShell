@@ -7,6 +7,7 @@ static void	handle_var_expand(const char **str, char **expand_str,
 				int exit_status, t_arena *arena, t_env *env_list);
 static void	expand_normal_var(const char **str, char **expand_str,
 				t_arena *arena, t_env *env_list);
+static void	handle_double_quote(const char **str, char **expanded_str, int exit_status, t_arena *arena, t_env *env_list);
 
 void	expand_commands(t_command *cmd_list, t_arena *arena, int exit_status,
 		t_env *env_list)
@@ -18,13 +19,21 @@ void	expand_commands(t_command *cmd_list, t_arena *arena, int exit_status,
 	current_cmd = cmd_list;
 	while (current_cmd)
 	{
+		if (current_cmd->args && current_cmd->args[1])
+			printf("DEBUG C1-B: Cmd Ptr: %p. Arg[1] Before: %s\n", (void *)current_cmd, current_cmd->args[1]);
+		else
+			printf("DEBUG C1-B: Cmd Ptr: %p. Arg[1] Before: (null)\n", (void *)current_cmd);
 		tmp_args = current_cmd->args;
 		while (tmp_args && *tmp_args)
 		{
+			printf("DEBUG C1-C: Arg Ptr: %p, Value Before: %s\n", (void *)*tmp_args, *tmp_args);
 			*tmp_args = copy_expanded_str(*tmp_args, exit_status, arena,
 					env_list);
+			printf("DEBUG C1-D: Arg Ptr: %p, Value After: %s\n", (void *)*tmp_args, *tmp_args);
 			tmp_args++;
 		}
+		if (current_cmd->redirs)
+			printf("DEBUG C1-E: Redir Filename Before: %s\n", current_cmd->redirs->filename);
 		current_redir = current_cmd->redirs;
 		while (current_redir)
 		{
@@ -43,17 +52,22 @@ static char	*copy_expanded_str(const char *str, int exit_status, t_arena *arena,
 	char		*current_expand_pos;
 	const char	*current_str_pos;
 	size_t		len;
+	size_t		final_len;
+	char		*trimmed_str;
 
 	len = ft_strlen(str);
 	expand_str = alloc_arena(arena, (len * 2) + 1);
 	if (!expand_str)
 		return (NULL);
+	ft_memset(expand_str, 0, (len * 2) +1);
 	current_expand_pos = expand_str;
 	current_str_pos = str;
 	while (*current_str_pos)
 	{
 		if (*current_str_pos == '\'')
 			handle_single_quote(&current_str_pos, &current_expand_pos);
+		else if (*current_str_pos == '"')
+			handle_double_quote(&current_str_pos, &current_expand_pos, exit_status, arena, env_list);
 		else if (*current_str_pos == '$' && *(current_str_pos + 1)
 			&& (ft_isalnum(*(current_str_pos + 1)) || *(current_str_pos
 					+ 1) == '?'))
@@ -63,16 +77,21 @@ static char	*copy_expanded_str(const char *str, int exit_status, t_arena *arena,
 			*current_expand_pos++ = *current_str_pos++;
 	}
 	*current_expand_pos = '\0';
-	return (expand_str);
+	final_len = current_expand_pos - expand_str;
+	trimmed_str = alloc_arena(arena, final_len + 1);
+	if (!trimmed_str)
+		return (NULL);
+	ft_strlcpy(trimmed_str, expand_str, final_len + 1);
+	return (trimmed_str);
 }
 
 static void	handle_single_quote(const char **str, char **expand_str)
 {
-	*(*expand_str)++ = *(*str)++;
+	(*str)++;
 	while (**str && **str != '\'')
 		*(*expand_str)++ = *(*str)++;
 	if (**str == '\'')
-		*(*expand_str)++ = *(*str)++;
+		(*str)++;
 }
 
 static void	handle_var_expand(const char **str, char **expand_str,
@@ -115,6 +134,22 @@ static void	expand_normal_var(const char **str, char **expand_str,
 		while (*value)
 			*(*expand_str)++ = *value++;
 	}
+}
+
+static void	handle_double_quote(const char **str, char **expand_str, int exit_status, t_arena *arena, t_env *env_list)
+{
+	(*str)++;
+	while (**str && **str != '"')
+	{
+		if (**str == '$' && *(*str + 1) && (ft_isalnum(*(*str + 1)) || *(*str + 1) == '?'))
+		{
+			handle_var_expand(str, expand_str, exit_status, arena, env_list);
+		}
+		else
+			*(*expand_str)++ = *(*str)++;
+	}
+	if (**str == '"')
+		(*str)++;
 }
 /*static char	*copy_expanded_str(const char *str, int exit_status,
 		t_arena *arena)

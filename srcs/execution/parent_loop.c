@@ -45,6 +45,25 @@ static int	execute_pipeline(t_command *cmd_list, t_env **env_list)
 	}
 	while (cmd_list)
 	{
+		//DEBUGIN START
+		printf("DEBUG EP-1: Preparing to execute commands: %s\n", cmd_list->args[0]);
+		int arg_idx = 0;
+		while (cmd_list->args[arg_idx] != NULL)
+		{
+			printf("DEBUG EP-2: Arg[%d]: %s\n", arg_idx, cmd_list->args[arg_idx]);
+			arg_idx++;
+		}
+		t_redir *r = cmd_list->redirs;
+		if (r)
+		{
+			printf("DEBUG EP-3: Command has redirection.\n");
+			while (r)
+			{
+				printf("DEBUG EP-4: Redir Type=%d, Filename='%s'\n", r->type, r->filename);
+				r = r->next;
+			}
+		}
+		//Debug ENDS
 		if (cmd_list->next)
 		{
 			if (pipe(pipe_fds) == -1)
@@ -130,6 +149,7 @@ static void	handle_redirs(t_redir *redirs)
 
 	while (redirs)
 	{
+		printf("DEBUG HR-1: Handling redirection type %d for file '%s'\n", redirs->type, redirs->filename);
 		if (redirs->type == GREAT_TOKEN)
 			fd = open(redirs->filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 		else if (redirs->type == APPEND_TOKEN)
@@ -143,13 +163,34 @@ static void	handle_redirs(t_redir *redirs)
 			perror("minishell");
 			exit(1);
 		}
+		printf("DEBUG HR-2: File opened successfully, fd=%d\n", fd);
+		printf("DEBUG HR-2C: Current Redir Ptr: %p\n", redirs);
 		if (redirs->type == GREAT_TOKEN || redirs->type == APPEND_TOKEN)
-			dup2(fd, STDOUT_FILENO);
+		{
+			printf("DEBUG HR-2D: About to dup2(%d, STDOUT_FILENO)\n", fd);
+			if (dup2(fd, STDOUT_FILENO) == -1)
+			{
+				printf("DEBUG HR-2.1: dup2(%d, STDOUT_FILENO) failed\n", fd);
+				exit(1);
+			}
+		}
 		else
-			dup2(fd, STDIN_FILENO);
+		{
+			printf("DEBUG HR-2E: About to dup2(%d, STDIN_FILENO)\n", fd);
+			if (dup2(fd, STDIN_FILENO) == -1)
+			{
+				printf("DEBUG HR-2.2: dup2(%d, STDIN_FILENO) fialed\n", fd);
+				exit(1);
+			}
+		}
+		printf("DEBUG HR-2F: About to close(%d)\n", fd);
+		printf("DEBUG HR-2A: dup2 completed.\n");
 		close(fd);
+		printf("DEBUG HR-2B: close(fd) completed.\n");
+		printf("DEBUG HR-3: Next pointer (redirs->next): %p\n", redirs->next);
 		redirs = redirs->next;
 	}
+	printf("DEBUG HR-4: handle_redirs function is about to RETURN successfully.\n");
 }
 
 static int	execute_builtins(t_command *cmd, t_env **env_list, int last_status)
