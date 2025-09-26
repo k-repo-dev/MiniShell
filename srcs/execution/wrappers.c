@@ -25,11 +25,10 @@ void	execve_wrapper(t_command *cmd, t_env **env_list)
 	envp = env_list_to_array(*env_list, &arena);
 	cmd_path = cmd_check(cmd->args[0], env_list);
 	if (!cmd_path)
-	{
-		perror("command not found");
-		exit(127);
-	}
+		exit(handle_error(E_CMD_NOT_FOUND, cmd->args[0]));
 	execve(cmd_path, cmd->args, envp);
-	perror("execve failed");
-	exit(1);
+	if (errno == EACCES)
+		exit(handle_error(E_PERMISSION_DENIED, cmd->args[0]));
+	else
+		exit(handle_error(E_CMD_NOT_FOUND, cmd->args[0]));
 }

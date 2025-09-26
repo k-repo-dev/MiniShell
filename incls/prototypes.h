@@ -51,4 +51,8 @@ void		expand_commands(t_command *cmd_list, t_arena *arena,
 size_t		get_expanded_len(const char *str, int exit_status);
 char		*get_variable_value(const char *vr_name, int exit_status,
 				t_arena *arena);
+
+// Function prototypes from error_handling.c
+int			handle_error(t_error_type, const char *arg);
+int			handle_file_error(const char *filename, const char *msg);
 #endif

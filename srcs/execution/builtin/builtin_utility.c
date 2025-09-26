@@ -18,5 +18,5 @@ int	handle_builtins(t_command *cmd, t_env **env_list, int last_status)
 		return (ft_env(*env_list));
 	else if (ft_strcmp(cmd->args[0], "exit") == 0)
 		return (ft_exit(cmd, last_status));
-	return (1);
+	return (handle_error(E_CMD_NOT_FOUND, cmd->args[0]));
 }

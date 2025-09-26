@@ -55,7 +55,7 @@ static int	execute_pipeline(t_command *cmd_list, t_env **env_list)
 			}
 		}
 		pid = fork();
-				if (pid == -1)
+		if (pid == -1)
 		{
 			perror("fork");
 			free(pids);
@@ -81,17 +81,19 @@ static int	execute_pipeline(t_command *cmd_list, t_env **env_list)
 				exit(exit_status);
 			}
 			execve_wrapper(cmd_list, env_list);
-			perror("minishell");
-			exit(127);
+			if (errno == ENOENT)
+				exit(handle_error(E_CMD_NOT_FOUND, cmd_list->args[0]));
+			else if (errno == EACCES)
+				exit(handle_error(E_PERMISSION_DENIED, cmd_list->args[0]));
+			else
+				exit(handle_error(E_CMD_NOT_FOUND, cmd_list->args[0]));
 		}
 		else
 		{
 
 			pids[i++] = pid;
 			if (in_fd != 0)
-			{
 				close(in_fd);
-			}
 			if (cmd_list->next)
 			{
 				close(pipe_fds[1]);
@@ -127,7 +129,9 @@ static int	count_cmds(t_command *cmd_list)
 static void	handle_redirs(t_redir *redirs)
 {
 	int	fd;
+	int	exit_code;
 
+	exit_code = 0;
 	while (redirs)
 	{
 
@@ -141,11 +145,12 @@ static void	handle_redirs(t_redir *redirs)
 			fd = open(redirs->filename, O_RDONLY);
 		if (fd == -1)
 		{
-			perror("minishell");
-			exit(1);
+			if (errno == EACCES)
+				exit_code = handle_file_error(redirs->filename, "Permission denied");
+			else
+				exit_code = handle_file_error(redirs->filename, "No such file or dirextory");
+			exit(exit_code);
 		}
-
-
 		if (redirs->type == GREAT_TOKEN || redirs->type == APPEND_TOKEN)
 		{
 

@@ -29,19 +29,39 @@ static int	run_minishell_loop(t_env **env_list)
 		line = readline("my_prompt> ");
 		if (line == NULL)
 		{
-			printf("\n###Exit Read###\n");
+			printf("exit\n");
 			rl_clear_history();
 			free_env_list(*env_list);
 			return (exit_status);
+		}
+		if (*line == '\0')
+		{
+			exit_status = handle_error(E_EMPTY_CMD, "");
+			free(line);
+			continue ;
 		}
 		if (*line)
 			add_history(line);
 		init_arena(&arena, (ft_strlen(line) * 2) + 4096);
 		token_list = tokenizer(line, &arena);
+		if (token_list == NULL)
+		{
+			exit_status = handle_error(E_SYNTAX_ERROR, NULL);
+			free(line);
+			free_arena(&arena);
+			continue ;
+		}
 		command_list = NULL;
 		if (token_list)
 		{
 			command_list = parse_commands(token_list, &arena);
+			if (command_list == NULL)
+			{
+				exit_status = handle_error(E_SYNTAX_ERROR, NULL);
+				free(line);
+				free_arena(&arena);
+				continue ;
+			}
 			if (command_list)
 			{
 				expand_commands(command_list, &arena, exit_status, *env_list);
