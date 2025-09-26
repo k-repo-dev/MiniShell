@@ -1,10 +1,10 @@
 #ifndef PROTOTYPES_H
 # define PROTOTYPES_H
 
-# include "../libft/libft.h"
+//# include "../libft/libft.h"
 # include "execution.h"
-# include "minishell.h"
-# include "structures.h"
+//# include "minishell.h"
+//# include "structures.h"
 
 // Function prototypes in signal.c
 int			init_sigaction(void (*handler)(int));
@@ -19,6 +19,7 @@ void		add_env_node(t_env **env_list, const char *key, const char *value);
 void		remove_env_node(t_env **head, const char *key);
 char		**env_list_to_array(t_env *head, t_arena *arena);
 char		*get_env_value(t_env *env_list, const char *key);
+t_env	*find_env_node(t_env *env_list, const char *key);
 
 // Function prototypes from memory_arena.c
 void		*alloc_arena(t_arena *arena, size_t size);

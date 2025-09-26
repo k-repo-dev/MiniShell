@@ -1,7 +1,5 @@
 #include "../../incls/prototypes.h"
 
-static t_env	*find_env_node(t_env *env_list, const char *key);
-
 void	add_env_node(t_env **env_list, const char *key, const char *value)
 {
 	t_env	*node;
@@ -33,7 +31,7 @@ void	add_env_node(t_env **env_list, const char *key, const char *value)
 	}
 }
 
-static t_env	*find_env_node(t_env *env_list, const char *key)
+t_env	*find_env_node(t_env *env_list, const char *key)
 {
 	while (env_list)
 	{

@@ -21,6 +21,7 @@ static int	run_minishell_loop(t_env **env_list)
 	t_command	*command_list;
 	t_arena		arena;
 	int			exit_status;
+	int			final_exit_code;
 
 	exit_status = 0;
 	while (1)
@@ -29,26 +30,43 @@ static int	run_minishell_loop(t_env **env_list)
 		if (line == NULL)
 		{
 			printf("\n###Exit Read###\n");
-			break ;
+			rl_clear_history();
+			free_env_list(*env_list);
+			return (exit_status);
 		}
 		if (*line)
 			add_history(line);
 		init_arena(&arena, (ft_strlen(line) * 2) + 4096);
 		token_list = tokenizer(line, &arena);
+		command_list = NULL;
 		if (token_list)
 		{
 			command_list = parse_commands(token_list, &arena);
 			if (command_list)
 			{
-				// expand_commands(command_list, &arena, exit_status);
 				expand_commands(command_list, &arena, exit_status, *env_list);
-				// parent_loop(&command_list, envp); // Execution starts here
 				exit_status = parent_loop(command_list, env_list, exit_status);
 			}
+		}
+		if (exit_status == -1 || exit_status == -2)
+		{
+			if (exit_status == -2)
+				final_exit_code = 2;
+			else
+			{
+				if (command_list && command_list->args && command_list->args[1] && is_numeric(command_list->args[1]))
+					final_exit_code = (int)ft_atoi(command_list->args[1]);
+				else
+					final_exit_code = exit_status;
+			}
+			free(line);
+			free_arena(&arena);
+			rl_clear_history();
+			free_env_list(*env_list);
+			return (final_exit_code);
 		}
 		free(line);
 		free_arena(&arena);
 	}
-	free_env_list(*env_list);
-	return (0);
+	return (exit_status);
 }
