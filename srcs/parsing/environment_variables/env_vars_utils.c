@@ -70,62 +70,6 @@ static size_t	handle_env_var(const char *str, int *i, int exit_status)
 	}
 	return (len);
 }
-/*size_t	get_expanded_len(const char *str, int exit_status)
-{
-	size_t	len;
-	int		i;
-	int		start;
-	char	*value;
-	char	var_name;
-
-	i = 0;
-	start = 0;
-	var_name = i - start + 1;
-	len = 0;
-	while (str[i])
-	{
-		if (str[i] == '\'')
-		{
-			len++;
-			i++;
-			while (str[i] && str[i] != '\'')
-			{
-				len++;
-				i++;
-			}
-			if (str[i] == '\'')
-				len++;
-		}
-		else if (str[i] == '$' && str[i + 1] && (ft_isalnum(str[i + 1]) || str[i
-				+ 1] == '?'))
-		{
-			i++;
-			if (str[i] == '?')
-			{
-				value = get_variable_value("?", exit_status, NULL);
-				if (value)
-					len += ft_strlen(value);
-				i++;
-			}
-			else
-			{
-				start = i;
-				while (str[i] && ft_isalnum(str[i]))
-					i++;
-				ft_strlcpy(&var_name, &str[start], i - start + 1);
-				value = get_variable_value(&var_name, exit_status, NULL);
-				if (value)
-					len += ft_strlen(value);
-			}
-		}
-		else
-		{
-			len++;
-			i++;
-		}
-	}
-	return (len);
-}*/
 
 char	*get_variable_value(const char *var_name, int exit_status,
 		t_arena *arena)

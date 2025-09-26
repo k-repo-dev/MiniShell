@@ -23,7 +23,6 @@ t_token	*tokenizer(const char *line, t_arena *arena)
 		token_end = find_token_end(cursor);
 		if (!token_end)
 			return (NULL);
-		printf("DEBUG C1-G: Token creation range. Cursor: %p, End: %p, Len: %zu\n", (void *)cursor, (void *)token_end, token_end - cursor);
 		new = create_new_token(arena, cursor, token_end);
 		if (!new)
 			return (NULL);
@@ -53,7 +52,6 @@ const char	*find_token_end(const char *start)
 			ft_putstr_fd("Error: unclosed quote\n", 2);
 			return (NULL);
 		}
-		printf("DEBUG C1-F: Found quoted token. Start: %p, End: %p, Length: %zu\n", (void *)start, (void *)end, end + 1 - start);
 		return (end + 1);
 	}
 	end = start;

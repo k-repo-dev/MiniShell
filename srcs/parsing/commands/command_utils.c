@@ -35,12 +35,9 @@ int add_redir_to_cmd(t_command *cmd, t_token **token, t_arena *arena)
 		return (1);
 	ft_memset(new_redir, 0, sizeof(t_redir));
 	new_redir->type = (*token)->type;
-	printf("DEBUG C2-A: Redir operator: %s. Checking next token...\n", (*token)->value);
 	*token = (*token)->next;
 	if (!*token)
 	{
-		printf("DEBUG C2-C: Error handling reached. testing Safe output.\n");
-		printf("DEBUG C2-B: Next token is NULL. Pointer: %p\n", (void*)*token);
 		ft_putstr_fd("syntax error\n", 2);
 		return (1);
 	}

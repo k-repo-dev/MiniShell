@@ -19,21 +19,13 @@ void	expand_commands(t_command *cmd_list, t_arena *arena, int exit_status,
 	current_cmd = cmd_list;
 	while (current_cmd)
 	{
-		if (current_cmd->args && current_cmd->args[1])
-			printf("DEBUG C1-B: Cmd Ptr: %p. Arg[1] Before: %s\n", (void *)current_cmd, current_cmd->args[1]);
-		else
-			printf("DEBUG C1-B: Cmd Ptr: %p. Arg[1] Before: (null)\n", (void *)current_cmd);
 		tmp_args = current_cmd->args;
 		while (tmp_args && *tmp_args)
 		{
-			printf("DEBUG C1-C: Arg Ptr: %p, Value Before: %s\n", (void *)*tmp_args, *tmp_args);
 			*tmp_args = copy_expanded_str(*tmp_args, exit_status, arena,
 					env_list);
-			printf("DEBUG C1-D: Arg Ptr: %p, Value After: %s\n", (void *)*tmp_args, *tmp_args);
 			tmp_args++;
 		}
-		if (current_cmd->redirs)
-			printf("DEBUG C1-E: Redir Filename Before: %s\n", current_cmd->redirs->filename);
 		current_redir = current_cmd->redirs;
 		while (current_redir)
 		{
@@ -151,62 +143,3 @@ static void	handle_double_quote(const char **str, char **expand_str, int exit_st
 	if (**str == '"')
 		(*str)++;
 }
-/*static char	*copy_expanded_str(const char *str, int exit_status,
-		t_arena *arena)
-{
-	size_t		i;
-	size_t		j;
-	char		*expanded_str;
-	const char	*value;
-	int			start;
-	char		var_name;
-
-	expanded_str = alloc_arena(arena, get_expanded_len(str, exit_status) + 1);
-	i = 0;
-	j = 0;
-	start = 0;
-	var_name = i - start + 1;
-	while (str[i])
-	{
-		if (str[i] == '\'')
-		{
-			expanded_str[j++] = str[i++];
-			while (str[i] && str[i] != '\'')
-				expanded_str[j++] = str[i++];
-			if (str[i] == '\'')
-				expanded_str[j++] = str[i++];
-		}
-		else if (str[i] == '$' && str[i + 1] && (ft_isalnum(str[i + 1]) || str[i
-				+ 1] == '?'))
-		{
-			i++;
-			if (str[i] == '?')
-			{
-				value = get_variable_value("?", exit_status, arena);
-				if (value)
-				{
-					ft_memcpy(&expanded_str[j], value, ft_strlen(value));
-					j += ft_strlen(value);
-				}
-				i++;
-			}
-			else
-			{
-				start = i;
-				while (str[i] && ft_isalnum(str[i]))
-					i++;
-				ft_strlcpy(&var_name, &str[start], i - start + 1);
-				value = get_variable_value(&var_name, exit_status, arena);
-				if (value)
-				{
-					ft_memcpy(&expanded_str[j], value, ft_strlen(value));
-					j += ft_strlen(value);
-				}
-			}
-		}
-		else
-			expanded_str[j++] = str[i++];
-	}
-	expanded_str[j] = '\0';
-	return (expanded_str);
-}*/
