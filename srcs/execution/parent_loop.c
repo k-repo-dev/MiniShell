@@ -130,6 +130,7 @@ static void	handle_redirs(t_redir *redirs)
 
 	while (redirs)
 	{
+
 		if (redirs->type == GREAT_TOKEN)
 			fd = open(redirs->filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 		else if (redirs->type == APPEND_TOKEN)
@@ -143,10 +144,19 @@ static void	handle_redirs(t_redir *redirs)
 			perror("minishell");
 			exit(1);
 		}
+
+
 		if (redirs->type == GREAT_TOKEN || redirs->type == APPEND_TOKEN)
-			dup2(fd, STDOUT_FILENO);
+		{
+
+			if (dup2(fd, STDOUT_FILENO) == -1)
+				exit(1);
+		}
 		else
-			dup2(fd, STDIN_FILENO);
+		{
+			if (dup2(fd, STDIN_FILENO) == -1)
+				exit(1);
+		}
 		close(fd);
 		redirs = redirs->next;
 	}

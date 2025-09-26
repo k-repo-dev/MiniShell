@@ -152,11 +152,9 @@ int	ft_cd(t_command *cmd, t_env **env_list)
 	return (0);
 }
 
-static int	is_numeric(const char *str);
-
 int	ft_exit(t_command *cmd, int last_status)
 {
-	long	status;
+	(void)last_status;
 
 	printf("exit\n");
 	if (cmd->args[1])
@@ -170,16 +168,14 @@ int	ft_exit(t_command *cmd, int last_status)
 		{
 			printf("minishell: exit: %s: numeric argument required\n",
 				cmd->args[1]);
-			exit(2);
+			return(-2);
 		}
-		status = ft_atoi(cmd->args[1]);
-		exit(status);
+		return (-1);
 	}
-	exit(last_status);
-	return (0);
+	return (-1);
 }
 
-static int	is_numeric(const char *str)
+int	is_numeric(const char *str)
 {
 	int	i;
 

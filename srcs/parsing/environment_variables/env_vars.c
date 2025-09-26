@@ -7,6 +7,7 @@ static void	handle_var_expand(const char **str, char **expand_str,
 				int exit_status, t_arena *arena, t_env *env_list);
 static void	expand_normal_var(const char **str, char **expand_str,
 				t_arena *arena, t_env *env_list);
+static void	handle_double_quote(const char **str, char **expanded_str, int exit_status, t_arena *arena, t_env *env_list);
 
 void	expand_commands(t_command *cmd_list, t_arena *arena, int exit_status,
 		t_env *env_list)
@@ -43,17 +44,22 @@ static char	*copy_expanded_str(const char *str, int exit_status, t_arena *arena,
 	char		*current_expand_pos;
 	const char	*current_str_pos;
 	size_t		len;
+	size_t		final_len;
+	char		*trimmed_str;
 
 	len = ft_strlen(str);
 	expand_str = alloc_arena(arena, (len * 2) + 1);
 	if (!expand_str)
 		return (NULL);
+	ft_memset(expand_str, 0, (len * 2) +1);
 	current_expand_pos = expand_str;
 	current_str_pos = str;
 	while (*current_str_pos)
 	{
 		if (*current_str_pos == '\'')
 			handle_single_quote(&current_str_pos, &current_expand_pos);
+		else if (*current_str_pos == '"')
+			handle_double_quote(&current_str_pos, &current_expand_pos, exit_status, arena, env_list);
 		else if (*current_str_pos == '$' && *(current_str_pos + 1)
 			&& (ft_isalnum(*(current_str_pos + 1)) || *(current_str_pos
 					+ 1) == '?'))
@@ -63,16 +69,21 @@ static char	*copy_expanded_str(const char *str, int exit_status, t_arena *arena,
 			*current_expand_pos++ = *current_str_pos++;
 	}
 	*current_expand_pos = '\0';
-	return (expand_str);
+	final_len = current_expand_pos - expand_str;
+	trimmed_str = alloc_arena(arena, final_len + 1);
+	if (!trimmed_str)
+		return (NULL);
+	ft_strlcpy(trimmed_str, expand_str, final_len + 1);
+	return (trimmed_str);
 }
 
 static void	handle_single_quote(const char **str, char **expand_str)
 {
-	*(*expand_str)++ = *(*str)++;
+	(*str)++;
 	while (**str && **str != '\'')
 		*(*expand_str)++ = *(*str)++;
 	if (**str == '\'')
-		*(*expand_str)++ = *(*str)++;
+		(*str)++;
 }
 
 static void	handle_var_expand(const char **str, char **expand_str,
@@ -116,62 +127,19 @@ static void	expand_normal_var(const char **str, char **expand_str,
 			*(*expand_str)++ = *value++;
 	}
 }
-/*static char	*copy_expanded_str(const char *str, int exit_status,
-		t_arena *arena)
-{
-	size_t		i;
-	size_t		j;
-	char		*expanded_str;
-	const char	*value;
-	int			start;
-	char		var_name;
 
-	expanded_str = alloc_arena(arena, get_expanded_len(str, exit_status) + 1);
-	i = 0;
-	j = 0;
-	start = 0;
-	var_name = i - start + 1;
-	while (str[i])
+static void	handle_double_quote(const char **str, char **expand_str, int exit_status, t_arena *arena, t_env *env_list)
+{
+	(*str)++;
+	while (**str && **str != '"')
 	{
-		if (str[i] == '\'')
+		if (**str == '$' && *(*str + 1) && (ft_isalnum(*(*str + 1)) || *(*str + 1) == '?'))
 		{
-			expanded_str[j++] = str[i++];
-			while (str[i] && str[i] != '\'')
-				expanded_str[j++] = str[i++];
-			if (str[i] == '\'')
-				expanded_str[j++] = str[i++];
-		}
-		else if (str[i] == '$' && str[i + 1] && (ft_isalnum(str[i + 1]) || str[i
-				+ 1] == '?'))
-		{
-			i++;
-			if (str[i] == '?')
-			{
-				value = get_variable_value("?", exit_status, arena);
-				if (value)
-				{
-					ft_memcpy(&expanded_str[j], value, ft_strlen(value));
-					j += ft_strlen(value);
-				}
-				i++;
-			}
-			else
-			{
-				start = i;
-				while (str[i] && ft_isalnum(str[i]))
-					i++;
-				ft_strlcpy(&var_name, &str[start], i - start + 1);
-				value = get_variable_value(&var_name, exit_status, arena);
-				if (value)
-				{
-					ft_memcpy(&expanded_str[j], value, ft_strlen(value));
-					j += ft_strlen(value);
-				}
-			}
+			handle_var_expand(str, expand_str, exit_status, arena, env_list);
 		}
 		else
-			expanded_str[j++] = str[i++];
+			*(*expand_str)++ = *(*str)++;
 	}
-	expanded_str[j] = '\0';
-	return (expanded_str);
-}*/
+	if (**str == '"')
+		(*str)++;
+}
