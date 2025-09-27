@@ -1,60 +1,83 @@
 #include "../../incls/prototypes.h"
 
+static int	handle_system_errors(t_error_type type);
+static int	handle_cd_errors(t_error_type type);
+static int	handle_exit_errors(t_error_type type, const char *arg);
+static int	handle_unhandled_error(void);
+
 int	handle_error(t_error_type type, const char *arg)
 {
-	int	exit_code;
-
 	printf("minishell: ");
+	if (type == E_CMD_NOT_FOUND || type == E_EMPTY_CMD)
+	{
+		if (!arg || !*arg)
+			printf(":command not found\n");
+		else
+			printf("%s: command not found\n", arg);
+		return (127);
+	}
 	if (arg && *arg)
 		printf("%s: ", arg);
-	if (type == E_EMPTY_CMD)
-	{
-		printf(":command not found\n");
-		exit_code = 127;
-	}
-	else if (type == E_CMD_NOT_FOUND)
-	{
-		printf("command not found\n");
-		exit_code = 127;
-	}
-	else if (type == E_PERMISSION_DENIED)
+	if (type == E_PERMISSION_DENIED || type == E_SYNTAX_ERROR)
+		return (handle_system_errors(type));
+	else if (type == E_CD_OLDPWD_UNSET || type == E_CD_TOO_MANY_ARGS)
+		return (handle_cd_errors(type));
+	else if (type == E_EXIT_TOO_MANY_ARGS || type == E_EXIT_NUMERIC_REQUIRED)
+		return (handle_exit_errors(type, arg));
+	else
+		return (handle_unhandled_error());
+}
+
+static int	handle_system_errors(t_error_type type)
+{
+	if (type == E_PERMISSION_DENIED)
 	{
 		printf("Permission denied\n");
-		exit_code = 126;
+		return (126);
 	}
 	else if (type == E_SYNTAX_ERROR)
 	{
 		printf("syntax error\n");
-		exit_code = 258;
+		return (258);
 	}
-	else if (type == E_CD_OLDPWD_UNSET)
+	return (handle_unhandled_error());
+}
+
+static int	handle_cd_errors(t_error_type type)
+{
+	if (type == E_CD_OLDPWD_UNSET)
 	{
 		printf("OLDPWD not set\n");
-		exit_code = 1;
+		return (1);
 	}
 	else if (type == E_CD_TOO_MANY_ARGS)
 	{
 		printf("too many arguments\n");
-		exit_code = 1;
+		return (1);
 	}
-	else if (type == E_EXIT_TOO_MANY_ARGS)
+	return (handle_unhandled_error());
+}
+
+static int	handle_exit_errors(t_error_type type, const char *arg)
+{
+	if (type == E_EXIT_TOO_MANY_ARGS)
 	{
 		printf("too many arguments\n");
-		exit_code = 1;
+		return (1);
 	}
 	else if (type == E_EXIT_NUMERIC_REQUIRED)
 	{
 		printf("%s: numeric argument required\n", arg);
-		exit_code = 2;
+		return (2);
 	}
-	else
-	{
-		printf("An unhandled internal error occured\n");
-		exit_code = 1;
-	}
-	return (exit_code);
+	return (handle_unhandled_error());
 }
 
+static int	handle_unhandled_error(void)
+{
+	printf("An unhandled internal error occured\n");
+	return (1);
+}
 int	handle_file_error(const char *filename, const char *msg)
 {
 	printf("minishell: %s: %s\n", filename, msg);

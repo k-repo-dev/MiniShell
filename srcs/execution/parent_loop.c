@@ -81,12 +81,6 @@ static int	execute_pipeline(t_command *cmd_list, t_env **env_list)
 				exit(exit_status);
 			}
 			execve_wrapper(cmd_list, env_list);
-			if (errno == ENOENT)
-				exit(handle_error(E_CMD_NOT_FOUND, cmd_list->args[0]));
-			else if (errno == EACCES)
-				exit(handle_error(E_PERMISSION_DENIED, cmd_list->args[0]));
-			else
-				exit(handle_error(E_CMD_NOT_FOUND, cmd_list->args[0]));
 		}
 		else
 		{
@@ -148,7 +142,7 @@ static void	handle_redirs(t_redir *redirs)
 			if (errno == EACCES)
 				exit_code = handle_file_error(redirs->filename, "Permission denied");
 			else
-				exit_code = handle_file_error(redirs->filename, "No such file or dirextory");
+				exit_code = handle_file_error(redirs->filename, "No such file or directory");
 			exit(exit_code);
 		}
 		if (redirs->type == GREAT_TOKEN || redirs->type == APPEND_TOKEN)

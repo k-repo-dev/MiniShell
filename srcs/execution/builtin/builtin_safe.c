@@ -134,11 +134,11 @@ int	ft_cd(t_command *cmd, t_env **env_list)
 	{
 		path = get_env_value(*env_list, "OLDPWD");
 		if (!path)
-			return (handle_error(E_CD_OLDPWD_UNSET, NULL));
+			return (handle_error(E_CD_OLDPWD_UNSET, "cd"));
 		printf("%s\n", path);
 	}
 	else if (cmd->args[2])
-		return (handle_error(E_CD_TOO_MANY_ARGS, NULL));
+		return (handle_error(E_CD_TOO_MANY_ARGS, "cd"));
 	status = chdir(path);
 	if (status == -1)
 		return (handle_file_error(path, "No such file or directory"));
@@ -156,7 +156,7 @@ int	ft_exit(t_command *cmd, int last_status)
 	if (cmd->args[1])
 	{
 		if (cmd->args[2])
-			return (handle_error(E_EXIT_TOO_MANY_ARGS, NULL));		
+			return (handle_error(E_EXIT_TOO_MANY_ARGS, "exit"));		
 		if (!is_numeric(cmd->args[1]))
 			return(handle_error(E_EXIT_NUMERIC_REQUIRED, cmd->args[1]));
 		return (-1);
