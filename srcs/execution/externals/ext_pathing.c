@@ -20,7 +20,6 @@ char	*cmd_findpath(t_env *env)
 	tmp = env;
 	while (tmp)
 	{
-		// printf("KEY: %s, VALUE: %s\n", env->key, env->value);
 		if (tmp->key && ft_strcmp(tmp->key, "PATH") == 0)
 			return (tmp->value);
 		tmp = tmp->next;
