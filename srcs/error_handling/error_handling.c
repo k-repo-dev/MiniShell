@@ -29,22 +29,22 @@ int	handle_error(t_error_type type, const char *arg)
 	}
 	else if (type == E_CD_OLDPWD_UNSET)
 	{
-		printf("minishell: cd: OLDPWD not set\n");
+		printf("OLDPWD not set\n");
 		exit_code = 1;
 	}
 	else if (type == E_CD_TOO_MANY_ARGS)
 	{
-		printf("minishell: cd: too many arguments\n");
+		printf("too many arguments\n");
 		exit_code = 1;
 	}
 	else if (type == E_EXIT_TOO_MANY_ARGS)
 	{
-		printf("minishell: exit: too many arguments\n");
+		printf("too many arguments\n");
 		exit_code = 1;
 	}
 	else if (type == E_EXIT_NUMERIC_REQUIRED)
 	{
-		printf("minishell: exit: %s: numeric argument required\n", arg);
+		printf("%s: numeric argument required\n", arg);
 		exit_code = 2;
 	}
 	else
