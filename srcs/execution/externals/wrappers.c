@@ -1,4 +1,4 @@
-#include "../../incls/prototypes.h"
+#include "../../../incls/prototypes.h"
 
 // pid_t	fork_wrapper(int pipefd[2])
 // {
@@ -21,6 +21,8 @@ void	execve_wrapper(t_command *cmd, t_env **env_list)
 	char	**envp;
 	t_arena	arena;
 
+	if (!cmd->args[0] || !*cmd->args[0])
+		exit(handle_error(E_CMD_NOT_FOUND, ""));
 	init_arena(&arena, 4096);
 	envp = env_list_to_array(*env_list, &arena);
 	cmd_path = cmd_check(cmd->args[0], env_list);

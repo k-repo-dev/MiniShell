@@ -35,6 +35,7 @@ t_token	*tokenizer(const char *line, t_arena *arena)
 const char	*find_token_end(const char *start)
 {
 	const char	*end;
+	char		quote_char;
 
 	if (*start == '|' || *start == '<' || *start == '>')
 	{
@@ -42,22 +43,28 @@ const char	*find_token_end(const char *start)
 			return (start + 2);
 		return (start + 1);
 	}
-	if (*start == '\'' || *start == '"')
-	{
-		end = start + 1;
-		while (*end && *end != *start)
-			end++;
-		if (!*end)
-		{
-			ft_putstr_fd("Error: unclosed quote\n", 2);
-			return (NULL);
-		}
-		return (end + 1);
-	}
 	end = start;
-	while (*end && *end != ' ' && *end != '\t' && *end != '|' && *end != '<'
-		&& *end != '>')
-		end++;
+	while (1)
+	{
+		while (*end && *end != ' ' && *end != '\t' && *end != '|' && *end != '<'
+				&& *end != '>' && *end != '\'' && *end != '"')
+			end++;
+		if (!*end || *end == ' ' || *end == '\t' || *end == '|' || *end == '<'
+				|| *end == '>')
+			return (end);
+		if (*end == '\'' || *end == '"')
+		{
+			quote_char = *end;
+			end++;
+			while (*end && *end != quote_char)
+				end++;
+			if (!*end)
+				return (NULL);
+			end++;
+			continue ;
+		}
+		break ;
+	}
 	return (end);
 }
 
@@ -78,9 +85,9 @@ static t_token	*create_new_token(t_arena *arena, const char *cursor, const char 
 		new->type = HEREDOC_TOKEN;
 	else if (ft_strcmp(new->value, "|") == 0)
 		new->type = PIPE_TOKEN;
-	else if (*cursor == '>')
+	else if (new->value[0] == '>')
 		new->type = GREAT_TOKEN;
-	else if (*cursor == '<')
+	else if (new->value[0] == '<')
 		new->type = LESS_TOKEN;
 	else
 		new->type = ARG_TOKEN;
