@@ -24,91 +24,92 @@ int	parent_loop(t_command *cmd_list, t_env **env_list, int last_status)
 	return (0);
 }
 
-static int	execute_pipeline(t_command *cmd_list, t_env **env_list)
+static void	child_proc(t_command *cmd, t_env **env, int in_fd, int *pipe_fds)
 {
-	pid_t	*pids;
-	int		pid;
-	int		pipe_fds[2];
-	int		in_fd;
-	int		exit_status;
-	int		num_cmds;
-	int		i;
+    int	exit_status;
 
-	i = 0;
-	num_cmds = count_cmds(cmd_list);
-	in_fd = 0;
-	pids = malloc(sizeof(pid_t) * num_cmds);
-	if (!pids)
-	{
-		perror("malloc");
-		return (-1);
-	}
-	while (cmd_list)
-	{
-		if (cmd_list->next)
-		{
-			if (pipe(pipe_fds) == -1)
-			{
-				perror("pipe");
-				free(pids);
-				return (-1);
-			}
-		}
-		pid = fork();
-				if (pid == -1)
-		{
-			perror("fork");
-			free(pids);
-			return (-1);
-		}
-		if (pid == 0)
-		{
-			if (in_fd != 0)
-			{
-				dup2(in_fd, STDIN_FILENO);
-				close(in_fd);
-			}
-			if (cmd_list->next)
-			{
-				dup2(pipe_fds[1], STDOUT_FILENO);
-				close(pipe_fds[0]);
-				close(pipe_fds[1]);
-			}
-			handle_redirs(cmd_list->redirs);
-			if (is_builtin(cmd_list->args[0]))
-			{
-				exit_status = handle_builtins(cmd_list, env_list, 0);
-				exit(exit_status);
-			}
-			execve_wrapper(cmd_list, env_list);
-			perror("minishell");
-			exit(127);
-		}
-		else
-		{
+    if (in_fd != 0)
+    {
+        dup2(in_fd, STDIN_FILENO);
+        close(in_fd);
+    }
+    if (cmd->next)
+    {
+        dup2(pipe_fds[1], STDOUT_FILENO);
+        close(pipe_fds[0]);
+        close(pipe_fds[1]);
+    }
+    handle_redirs(cmd->redirs);
+    if (is_builtin(cmd->args[0]))
+    {
+        exit_status = handle_builtins(cmd, env, 0);
+        exit(exit_status);
+    }
+    execve_wrapper(cmd, env);
+    perror("minishell");
+    exit(127);
+}
 
-			pids[i++] = pid;
-			if (in_fd != 0)
-			{
-				close(in_fd);
-			}
-			if (cmd_list->next)
-			{
-				close(pipe_fds[1]);
-				in_fd = pipe_fds[0];
-			}
-		}
-		cmd_list = cmd_list->next;
-	}
-	if (in_fd != 0)
-		close(in_fd);
-	int j = 0;
-	while (j < num_cmds)
-	{
-			waitpid(pids[j], &exit_status, 0);
-		j++;
-	}
-	return (WEXITSTATUS(exit_status));
+static int	wait_all(pid_t *pids, int num)
+{
+    int	status;
+    int	i;
+
+    i = 0;
+    while (i < num)
+    {
+        waitpid(pids[i], &status, 0);
+        i++;
+    }
+    return (WEXITSTATUS(status));
+}
+
+static int	pipeline_fork_step(
+    t_command *cmd, t_env **env, int *in_fd, int *pipe_fds, pid_t *pid)
+{
+    if (cmd->next && pipe(pipe_fds) == -1)
+        return (perror("pipe"), -1);
+    *pid = fork();
+    if (*pid == -1)
+        return (perror("fork"), -1);
+    if (*pid == 0)
+        child_proc(cmd, env, *in_fd, pipe_fds);
+    if (*in_fd != 0)
+        close(*in_fd);
+    if (cmd->next)
+    {
+        close(pipe_fds[1]);
+        *in_fd = pipe_fds[0];
+    }
+    return (0);
+}
+
+static int	execute_pipeline(t_command *cmd, t_env **env)
+{
+    pid_t	*pids;
+    int		pipe_fds[2];
+    int		in_fd;
+    int		num;
+    int		i;
+
+    num = count_cmds(cmd);
+    pids = malloc(sizeof(pid_t) * num);
+    if (!pids)
+        return (perror("malloc"), -1);
+    in_fd = 0;
+    i = 0;
+    while (cmd)
+    {
+        if (pipeline_fork_step(cmd, env, &in_fd, pipe_fds, &pids[i]) == -1)
+            return (free(pids), -1);
+        cmd = cmd->next;
+        i++;
+    }
+    if (in_fd != 0)
+        close(in_fd);
+    i = wait_all(pids, num);
+    free(pids);
+    return (i);
 }
 
 static int	count_cmds(t_command *cmd_list)

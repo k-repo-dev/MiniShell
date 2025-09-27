@@ -1,4 +1,4 @@
-#include "../../incls/prototypes.h"
+#include "prototypes.h"
 
 // pid_t	fork_wrapper(int pipefd[2])
 // {
