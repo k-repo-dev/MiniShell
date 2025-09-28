@@ -17,7 +17,7 @@ void		free_env_list(t_env *head);
 // Function prototypes from env_utils.c
 void		add_env_node(t_env **env_list, const char *key, const char *value);
 void		remove_env_node(t_env **head, const char *key);
-char		**env_list_to_array(t_env *head, t_arena *arena);
+char		**env_list_to_array(t_env *head);
 char		*get_env_value(t_env *env_list, const char *key);
 t_env	*find_env_node(t_env *env_list, const char *key);
 

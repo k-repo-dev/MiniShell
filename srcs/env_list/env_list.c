@@ -27,16 +27,19 @@ t_env	*init_env_list(char **envp)
 
 void	free_env_list(t_env *head)
 {
+	t_env	*current;
 	t_env	*tmp;
 
-	while (head)
+	current = head;
+	while (current)
 	{
-		tmp = head;
-		head = head->next;
-		free(tmp->key);
-		if (tmp->value)
-			free(tmp->value);
-		free(tmp);
+		tmp = current->next;
+		if (current->key)
+			free(current->key);
+		if (current->value)
+			free(current->value);
+		free(current);
+		current = tmp;
 	}
 }
 

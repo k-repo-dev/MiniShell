@@ -5,13 +5,16 @@ static int	run_minishell_loop(t_env **env_list);
 int	main(int ac, char *av[], char **envp)
 {
 	t_env	*env_list;
+	int		exit_code;
 
 	(void)ac;
 	(void)av;
 	if (init_sigaction(handle_sigint) == -1)
 		return (1);
 	env_list = init_env_list(envp);
-	return (run_minishell_loop(&env_list));
+	exit_code = run_minishell_loop(&env_list);
+	free_env_list(env_list);
+	return (exit_code);
 }
 
 static int	run_minishell_loop(t_env **env_list)
@@ -24,6 +27,7 @@ static int	run_minishell_loop(t_env **env_list)
 	int			final_exit_code;
 
 	exit_status = 0;
+	ft_memset(&arena, 0, sizeof(t_arena));
 	while (1)
 	{
 		line = readline("my_prompt> ");
@@ -31,13 +35,15 @@ static int	run_minishell_loop(t_env **env_list)
 		{
 			printf("exit\n");
 			rl_clear_history();
-			free_env_list(*env_list);
+			free_arena(&arena);
+			*env_list = NULL;
 			return (exit_status);
 		}
 		if (*line == '\0')
 		{
 			exit_status = handle_error(E_EMPTY_CMD, "");
 			free(line);
+			free_arena(&arena);
 			continue ;
 		}
 		if (*line)
@@ -82,7 +88,6 @@ static int	run_minishell_loop(t_env **env_list)
 			free(line);
 			free_arena(&arena);
 			rl_clear_history();
-			free_env_list(*env_list);
 			return (final_exit_code);
 		}
 		free(line);

@@ -68,7 +68,7 @@ void	remove_env_node(t_env **head, const char *key)
 	}
 }
 
-char	**env_list_to_array(t_env *head, t_arena *arena)
+char	**env_list_to_array(t_env *head)
 {
 	char	**env_array;
 	t_env	*current;
@@ -84,21 +84,20 @@ char	**env_list_to_array(t_env *head, t_arena *arena)
 		count++;
 		current = current->next;
 	}
-	env_array = alloc_arena(arena, sizeof(char *) * (count + 1));
+	env_array = malloc(sizeof(char *) * (count + 1));
 	if (!env_array)
-	{
-		printf("Error: alloc_arena failed for env_array.\n");
 		return (NULL);
-	}
 	i = 0;
 	current = head;
 	while (current)
 	{
 		total_len = ft_strlen(current->key) + ft_strlen(current->value) + 2;
-		combined_str = alloc_arena(arena, total_len);
+		combined_str = malloc(total_len);
 		if (!combined_str)
 		{
-			printf("Error: alloc_arena failed for combined_str.\n");
+			while (i > 0)
+				free(env_array[i--]);
+			free(env_array);
 			return (NULL);
 		}
 		ft_strlcpy(combined_str, current->key, total_len);

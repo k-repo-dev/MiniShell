@@ -1,7 +1,7 @@
 #include "../../incls/prototypes.h"
 
 static int	execute_pipeline(t_command *md_list, t_env **env_list);
-static void	handle_redirs(t_redir *redirs);
+static int	handle_redirs(t_redir *redirs);
 static int	execute_builtins(t_command *cmd_list, t_env **env_list,
 				int last_status);
 static int	is_builtin(const char *cmd);
@@ -11,8 +11,12 @@ static int	is_parent_builtin(const char *cmd);
 int	parent_loop(t_command *cmd_list, t_env **env_list, int last_status)
 {
 	int	exit_status;
-	if (is_parent_builtin(cmd_list->args[0]) && cmd_list->next == NULL)
+	
+	if (cmd_list && is_parent_builtin(cmd_list->args[0]) && cmd_list->next == NULL)
 	{
+		exit_status = handle_redirs(cmd_list->redirs);
+		if (exit_status != 0)
+			return (exit_status);
 		exit_status = execute_builtins(cmd_list, env_list, last_status);
 		return (exit_status);
 	}
@@ -74,7 +78,10 @@ static int	execute_pipeline(t_command *cmd_list, t_env **env_list)
 				close(pipe_fds[0]);
 				close(pipe_fds[1]);
 			}
-			handle_redirs(cmd_list->redirs);
+			if (handle_redirs(cmd_list->redirs) != 0)
+				exit(1);
+			if (!cmd_list->args || !cmd_list->args[0])
+				exit(0);
 			if (is_builtin(cmd_list->args[0]))
 			{
 				exit_status = handle_builtins(cmd_list, env_list, 0);
@@ -104,6 +111,7 @@ static int	execute_pipeline(t_command *cmd_list, t_env **env_list)
 			waitpid(pids[j], &exit_status, 0);
 		j++;
 	}
+	free(pids);
 	return (WEXITSTATUS(exit_status));
 }
 
@@ -120,7 +128,7 @@ static int	count_cmds(t_command *cmd_list)
 	return (count);
 }
 
-static void	handle_redirs(t_redir *redirs)
+static int	handle_redirs(t_redir *redirs)
 {
 	int	fd;
 	int	exit_code;
@@ -128,7 +136,6 @@ static void	handle_redirs(t_redir *redirs)
 	exit_code = 0;
 	while (redirs)
 	{
-
 		if (redirs->type == GREAT_TOKEN)
 			fd = open(redirs->filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 		else if (redirs->type == APPEND_TOKEN)
@@ -143,22 +150,23 @@ static void	handle_redirs(t_redir *redirs)
 				exit_code = handle_file_error(redirs->filename, "Permission denied");
 			else
 				exit_code = handle_file_error(redirs->filename, "No such file or directory");
-			exit(exit_code);
+			return(exit_code);
 		}
 		if (redirs->type == GREAT_TOKEN || redirs->type == APPEND_TOKEN)
 		{
 
 			if (dup2(fd, STDOUT_FILENO) == -1)
-				exit(1);
+				return(1);
 		}
 		else
 		{
 			if (dup2(fd, STDIN_FILENO) == -1)
-				exit(1);
+				return(1);
 		}
 		close(fd);
 		redirs = redirs->next;
 	}
+	return (0);
 }
 
 static int	execute_builtins(t_command *cmd, t_env **env_list, int last_status)
