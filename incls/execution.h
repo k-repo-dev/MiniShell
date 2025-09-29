@@ -10,13 +10,14 @@ void	execve_wrapper(t_command *cmd, t_env **env_list);
 int		parent_loop(t_command *cmd_list, t_env **env_list, int last_status);
 
 // Processes
-void	child_proc(t_command *cmd, t_env **env, int in_fd, int *pipe_fds);
+// void	child_proc(t_command *cmd, t_env **env, int in_fd, int *pipe_fds);
 
 // builing Utils
 int		handle_builtins(t_command *cmd, t_env **env_list, int last_status);
 void	cleanup_redirs(t_command *cmd_list);
 void	free_char_array(char **arr);
-int		pipeline_fork(t_command *cmd, t_env **env, t_pipe_state *pipe_state);
+// int		pipeline_fork(t_command *cmd, t_env **env,
+//			t_pipe_state *pipe_state);
 
 // Builtins Parent
 int		ft_export(t_command *cmd, t_env **env_list);
