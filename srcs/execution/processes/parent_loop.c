@@ -1,4 +1,4 @@
-#include "../../incls/prototypes.h"
+#include "../../../incls/prototypes.h"
 
 static int	execute_pipeline(t_command *md_list, t_env **env_list);
 static int	handle_redirs(t_redir *redirs);
@@ -11,7 +11,7 @@ static int	is_parent_builtin(const char *cmd);
 int	parent_loop(t_command *cmd_list, t_env **env_list, int last_status)
 {
 	int	exit_status;
-	
+
 	if (cmd_list && cmd_list->args && is_parent_builtin(cmd_list->args[0])
 		&& cmd_list->next == NULL)
 	{
@@ -26,23 +26,22 @@ int	parent_loop(t_command *cmd_list, t_env **env_list, int last_status)
 		return (exit_status);
 	}
 	else
-	{
-		exit_status = execute_pipeline(cmd_list, env_list);
-		return (exit_status);
-	}
+		return (execute_pipeline(cmd_list, env_list));
 	return (0);
 }
 
 static int	execute_pipeline(t_command *cmd_list, t_env **env_list)
 {
-	pid_t		*pids;
-	int			pid;
-	int			pipe_fds[2];
-	int			in_fd;
-	int			exit_status;
-	int			num_cmds;
-	int			i;
-	t_command	*cmd_list_head;
+	pid_t			*pids;
+	int				pid;
+	int				pipe_fds[2];
+	int				in_fd;
+	int				exit_status;
+	int				num_cmds;
+	int				i;
+	t_command		*cmd_list_head;
+	int				j;
+	t_pipe_state	pipe_state;
 
 	cmd_list_head = cmd_list;
 	i = 0;
@@ -72,33 +71,10 @@ static int	execute_pipeline(t_command *cmd_list, t_env **env_list)
 			free(pids);
 			return (-1);
 		}
-		if (pid == 0) //CHILD PROCESS
+		if (pid == 0) // CHILD PROCESS
+			child_proc(cmd, env, pipe_state->in_fd, pipe_state->pipe_fds);
+		else // PARENT PROCESS
 		{
-			if (in_fd != 0)
-			{
-				dup2(in_fd, STDIN_FILENO);
-				close(in_fd);
-			}
-			if (cmd_list->next)
-			{
-				dup2(pipe_fds[1], STDOUT_FILENO);
-				close(pipe_fds[0]);
-				close(pipe_fds[1]);
-			}
-			if (handle_redirs(cmd_list->redirs) != 0)
-				exit(1);
-			if (!cmd_list->args || !cmd_list->args[0])
-				exit(0);
-			if (is_builtin(cmd_list->args[0]))
-			{
-				exit_status = handle_builtins(cmd_list, env_list, 0);
-				exit(exit_status);
-			}
-			execve_wrapper(cmd_list, env_list);
-		}
-		else //PARENT PROCESS
-		{
-
 			pids[i++] = pid;
 			if (in_fd != 0)
 				close(in_fd);
@@ -112,10 +88,10 @@ static int	execute_pipeline(t_command *cmd_list, t_env **env_list)
 	}
 	if (in_fd != 0)
 		close(in_fd);
-	int j = 0;
+	j = 0;
 	while (j < num_cmds)
 	{
-			waitpid(pids[j], &exit_status, 0);
+		waitpid(pids[j], &exit_status, 0);
 		j++;
 	}
 	cleanup_redirs(cmd_list_head);
@@ -155,21 +131,22 @@ static int	handle_redirs(t_redir *redirs)
 		if (fd == -1)
 		{
 			if (errno == EACCES)
-				exit_code = handle_file_error(redirs->filename, "Permission denied");
+				exit_code = handle_file_error(redirs->filename,
+						"Permission denied");
 			else
-				exit_code = handle_file_error(redirs->filename, "No such file or directory");
-			return(exit_code);
+				exit_code = handle_file_error(redirs->filename,
+						"No such file or directory");
+			return (exit_code);
 		}
 		if (redirs->type == GREAT_TOKEN || redirs->type == APPEND_TOKEN)
 		{
-
 			if (dup2(fd, STDOUT_FILENO) == -1)
-				return(1);
+				return (1);
 		}
 		else
 		{
 			if (dup2(fd, STDIN_FILENO) == -1)
-				return(1);
+				return (1);
 		}
 		close(fd);
 		redirs = redirs->next;

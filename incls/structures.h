@@ -56,6 +56,13 @@ typedef struct s_env
 	struct s_env			*next;
 }							t_env;
 
+typedef struct s_pipe_state
+{
+	int						in_fd;
+	int						pipe_fds[2];
+	pid_t					*pid;
+}							t_pipe_state;
+
 typedef enum e_error_type
 {
 	E_EMPTY_CMD,
@@ -69,6 +76,6 @@ typedef enum e_error_type
 	E_FILE_NOT_FOUND,
 	E_FILE_PERMISSION,
 	E_DUP2_FAIL
-}	t_error_type;
+}							t_error_type;
 
 #endif
