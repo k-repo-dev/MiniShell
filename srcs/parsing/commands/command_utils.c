@@ -1,8 +1,7 @@
 #include "../../../incls/prototypes.h"
 
-static char	*handle_heredoc(const char *delimiter);
-static void	heredoc_warning(const char *delimiter);
-static int	get_heredoc_id(void);
+static int	setup_new_redir(t_redir *new_redir, t_token **token, t_arena *arena);
+static void	link_new_redir(t_command *cmd, t_redir *new_redir);
 
 void	add_arg_to_cmd(t_command *cmd, t_token *token, t_arena *arena)
 {
@@ -11,11 +10,11 @@ void	add_arg_to_cmd(t_command *cmd, t_token *token, t_arena *arena)
 	int		count;
 
 	count = 0;
+	i = 0;
 	if (cmd->args)
 		while (cmd->args[count])
 			count++;
 	new_args = alloc_arena(arena, sizeof(char *) * (count + 2));
-	i = 0;
 	while (i < count)
 	{
 		new_args[i] = cmd->args[i];
@@ -29,15 +28,27 @@ void	add_arg_to_cmd(t_command *cmd, t_token *token, t_arena *arena)
 int add_redir_to_cmd(t_command *cmd, t_token **token, t_arena *arena)
 {
 	t_redir	*new_redir;
-	t_redir	*current_redir;
+	int		error_flag;
 
+	error_flag = 0;
 	new_redir = alloc_arena(arena, sizeof(t_redir));
 	if (!new_redir)
 		return (1);
 	ft_memset(new_redir, 0, sizeof(t_redir));
+	error_flag = setup_new_redir(new_redir, token, arena);
+	if (error_flag)
+		return (1);
+	link_new_redir(cmd, new_redir);
+	*token = (*token)->next;
+
+	return (0);
+}
+
+static int	setup_new_redir(t_redir *new_redir, t_token **token, t_arena *arena)
+{
 	new_redir->type = (*token)->type;
 	*token = (*token)->next;
-	if (!*token)
+	if (*token)
 	{
 		ft_putstr_fd("syntax error: redirection requires argument\n", 2);
 		return (1);
@@ -48,6 +59,14 @@ int add_redir_to_cmd(t_command *cmd, t_token **token, t_arena *arena)
 		new_redir->filename = arena_strdup(arena, (*token)->value);
 	if (!new_redir->filename)
 		return (1);
+	return (0);
+}
+
+static void	link_new_redir(t_command *cmd, t_redir *new_redir)
+{
+	t_redir	*current_redir;
+
+	current_redir = NULL;
 	if (!cmd->redirs)
 		cmd->redirs = new_redir;
 	else
@@ -55,69 +74,5 @@ int add_redir_to_cmd(t_command *cmd, t_token **token, t_arena *arena)
 		current_redir = cmd->redirs;
 		while (current_redir->next)
 			current_redir = current_redir->next;
-		current_redir->next = new_redir;
 	}
-	*token = (*token)->next;
-	return (0);
-}
-
-static char	*handle_heredoc(const char *delimiter)
-{
-	char	*line;
-	char	*id_str;
-	char	*tmp_filename;
-	int		fd;
-	int		id;
-
-	id = get_heredoc_id();
-	id_str = ft_itoa(id);
-	if (!id_str)
-		return (NULL);
-	size_t	len = 11 + ft_strlen(id_str) + 1;
-	tmp_filename = (char *)malloc(len);
-	if (!tmp_filename)
-	{
-		free(id_str);
-		return (NULL);
-	}
-	ft_strlcpy(tmp_filename, "/tmp/ms_hd_", len);
-	ft_strlcat(tmp_filename, id_str, len);
-	free(id_str);
-	fd = open(tmp_filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-	if (fd == -1)
-	{
-		perror("open heredoc file");
-		free(tmp_filename);
-		return (NULL);
-	}
-	while ((line = readline("> ")))
-	{
-		if (!ft_strcmp(line, delimiter))
-		{
-			free(line);
-			break ;
-		}
-		ft_putstr_fd(line, fd);
-		ft_putstr_fd("\n", fd);
-		free(line);
-	}
-	if (!line)
-		heredoc_warning(delimiter);
-	close(fd);
-	return(tmp_filename);
-}
-
-static int	get_heredoc_id(void)
-{
-	static int	id;
-
-	//id = 0;
-	return (++id);
-}
-
-static void	heredoc_warning(const char *delimiter)
-{
-	ft_putstr_fd("minishell: warning: here-document at line 1 delimited by end-of0-file (wanted '", 2);
-	ft_putstr_fd(delimiter, 2);
-	ft_putstr_fd("')\n", 2);
 }

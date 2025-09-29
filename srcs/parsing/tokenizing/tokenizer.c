@@ -1,8 +1,5 @@
 #include "../../../incls/prototypes.h"
 
-static t_token	*create_new_token(t_arena *arena, const char *cursor, const char *token_end);
-static void		link_token(t_token **head, t_token **last, t_token *new);
-
 t_token	*tokenizer(const char *line, t_arena *arena)
 {
 	t_token		*head;
@@ -36,6 +33,7 @@ const char	*find_token_end(const char *start)
 {
 	const char	*end;
 	char		quote_char;
+	const char	*ret;
 
 	if (*start == '|' || *start == '<' || *start == '>')
 	{
@@ -46,59 +44,32 @@ const char	*find_token_end(const char *start)
 	end = start;
 	while (1)
 	{
-		while (*end && *end != ' ' && *end != '\t' && *end != '|' && *end != '<'
-				&& *end != '>' && *end != '\'' && *end != '"')
+		while (*end && *end!= ' ' && *end != '\t' && *end != '|'
+				&& *end != '<' && *end != '>' && *end != '\''
+				&& *end != '"')
 			end++;
-		if (!*end || *end == ' ' || *end == '\t' || *end == '|' || *end == '<'
-				|| *end == '>')
-			return (end);
-		if (*end == '\'' || *end == '"')
-		{
-			quote_char = *end;
-			end++;
-			while (*end && *end != quote_char)
-				end++;
-			if (!*end)
-				return (NULL);
-			end++;
-			continue ;
-		}
-		break ;
+		ret = check_token_char(&end, &quote_char);
+		if (ret != NULL)
+			return (ret);
 	}
 	return (end);
 }
 
-static t_token	*create_new_token(t_arena *arena, const char *cursor, const char *token_end)
+const char	*check_token_char(const char **end, char *quote_char)
 {
-	t_token	*new;
-
-	new = (t_token *)alloc_arena(arena, sizeof(t_token));
-	if (!new)
+	if (!**end || **end == ' ' || **end == '\t' || **end == '|' || **end == '<'
+		|| **end == '>')
+		return (*end);
+	if (**end == '\'' || **end == '"')
+	{
+		*quote_char = **end;
+		*end = *end + 1;
+		while (**end && **end != *quote_char)
+			*end = *end + 1;
+		if (!**end)
+			return (NULL);
+		*end = *end + 1;
 		return (NULL);
-	new->value = arena_strndup(arena, cursor, token_end - cursor);
-	if (!new->value)
-		return (NULL);
-	new->next = NULL;
-	if (ft_strcmp(new->value, ">>") == 0)
-		new->type = APPEND_TOKEN;
-	else if (ft_strcmp(new->value, "<<") == 0)
-		new->type = HEREDOC_TOKEN;
-	else if (ft_strcmp(new->value, "|") == 0)
-		new->type = PIPE_TOKEN;
-	else if (new->value[0] == '>')
-		new->type = GREAT_TOKEN;
-	else if (new->value[0] == '<')
-		new->type = LESS_TOKEN;
-	else
-		new->type = ARG_TOKEN;
-	return (new);
-}
-
-static void	link_token(t_token **head, t_token **last, t_token *new)
-{
-	if (!*head)
-		*head = new;
-	else
-		(*last)->next = new;
-	*last= new;
+	}
+	return (*end);
 }

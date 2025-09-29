@@ -1,10 +1,7 @@
 #ifndef PROTOTYPES_H
 # define PROTOTYPES_H
 
-//# include "../libft/libft.h"
 # include "execution.h"
-//# include "minishell.h"
-//# include "structures.h"
 
 // Function prototypes in signal.c
 int			init_sigaction(void (*handler)(int));
@@ -35,22 +32,41 @@ char		*arena_strndup(t_arena *arena, const char *s1, size_t n);
 // Function prototypes from tokenizer.c
 t_token		*tokenizer(const char *line, t_arena *arena);
 const char	*find_token_end(const char *start);
+const char	*check_token_char(const char **end, char *quote_char);
+
+// Function prototypes from tokenizer_utils.c
+t_token		*create_new_token(t_arena *arena, const char *cursor, const char *token_end);
+void		link_token(t_token **head, t_token **last, t_token *new_token);
+void		set_token_type(t_token *new_token);
 
 // Function prototypes from commands.c
 t_command	*parse_commands(t_token *token_head, t_arena *arena);
 
 // Function prototypes from command_utils.c
 void		add_arg_to_cmd(t_command *cmd, t_token *token, t_arena *arena);
-int		add_redir_to_cmd(t_command *cmd, t_token **token, t_arena *arena);
+int			add_redir_to_cmd(t_command *cmd, t_token **token, t_arena *arena);
 
-// Function prototypes from env_vars.c
+// Function prototypes from command_heredoc.c
+char		*handle_heredoc(const char *delimiter);
+
+// Function prototypes from env_expand_core.c
 void		expand_commands(t_command *cmd_list, t_arena *arena,
 				int exit_status, t_env *env_list);
+void		copy_char(const char **str, char **expand_str);
 
-// Function prototypes from env_vars_utils.c
-size_t		get_expanded_len(const char *str, int exit_status, t_env *env_list);
-char		*get_variable_value(const char *vr_name, int exit_status,
-				t_arena *arena);
+// Function prototypes form env_expand_vars.c
+void		handle_single_quote(const char **str, char **expand_str);
+void		handle_double_quote(const char **str, char **expand_str, int exit_status, t_env *env_list);
+void		handle_var_expand(const char **str, char **expand_str, int exit_status, t_env *env_list);
+void		copy_value_to_expand(const char *value, char **expand_str);
+void		expand_normal_var(const char **str, char **expand_str, t_env *env_list);
+
+// Function prototypes from env_expand_len.c
+size_t		get_expand_len(const char *str, int exit_status, t_env *env_list);
+
+// Function prototypes from env_var_lookup.c
+char		*get_variable_value(const char *var_name, int exit_status, t_arena *arena);
+int			is_expand_char(char c);
 
 // Function prototypes from error_handling.c
 int			handle_error(t_error_type, const char *arg);
