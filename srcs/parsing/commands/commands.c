@@ -23,8 +23,10 @@ t_command	*parse_commands(t_token *token_head, t_arena *arena)
 		}
 		if (current_token->type == PIPE_TOKEN)
 			current_cmd = NULL;
-		else if (current_token->type == LESS_TOKEN || current_token->type == GREAT_TOKEN
-				|| current_token->type == HEREDOC_TOKEN || current_token->type == APPEND_TOKEN)
+		else if (current_token->type == LESS_TOKEN
+			|| current_token->type == GREAT_TOKEN
+			|| current_token->type == HEREDOC_TOKEN
+			|| current_token->type == APPEND_TOKEN)
 		{
 			if (add_redir_to_cmd(current_cmd, &current_token, arena) != 0)
 			{
@@ -33,8 +35,10 @@ t_command	*parse_commands(t_token *token_head, t_arena *arena)
 			}
 		}
 		else
+		{
 			add_arg_to_cmd(current_cmd, current_token, arena);
-		current_token = current_token->next;
+			current_token = current_token->next;
+		}
 	}
 	if (error_flag)
 		return (NULL);

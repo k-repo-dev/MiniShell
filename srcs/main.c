@@ -32,11 +32,11 @@ static int	run_minishell_loop(t_env **env_list)
 	{
 		ft_memset(&arena, 0, sizeof(t_arena));
 		command_list = NULL;
-		if (isatty(fileno(stdin))) //<<<<<<<<<< minishell tester
+		if (isatty(fileno(stdin))) //<<<<<<<<<< minishell tester // Remove after
 			line = readline("my_prompt> ");
 		if (line == NULL)
 		{
-			// printf("exit\n");
+			// printf("exit\n"); // remove after
 			rl_clear_history();
 			if (command_list)
 				cleanup_redirs(command_list);
