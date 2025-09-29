@@ -1,9 +1,9 @@
 #include "../../../incls/prototypes.h"
 
 static size_t	handle_single_quotes(const char *str, int *i);
-static size_t	handle_env_var(const char *str, int *i, int exit_status);
+static size_t	handle_env_var(const char *str, int *i, int exit_status, t_env *env_list);
 
-size_t	get_expanded_len(const char *str, int exit_status)
+size_t	get_expanded_len(const char *str, int exit_status, t_env *env_list)
 {
 	size_t	len;
 	int		i;
@@ -16,7 +16,7 @@ size_t	get_expanded_len(const char *str, int exit_status)
 			len += handle_single_quotes(str, &i);
 		else if (str[i] == '$' && str[i + 1] && (ft_isalnum(str[i + 1]) 
 				|| str[i + 1] == '?'))
-			len += handle_env_var(str, &i, exit_status);
+			len += handle_env_var(str, &i, exit_status, env_list);
 		else
 		{
 			len++;
@@ -42,7 +42,7 @@ static size_t	handle_single_quotes(const char *str, int *i)
 	return (len);
 }
 
-static size_t	handle_env_var(const char *str, int *i, int exit_status)
+static size_t	handle_env_var(const char *str, int *i, int exit_status, t_env *env_list)
 {
 	size_t	len;
 	int		start;
@@ -56,6 +56,8 @@ static size_t	handle_env_var(const char *str, int *i, int exit_status)
 		value = get_variable_value("?", exit_status, NULL);
 		if (value)
 			len += ft_strlen(value);
+		if (value)
+			free(value);
 		(*i)++;
 	}
 	else
@@ -64,7 +66,7 @@ static size_t	handle_env_var(const char *str, int *i, int exit_status)
 		while (str[*i] && ft_isalnum(str[*i]))
 			(*i)++;
 		ft_strlcpy(var_name, &str[start], (*i) - start + 1);
-		value = get_variable_value(var_name, exit_status, NULL);
+		value = get_env_value(env_list, var_name);
 		if (value)
 			len += ft_strlen(value);
 	}

@@ -1,7 +1,8 @@
 #include "../../../incls/prototypes.h"
 
-static char	*handle_heredoc(const char *delimiter, t_arena *arena);
+static char	*handle_heredoc(const char *delimiter);
 static void	heredoc_warning(const char *delimiter);
+static int	get_heredoc_id(void);
 
 void	add_arg_to_cmd(t_command *cmd, t_token *token, t_arena *arena)
 {
@@ -38,13 +39,15 @@ int add_redir_to_cmd(t_command *cmd, t_token **token, t_arena *arena)
 	*token = (*token)->next;
 	if (!*token)
 	{
-		ft_putstr_fd("syntax error\n", 2);
+		ft_putstr_fd("syntax error: redirection requires argument\n", 2);
 		return (1);
 	}
 	if (new_redir->type == HEREDOC_TOKEN)
-		new_redir->filename = handle_heredoc((*token)->value, arena);
+		new_redir->filename = handle_heredoc((*token)->value);
 	else
 		new_redir->filename = arena_strdup(arena, (*token)->value);
+	if (!new_redir->filename)
+		return (1);
 	if (!cmd->redirs)
 		cmd->redirs = new_redir;
 	else
@@ -54,19 +57,37 @@ int add_redir_to_cmd(t_command *cmd, t_token **token, t_arena *arena)
 			current_redir = current_redir->next;
 		current_redir->next = new_redir;
 	}
+	*token = (*token)->next;
 	return (0);
 }
 
-static char	*handle_heredoc(const char *delimiter, t_arena *arena)
+static char	*handle_heredoc(const char *delimiter)
 {
 	char	*line;
-	int		fd;
+	char	*id_str;
 	char	*tmp_filename;
+	int		fd;
+	int		id;
 
-	if (!(tmp_filename = arena_strdup(arena, "/tmp/heredoc_XXXXXX"))
-			|| (fd = mkstemp(tmp_filename)) == -1)
+	id = get_heredoc_id();
+	id_str = ft_itoa(id);
+	if (!id_str)
+		return (NULL);
+	size_t	len = 11 + ft_strlen(id_str) + 1;
+	tmp_filename = (char *)malloc(len);
+	if (!tmp_filename)
 	{
-		perror("Error: mkstmp");
+		free(id_str);
+		return (NULL);
+	}
+	ft_strlcpy(tmp_filename, "/tmp/ms_hd_", len);
+	ft_strlcat(tmp_filename, id_str, len);
+	free(id_str);
+	fd = open(tmp_filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	if (fd == -1)
+	{
+		perror("open heredoc file");
+		free(tmp_filename);
 		return (NULL);
 	}
 	while ((line = readline("> ")))
@@ -84,6 +105,14 @@ static char	*handle_heredoc(const char *delimiter, t_arena *arena)
 		heredoc_warning(delimiter);
 	close(fd);
 	return(tmp_filename);
+}
+
+static int	get_heredoc_id(void)
+{
+	static int	id;
+
+	//id = 0;
+	return (++id);
 }
 
 static void	heredoc_warning(const char *delimiter)

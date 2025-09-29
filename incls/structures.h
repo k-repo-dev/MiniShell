@@ -56,4 +56,19 @@ typedef struct s_env
 	struct s_env			*next;
 }							t_env;
 
+typedef enum e_error_type
+{
+	E_EMPTY_CMD,
+	E_CMD_NOT_FOUND,
+	E_PERMISSION_DENIED,
+	E_SYNTAX_ERROR,
+	E_CD_OLDPWD_UNSET,
+	E_CD_TOO_MANY_ARGS,
+	E_EXIT_TOO_MANY_ARGS,
+	E_EXIT_NUMERIC_REQUIRED,
+	E_FILE_NOT_FOUND,
+	E_FILE_PERMISSION,
+	E_DUP2_FAIL
+}	t_error_type;
+
 #endif

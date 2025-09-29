@@ -10,8 +10,9 @@
 // void	child(char **args, char **envp);
 // pid_t	fork_wrapper(int pipefd[2]); // currently unused
 void	execve_wrapper(t_command *cmd, t_env **env_list);
+void	free_char_array(char **arr);
 int		parent_loop(t_command *cmd_list, t_env **env_list, int last_status);
-
+void	cleanup_redirs(t_command *cmd_list);
 // Builtins
 int		builtin_echo(t_command *cmd);
 int		handle_builtins(t_command *cmd, t_env **env_list, int last_status);

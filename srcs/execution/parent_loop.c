@@ -1,7 +1,7 @@
 #include "../../incls/prototypes.h"
 
 static int	execute_pipeline(t_command *md_list, t_env **env_list);
-static void	handle_redirs(t_redir *redirs);
+static int	handle_redirs(t_redir *redirs);
 static int	execute_builtins(t_command *cmd_list, t_env **env_list,
 				int last_status);
 static int	is_builtin(const char *cmd);
@@ -11,9 +11,18 @@ static int	is_parent_builtin(const char *cmd);
 int	parent_loop(t_command *cmd_list, t_env **env_list, int last_status)
 {
 	int	exit_status;
-	if (is_parent_builtin(cmd_list->args[0]) && cmd_list->next == NULL)
+	
+	if (cmd_list && cmd_list->args && is_parent_builtin(cmd_list->args[0])
+		&& cmd_list->next == NULL)
 	{
+		exit_status = handle_redirs(cmd_list->redirs);
+		if (exit_status != 0)
+		{
+			cleanup_redirs(cmd_list);
+			return (exit_status);
+		}
 		exit_status = execute_builtins(cmd_list, env_list, last_status);
+		cleanup_redirs(cmd_list);
 		return (exit_status);
 	}
 	else
@@ -26,14 +35,16 @@ int	parent_loop(t_command *cmd_list, t_env **env_list, int last_status)
 
 static int	execute_pipeline(t_command *cmd_list, t_env **env_list)
 {
-	pid_t	*pids;
-	int		pid;
-	int		pipe_fds[2];
-	int		in_fd;
-	int		exit_status;
-	int		num_cmds;
-	int		i;
+	pid_t		*pids;
+	int			pid;
+	int			pipe_fds[2];
+	int			in_fd;
+	int			exit_status;
+	int			num_cmds;
+	int			i;
+	t_command	*cmd_list_head;
 
+	cmd_list_head = cmd_list;
 	i = 0;
 	num_cmds = count_cmds(cmd_list);
 	in_fd = 0;
@@ -55,13 +66,13 @@ static int	execute_pipeline(t_command *cmd_list, t_env **env_list)
 			}
 		}
 		pid = fork();
-				if (pid == -1)
+		if (pid == -1)
 		{
 			perror("fork");
 			free(pids);
 			return (-1);
 		}
-		if (pid == 0)
+		if (pid == 0) //CHILD PROCESS
 		{
 			if (in_fd != 0)
 			{
@@ -74,24 +85,23 @@ static int	execute_pipeline(t_command *cmd_list, t_env **env_list)
 				close(pipe_fds[0]);
 				close(pipe_fds[1]);
 			}
-			handle_redirs(cmd_list->redirs);
+			if (handle_redirs(cmd_list->redirs) != 0)
+				exit(1);
+			if (!cmd_list->args || !cmd_list->args[0])
+				exit(0);
 			if (is_builtin(cmd_list->args[0]))
 			{
 				exit_status = handle_builtins(cmd_list, env_list, 0);
 				exit(exit_status);
 			}
 			execve_wrapper(cmd_list, env_list);
-			perror("minishell");
-			exit(127);
 		}
-		else
+		else //PARENT PROCESS
 		{
 
 			pids[i++] = pid;
 			if (in_fd != 0)
-			{
 				close(in_fd);
-			}
 			if (cmd_list->next)
 			{
 				close(pipe_fds[1]);
@@ -108,6 +118,8 @@ static int	execute_pipeline(t_command *cmd_list, t_env **env_list)
 			waitpid(pids[j], &exit_status, 0);
 		j++;
 	}
+	cleanup_redirs(cmd_list_head);
+	free(pids);
 	return (WEXITSTATUS(exit_status));
 }
 
@@ -124,13 +136,14 @@ static int	count_cmds(t_command *cmd_list)
 	return (count);
 }
 
-static void	handle_redirs(t_redir *redirs)
+static int	handle_redirs(t_redir *redirs)
 {
 	int	fd;
+	int	exit_code;
 
+	exit_code = 0;
 	while (redirs)
 	{
-
 		if (redirs->type == GREAT_TOKEN)
 			fd = open(redirs->filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 		else if (redirs->type == APPEND_TOKEN)
@@ -141,25 +154,27 @@ static void	handle_redirs(t_redir *redirs)
 			fd = open(redirs->filename, O_RDONLY);
 		if (fd == -1)
 		{
-			perror("minishell");
-			exit(1);
+			if (errno == EACCES)
+				exit_code = handle_file_error(redirs->filename, "Permission denied");
+			else
+				exit_code = handle_file_error(redirs->filename, "No such file or directory");
+			return(exit_code);
 		}
-
-
 		if (redirs->type == GREAT_TOKEN || redirs->type == APPEND_TOKEN)
 		{
 
 			if (dup2(fd, STDOUT_FILENO) == -1)
-				exit(1);
+				return(1);
 		}
 		else
 		{
 			if (dup2(fd, STDIN_FILENO) == -1)
-				exit(1);
+				return(1);
 		}
 		close(fd);
 		redirs = redirs->next;
 	}
+	return (0);
 }
 
 static int	execute_builtins(t_command *cmd, t_env **env_list, int last_status)
@@ -187,4 +202,28 @@ static int	is_parent_builtin(const char *cmd)
 		|| ft_strcmp(cmd, "unset") == 0 || ft_strcmp(cmd, "exit") == 0)
 		return (1);
 	return (0);
+}
+
+void	cleanup_redirs(t_command *cmd_list)
+{
+	t_command	*cmd;
+	t_redir		*redir;
+
+	cmd = cmd_list;
+	while (cmd)
+	{
+		redir = cmd->redirs;
+		while (redir)
+		{
+			if (redir->type == HEREDOC_TOKEN)
+			{
+				if (redir->filename)
+					unlink(redir->filename);
+				if (redir->filename)
+					free(redir->filename);
+			}
+			redir = redir->next;
+		}
+		cmd = cmd->next;
+	}
 }
