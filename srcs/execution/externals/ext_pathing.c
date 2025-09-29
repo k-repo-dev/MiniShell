@@ -54,15 +54,11 @@ char	*cmd_path_search(char **paths, char *cmd)
 	{
 		full_path = create_full_path(paths[i], cmd);
 		if (full_path && access(full_path, X_OK) == 0)
-		{
-			// cmd_freeargs(paths);
 			return (full_path);
-		}
 		if (full_path)
 			free(full_path);
 		i++;
 	}
-	// cmd_freeargs(paths);
 	return (NULL);
 }
 
@@ -81,6 +77,8 @@ char	*cmd_check(char *cmd, t_env **env)
 		return (NULL);
 	paths = ft_split(path_env, ':');
 	if (!paths)
-		return (free(result), NULL);
-	return (cmd_path_search(paths, cmd));
+		return (NULL);
+	result = cmd_path_search(paths, cmd);
+	free_char_array(paths);
+	return (result);
 }

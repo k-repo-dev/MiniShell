@@ -1,6 +1,5 @@
 #include "../../../incls/prototypes.h"
 
-static void	free_char_array(char **arr);
 // pid_t	fork_wrapper(int pipefd[2])
 // {
 // 	pid_t	pid;
@@ -38,7 +37,7 @@ void	execve_wrapper(t_command *cmd, t_env **env_list)
 		exit(127);
 }
 
-static void	free_char_array(char **arr)
+void	free_char_array(char **arr)
 {
 	int	i;
 

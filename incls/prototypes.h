@@ -48,7 +48,7 @@ void		expand_commands(t_command *cmd_list, t_arena *arena,
 				int exit_status, t_env *env_list);
 
 // Function prototypes from env_vars_utils.c
-size_t		get_expanded_len(const char *str, int exit_status);
+size_t		get_expanded_len(const char *str, int exit_status, t_env *env_list);
 char		*get_variable_value(const char *vr_name, int exit_status,
 				t_arena *arena);
 

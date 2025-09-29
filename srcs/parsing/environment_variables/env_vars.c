@@ -4,10 +4,9 @@ static char	*copy_expanded_str(const char *str, int exit_status, t_arena *arena,
 				t_env *env_list);
 static void	handle_single_quote(const char **str, char **expand_str);
 static void	handle_var_expand(const char **str, char **expand_str,
-				int exit_status, t_arena *arena, t_env *env_list);
-static void	expand_normal_var(const char **str, char **expand_str,
-				t_arena *arena, t_env *env_list);
-static void	handle_double_quote(const char **str, char **expanded_str, int exit_status, t_arena *arena, t_env *env_list);
+				int exit_status, t_env *env_list);
+static void	expand_normal_var(const char **str, char **expand_str, t_env *env_list);
+static void	handle_double_quote(const char **str, char **expanded_str, int exit_status, t_env *env_list);
 
 void	expand_commands(t_command *cmd_list, t_arena *arena, int exit_status,
 		t_env *env_list)
@@ -29,8 +28,9 @@ void	expand_commands(t_command *cmd_list, t_arena *arena, int exit_status,
 		current_redir = current_cmd->redirs;
 		while (current_redir)
 		{
-			current_redir->filename = copy_expanded_str(current_redir->filename,
-					exit_status, arena, env_list);
+			if (current_redir->type != HEREDOC_TOKEN)
+				current_redir->filename = copy_expanded_str(current_redir->filename,
+						exit_status, arena, env_list);
 			current_redir = current_redir->next;
 		}
 		current_cmd = current_cmd->next;
@@ -43,15 +43,13 @@ static char	*copy_expanded_str(const char *str, int exit_status, t_arena *arena,
 	char		*expand_str;
 	char		*current_expand_pos;
 	const char	*current_str_pos;
-	size_t		len;
-	size_t		final_len;
-	char		*trimmed_str;
+	size_t		pre_calc_len;
 
-	len = ft_strlen(str);
-	expand_str = alloc_arena(arena, (len * 2) + 1);
+	pre_calc_len = get_expanded_len(str, exit_status, env_list);
+	expand_str = alloc_arena(arena, pre_calc_len + 1);
 	if (!expand_str)
 		return (NULL);
-	ft_memset(expand_str, 0, (len * 2) +1);
+	ft_memset(expand_str, 0, pre_calc_len + 1);
 	current_expand_pos = expand_str;
 	current_str_pos = str;
 	while (*current_str_pos)
@@ -59,22 +57,19 @@ static char	*copy_expanded_str(const char *str, int exit_status, t_arena *arena,
 		if (*current_str_pos == '\'')
 			handle_single_quote(&current_str_pos, &current_expand_pos);
 		else if (*current_str_pos == '"')
-			handle_double_quote(&current_str_pos, &current_expand_pos, exit_status, arena, env_list);
+			handle_double_quote(&current_str_pos, &current_expand_pos, exit_status, env_list);
 		else if (*current_str_pos == '$' && *(current_str_pos + 1)
 			&& (ft_isalnum(*(current_str_pos + 1)) || *(current_str_pos
 					+ 1) == '?'))
 			handle_var_expand(&current_str_pos, &current_expand_pos,
-				exit_status, arena, env_list);
+				exit_status, env_list);
 		else
 			*current_expand_pos++ = *current_str_pos++;
 	}
 	*current_expand_pos = '\0';
-	final_len = current_expand_pos - expand_str;
-	trimmed_str = alloc_arena(arena, final_len + 1);
-	if (!trimmed_str)
+	if (current_expand_pos == expand_str)
 		return (NULL);
-	ft_strlcpy(trimmed_str, expand_str, final_len + 1);
-	return (trimmed_str);
+	return (expand_str);
 }
 
 static void	handle_single_quote(const char **str, char **expand_str)
@@ -87,7 +82,7 @@ static void	handle_single_quote(const char **str, char **expand_str)
 }
 
 static void	handle_var_expand(const char **str, char **expand_str,
-		int exit_status, t_arena *arena, t_env *env_list)
+		int exit_status, t_env *env_list)
 {
 	const char	*value;
 	char		*tmp_value;
@@ -103,22 +98,22 @@ static void	handle_var_expand(const char **str, char **expand_str,
 		(*str)++;
 	}
 	else
-		expand_normal_var(str, expand_str, arena, env_list);
+		expand_normal_var(str, expand_str,  env_list);
 }
 
-static void	expand_normal_var(const char **str, char **expand_str,
-		t_arena *arena, t_env *env_list)
+static void	expand_normal_var(const char **str, char **expand_str, t_env *env_list)
 {
 	const char	*value;
 	const char	*start;
-	char		*var_name;
+	char		var_name[256];
 	size_t		len;
 
 	start = *str;
 	while (**str && (ft_isalnum(**str) || **str == '_'))
 		(*str)++;
 	len = *str - start;
-	var_name = alloc_arena(arena, len + 1);
+	if (len >= 256)
+		return ;
 	ft_strlcpy(var_name, start, len + 1);
 	value = get_env_value(env_list, var_name);
 	if (value)
@@ -128,14 +123,14 @@ static void	expand_normal_var(const char **str, char **expand_str,
 	}
 }
 
-static void	handle_double_quote(const char **str, char **expand_str, int exit_status, t_arena *arena, t_env *env_list)
+static void	handle_double_quote(const char **str, char **expand_str, int exit_status, t_env *env_list)
 {
 	(*str)++;
 	while (**str && **str != '"')
 	{
 		if (**str == '$' && *(*str + 1) && (ft_isalnum(*(*str + 1)) || *(*str + 1) == '?'))
 		{
-			handle_var_expand(str, expand_str, exit_status, arena, env_list);
+			handle_var_expand(str, expand_str, exit_status, env_list);
 		}
 		else
 			*(*expand_str)++ = *(*str)++;

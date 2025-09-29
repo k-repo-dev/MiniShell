@@ -12,12 +12,17 @@ int	parent_loop(t_command *cmd_list, t_env **env_list, int last_status)
 {
 	int	exit_status;
 	
-	if (cmd_list && is_parent_builtin(cmd_list->args[0]) && cmd_list->next == NULL)
+	if (cmd_list && cmd_list->args && is_parent_builtin(cmd_list->args[0])
+		&& cmd_list->next == NULL)
 	{
 		exit_status = handle_redirs(cmd_list->redirs);
 		if (exit_status != 0)
+		{
+			cleanup_redirs(cmd_list);
 			return (exit_status);
+		}
 		exit_status = execute_builtins(cmd_list, env_list, last_status);
+		cleanup_redirs(cmd_list);
 		return (exit_status);
 	}
 	else
@@ -30,14 +35,16 @@ int	parent_loop(t_command *cmd_list, t_env **env_list, int last_status)
 
 static int	execute_pipeline(t_command *cmd_list, t_env **env_list)
 {
-	pid_t	*pids;
-	int		pid;
-	int		pipe_fds[2];
-	int		in_fd;
-	int		exit_status;
-	int		num_cmds;
-	int		i;
+	pid_t		*pids;
+	int			pid;
+	int			pipe_fds[2];
+	int			in_fd;
+	int			exit_status;
+	int			num_cmds;
+	int			i;
+	t_command	*cmd_list_head;
 
+	cmd_list_head = cmd_list;
 	i = 0;
 	num_cmds = count_cmds(cmd_list);
 	in_fd = 0;
@@ -65,7 +72,7 @@ static int	execute_pipeline(t_command *cmd_list, t_env **env_list)
 			free(pids);
 			return (-1);
 		}
-		if (pid == 0)
+		if (pid == 0) //CHILD PROCESS
 		{
 			if (in_fd != 0)
 			{
@@ -89,7 +96,7 @@ static int	execute_pipeline(t_command *cmd_list, t_env **env_list)
 			}
 			execve_wrapper(cmd_list, env_list);
 		}
-		else
+		else //PARENT PROCESS
 		{
 
 			pids[i++] = pid;
@@ -111,6 +118,7 @@ static int	execute_pipeline(t_command *cmd_list, t_env **env_list)
 			waitpid(pids[j], &exit_status, 0);
 		j++;
 	}
+	cleanup_redirs(cmd_list_head);
 	free(pids);
 	return (WEXITSTATUS(exit_status));
 }
@@ -194,4 +202,28 @@ static int	is_parent_builtin(const char *cmd)
 		|| ft_strcmp(cmd, "unset") == 0 || ft_strcmp(cmd, "exit") == 0)
 		return (1);
 	return (0);
+}
+
+void	cleanup_redirs(t_command *cmd_list)
+{
+	t_command	*cmd;
+	t_redir		*redir;
+
+	cmd = cmd_list;
+	while (cmd)
+	{
+		redir = cmd->redirs;
+		while (redir)
+		{
+			if (redir->type == HEREDOC_TOKEN)
+			{
+				if (redir->filename)
+					unlink(redir->filename);
+				if (redir->filename)
+					free(redir->filename);
+			}
+			redir = redir->next;
+		}
+		cmd = cmd->next;
+	}
 }

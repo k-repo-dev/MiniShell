@@ -39,13 +39,15 @@ int add_redir_to_cmd(t_command *cmd, t_token **token, t_arena *arena)
 	*token = (*token)->next;
 	if (!*token)
 	{
-		ft_putstr_fd("syntax error\n", 2);
+		ft_putstr_fd("syntax error: redirection requires argument\n", 2);
 		return (1);
 	}
 	if (new_redir->type == HEREDOC_TOKEN)
 		new_redir->filename = handle_heredoc((*token)->value);
 	else
 		new_redir->filename = arena_strdup(arena, (*token)->value);
+	if (!new_redir->filename)
+		return (1);
 	if (!cmd->redirs)
 		cmd->redirs = new_redir;
 	else
@@ -55,6 +57,7 @@ int add_redir_to_cmd(t_command *cmd, t_token **token, t_arena *arena)
 			current_redir = current_redir->next;
 		current_redir->next = new_redir;
 	}
+	*token = (*token)->next;
 	return (0);
 }
 
@@ -94,8 +97,8 @@ static char	*handle_heredoc(const char *delimiter)
 			free(line);
 			break ;
 		}
-		ft_putstr_fd(line, 2);
-		ft_putstr_fd("\n", 2);
+		ft_putstr_fd(line, fd);
+		ft_putstr_fd("\n", fd);
 		free(line);
 	}
 	if (!line)
@@ -108,7 +111,7 @@ static int	get_heredoc_id(void)
 {
 	static int	id;
 
-	id = 0;
+	//id = 0;
 	return (++id);
 }
 
