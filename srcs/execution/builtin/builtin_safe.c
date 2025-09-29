@@ -2,7 +2,6 @@
 
 static void	print_exported_env(t_env *env_list);
 
-// Child safe
 int	builtin_echo(t_command *cmd)
 {
 	int	i;
