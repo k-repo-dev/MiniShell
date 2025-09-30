@@ -7,16 +7,20 @@
 int			init_sigaction(void (*handler)(int));
 void		handle_sigint(int sig);
 
-// Function Prototypes from env_list.c
-t_env		*init_env_list(char **envp);
+// Function Prototypes from env_cleanup.c
 void		free_env_list(t_env *head);
 
-// Function prototypes from env_utils.c
-void		add_env_node(t_env **env_list, const char *key, const char *value);
-void		remove_env_node(t_env **head, const char *key);
+// Function prototypes from env_conversion.c
 char		**env_list_to_array(t_env *head);
+
+// Function prototypes from env_init.c
+t_env		*init_env_list(char **envp);
+
+// Function prototypes from env_manipulation.c
+void		add_env_node(t_env **env_list, const char *key, const char *value);
+t_env		*find_env_node(t_env *env_list, const char *key);
+void		remove_env_node(t_env **head, const char *key);
 char		*get_env_value(t_env *env_list, const char *key);
-t_env	*find_env_node(t_env *env_list, const char *key);
 
 // Function prototypes from memory_arena.c
 void		*alloc_arena(t_arena *arena, size_t size);
