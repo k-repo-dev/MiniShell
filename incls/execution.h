@@ -6,34 +6,32 @@
 # include "structures.h"
 
 // Execution
-// void	parent_loop(t_command **command_list, char **envp);
-// void	child(char **args, char **envp);
-// pid_t	fork_wrapper(int pipefd[2]); // currently unused
 void	execve_wrapper(t_command *cmd, t_env **env_list);
-void	free_char_array(char **arr);
 int		parent_loop(t_command *cmd_list, t_env **env_list, int last_status);
-void	cleanup_redirs(t_command *cmd_list);
-// Builtins
-int		builtin_echo(t_command *cmd);
+
+// Processes
+// void	child_proc(t_command *cmd, t_env **env, int in_fd, int *pipe_fds);
+
+// builing Utils
 int		handle_builtins(t_command *cmd, t_env **env_list, int last_status);
+void	cleanup_redirs(t_command *cmd_list);
+void	free_char_array(char **arr);
+// int		pipeline_fork(t_command *cmd, t_env **env,
+//			t_pipe_state *pipe_state);
+
+// Builtins Parent
 int		ft_export(t_command *cmd, t_env **env_list);
 int		ft_unset(t_command *cmd, t_env **env_list);
+int		ft_cd(t_command *cmd, t_env **env_list);
+
+// Builtins Safe to run in child
+int		builtin_echo(t_command *cmd);
 int		ft_pwd(void);
 int		ft_env(t_env *env_list);
-int		ft_cd(t_command *cmd, t_env **env_list);
 int		ft_exit(t_command *cmd, int last_status);
+
+// Builtin helpers
 int		is_numeric(const char *str);
-
-// int		builtin_pwd(void);
-// int		builtin_env(char **envp);
-// int		builtin_cd(t_command *cmd);
-// int		builtin_export(t_command *cmd, char **envp);
-// int		builtin_unset(t_command *cmd, char **envp);
-// bool	is_builtin(const char *cmd);
-// void	exec_builtin(t_command **args, char **envp);
-
-// Executables
-// char	*is_executable(char *cmd, char **envp);
 
 // Pathing
 char	*check_absolute_path(const char *cmd);
@@ -41,8 +39,5 @@ char	*cmd_findpath(t_env *env);
 char	*create_full_path(char *directory, char *cmd);
 char	*cmd_path_search(char **paths, char *cmd);
 char	*cmd_check(char *cmd, t_env **env);
-
-// test functions << delete after
-// void	test_print(t_command **command_list);
 
 #endif

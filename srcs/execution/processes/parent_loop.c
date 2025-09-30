@@ -1,4 +1,4 @@
-#include "../../incls/prototypes.h"
+#include "../../../incls/prototypes.h"
 
 static int	execute_pipeline(t_command *md_list, t_env **env_list);
 static int	handle_redirs(t_redir *redirs);
@@ -11,7 +11,7 @@ static int	is_parent_builtin(const char *cmd);
 int	parent_loop(t_command *cmd_list, t_env **env_list, int last_status)
 {
 	int	exit_status;
-	
+
 	if (cmd_list && cmd_list->args && is_parent_builtin(cmd_list->args[0])
 		&& cmd_list->next == NULL)
 	{
@@ -30,97 +30,96 @@ int	parent_loop(t_command *cmd_list, t_env **env_list, int last_status)
 		exit_status = execute_pipeline(cmd_list, env_list);
 		return (exit_status);
 	}
+}
+
+static void	child_proc(t_command *cmd, t_env **env, int in_fd, int *pipe_fds)
+{
+	int	exit_status;
+
+	if (in_fd != 0)
+	{
+		dup2(in_fd, STDIN_FILENO);
+		close(in_fd);
+	}
+	if (cmd->next)
+	{
+		dup2(pipe_fds[1], STDOUT_FILENO);
+		close(pipe_fds[0]);
+		close(pipe_fds[1]);
+	}
+	handle_redirs(cmd->redirs);
+	if (cmd->args && cmd->args[0] && is_builtin(cmd->args[0]))
+	{
+		exit_status = handle_builtins(cmd, env, 0);
+		exit(exit_status);
+	}
+	execve_wrapper(cmd, env);
+	perror("minishell");
+	exit(127);
+}
+
+static int	pipeline_fork(t_command *cmd, t_env **env, t_pipe_state *pipe_state)
+{
+	if (cmd->next && pipe(pipe_state->pipe_fds) == -1)
+		return (perror("pipe"), -1);
+	*(pipe_state->pid) = fork();
+	if (*(pipe_state->pid) == -1)
+		return (perror("fork"), -1);
+	if (*(pipe_state->pid) == 0)
+		child_proc(cmd, env, pipe_state->in_fd, pipe_state->pipe_fds);
+	if (pipe_state->in_fd != 0)
+		close(pipe_state->in_fd);
+	if (cmd->next)
+	{
+		close(pipe_state->pipe_fds[1]);
+		pipe_state->in_fd = pipe_state->pipe_fds[0];
+	}
 	return (0);
 }
 
-static int	execute_pipeline(t_command *cmd_list, t_env **env_list)
+static int	wait_all(pid_t *pids, int num)
 {
-	pid_t		*pids;
-	int			pid;
-	int			pipe_fds[2];
-	int			in_fd;
-	int			exit_status;
-	int			num_cmds;
-	int			i;
-	t_command	*cmd_list_head;
+	int	status;
+	int	i;
 
-	cmd_list_head = cmd_list;
 	i = 0;
-	num_cmds = count_cmds(cmd_list);
-	in_fd = 0;
-	pids = malloc(sizeof(pid_t) * num_cmds);
-	if (!pids)
+	while (i < num)
 	{
-		perror("malloc");
-		return (-1);
+		waitpid(pids[i], &status, 0);
+		i++;
 	}
-	while (cmd_list)
-	{
-		if (cmd_list->next)
-		{
-			if (pipe(pipe_fds) == -1)
-			{
-				perror("pipe");
-				free(pids);
-				return (-1);
-			}
-		}
-		pid = fork();
-		if (pid == -1)
-		{
-			perror("fork");
-			free(pids);
-			return (-1);
-		}
-		if (pid == 0) //CHILD PROCESS
-		{
-			if (in_fd != 0)
-			{
-				dup2(in_fd, STDIN_FILENO);
-				close(in_fd);
-			}
-			if (cmd_list->next)
-			{
-				dup2(pipe_fds[1], STDOUT_FILENO);
-				close(pipe_fds[0]);
-				close(pipe_fds[1]);
-			}
-			if (handle_redirs(cmd_list->redirs) != 0)
-				exit(1);
-			if (!cmd_list->args || !cmd_list->args[0])
-				exit(0);
-			if (is_builtin(cmd_list->args[0]))
-			{
-				exit_status = handle_builtins(cmd_list, env_list, 0);
-				exit(exit_status);
-			}
-			execve_wrapper(cmd_list, env_list);
-		}
-		else //PARENT PROCESS
-		{
+	return (WEXITSTATUS(status));
+}
 
-			pids[i++] = pid;
-			if (in_fd != 0)
-				close(in_fd);
-			if (cmd_list->next)
-			{
-				close(pipe_fds[1]);
-				in_fd = pipe_fds[0];
-			}
-		}
-		cmd_list = cmd_list->next;
-	}
-	if (in_fd != 0)
-		close(in_fd);
-	int j = 0;
-	while (j < num_cmds)
+static int	execute_pipeline(t_command *cmd, t_env **env)
+{
+	pid_t			*pids;
+	t_pipe_state	pipe_state;
+	int				num;
+	int				i;
+	t_command		*cmd_list_head;
+
+	cmd_list_head = cmd;
+	num = count_cmds(cmd);
+	pids = malloc(sizeof(pid_t) * num);
+	if (!pids)
+		return (perror("malloc"), -1);
+	pipe_state.in_fd = 0;
+	i = 0;
+	while (cmd)
 	{
-			waitpid(pids[j], &exit_status, 0);
-		j++;
+		pipe_state.pid = &pids[i];
+		if (pipeline_fork(cmd, env, &pipe_state) == -1)
+			return (free(pids), -1);
+		cmd = cmd->next;
+		i++;
 	}
+	if (pipe_state.in_fd != 0)
+		close(pipe_state.in_fd);
+	i = wait_all(pids, num);
 	cleanup_redirs(cmd_list_head);
 	free(pids);
-	return (WEXITSTATUS(exit_status));
+	return (i);
 }
 
 static int	count_cmds(t_command *cmd_list)
@@ -155,21 +154,22 @@ static int	handle_redirs(t_redir *redirs)
 		if (fd == -1)
 		{
 			if (errno == EACCES)
-				exit_code = handle_file_error(redirs->filename, "Permission denied");
+				exit_code = handle_file_error(redirs->filename,
+						"Permission denied");
 			else
-				exit_code = handle_file_error(redirs->filename, "No such file or directory");
-			return(exit_code);
+				exit_code = handle_file_error(redirs->filename,
+						"No such file or directory");
+			return (exit_code);
 		}
 		if (redirs->type == GREAT_TOKEN || redirs->type == APPEND_TOKEN)
 		{
-
 			if (dup2(fd, STDOUT_FILENO) == -1)
-				return(1);
+				return (1);
 		}
 		else
 		{
 			if (dup2(fd, STDIN_FILENO) == -1)
-				return(1);
+				return (1);
 		}
 		close(fd);
 		redirs = redirs->next;

@@ -32,10 +32,11 @@ static int	run_minishell_loop(t_env **env_list)
 	{
 		ft_memset(&arena, 0, sizeof(t_arena));
 		command_list = NULL;
-		line = readline("my_prompt> ");
+		if (isatty(fileno(stdin))) //<<<<<<<<<< minishell tester // Remove after
+			line = readline("my_prompt> ");
 		if (line == NULL)
 		{
-			printf("exit\n");
+			// printf("exit\n"); // remove after
 			rl_clear_history();
 			if (command_list)
 				cleanup_redirs(command_list);
@@ -74,7 +75,8 @@ static int	run_minishell_loop(t_env **env_list)
 				final_exit_code = 2;
 			else
 			{
-				if (command_list && command_list->args && command_list->args[1] && is_numeric(command_list->args[1]))
+				if (command_list && command_list->args && command_list->args[1]
+					&& is_numeric(command_list->args[1]))
 					final_exit_code = (int)ft_atoi(command_list->args[1]);
 				else
 					final_exit_code = exit_status;

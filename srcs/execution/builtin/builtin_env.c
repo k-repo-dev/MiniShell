@@ -1,6 +1,5 @@
 #include "../../../incls/prototypes.h"
 
-// Parent only
 int	builtin_cd(t_command *cmd)
 {
 	const char	*target_dir;

@@ -1,19 +1,4 @@
-#include "../../incls/prototypes.h"
-
-// pid_t	fork_wrapper(int pipefd[2])
-// {
-// 	pid_t	pid;
-
-// 	pid = fork();
-// 	if (pid < 0)
-// 	{
-// 		close(pipefd[0]);
-// 		close(pipefd[1]);
-// 		perror("fork");
-// 		exit(1);
-// 	}
-// 	return (pid);
-// }
+#include "../../../incls/prototypes.h"
 
 void	execve_wrapper(t_command *cmd, t_env **env_list)
 {
