@@ -33,8 +33,10 @@ int		ft_exit(t_command *cmd, int last_status);
 // Builtin helpers
 int		is_numeric(const char *str);
 void	print_exported_env(t_env *env_list);
-void	print_exported_env(t_env *env_list);
 int		count_cmds(t_command *cmd_list);
+t_env	**stack_to_array(t_env *env_list, int size);
+void	bubble_sort(t_env **array, int size);
+int		ft_listsize(t_env *list);
 
 // Pipes & Redirections
 int		execute_pipeline(t_command *md_list, t_env **env_list);

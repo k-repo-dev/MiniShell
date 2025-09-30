@@ -44,17 +44,86 @@ int	ft_export(t_command *cmd, t_env **env_list)
 
 void	print_exported_env(t_env *env_list)
 {
-	t_env	*current;
+	int		size;
+	t_env	**array;
+	int		i;
 
-	current = env_list;
-	while (current)
+	i = 0;
+	size = ft_listsize(env_list);
+	if (size == 0)
+		return ;
+	array = stack_to_array(env_list, size);
+	if (!array)
+		return ;
+	bubble_sort(array, size);
+	while (i < size)
 	{
-		printf("declare -x %s", current->key);
-		if (current->value)
-			printf("=\"%s\"", current->value);
+		printf("declare -x %s", array[i]->key);
+		if (array[i]->value)
+			printf("=\"%s\"", array[i]->value);
 		printf("\n");
-		current = current->next;
+		i++;
+	}
+	free(array);
+}
+
+t_env	**stack_to_array(t_env *env_list, int size)
+{
+	t_env	**array;
+	int		i;
+
+	i = 0;
+	array = malloc(sizeof(t_env *) * size);
+	if (!array)
+		return (NULL);
+	while (i < size)
+	{
+		array[i] = env_list;
+		env_list = env_list->next;
+		i++;
+	}
+	return (array);
+}
+
+void	bubble_sort(t_env **array, int size)
+{
+	int		i;
+	int		j;
+	t_env	*temp;
+
+	i = 0;
+	while (i < size - 1)
+	{
+		j = 0;
+		while (j < size - i - 1)
+		{
+			if (strcmp(array[j]->key, array[j + 1]->key) > 0)
+			{
+				temp = array[j];
+				array[j] = array[j + 1];
+				array[j + 1] = temp;
+			}
+			j++;
+		}
+		i++;
 	}
 }
 
-void	export_sort(void);
+int	ft_listsize(t_env *list)
+{
+	int	count;
+
+	count = 0;
+	while (list)
+	{
+		count++;
+		list = list->next;
+	}
+	return (count);
+}
+
+/*
+put env_list nodes into an array
+sort array
+and then print array
+*/
