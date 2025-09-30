@@ -67,24 +67,6 @@ void	print_exported_env(t_env *env_list)
 	free(array);
 }
 
-t_env	**stack_to_array(t_env *env_list, int size)
-{
-	t_env	**array;
-	int		i;
-
-	i = 0;
-	array = malloc(sizeof(t_env *) * size);
-	if (!array)
-		return (NULL);
-	while (i < size)
-	{
-		array[i] = env_list;
-		env_list = env_list->next;
-		i++;
-	}
-	return (array);
-}
-
 void	bubble_sort(t_env **array, int size)
 {
 	int		i;
@@ -108,22 +90,3 @@ void	bubble_sort(t_env **array, int size)
 		i++;
 	}
 }
-
-int	ft_listsize(t_env *list)
-{
-	int	count;
-
-	count = 0;
-	while (list)
-	{
-		count++;
-		list = list->next;
-	}
-	return (count);
-}
-
-/*
-put env_list nodes into an array
-sort array
-and then print array
-*/
