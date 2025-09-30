@@ -56,3 +56,5 @@ void	print_exported_env(t_env *env_list)
 		current = current->next;
 	}
 }
+
+void	export_sort(void);

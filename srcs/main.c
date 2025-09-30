@@ -34,6 +34,12 @@ static int	run_minishell_loop(t_env **env_list)
 		command_list = NULL;
 		if (isatty(fileno(stdin))) //<<<<<<<<<< minishell tester // Remove after
 			line = readline("my_prompt> ");
+		else
+		{
+			line = get_next_line(fileno(stdin));
+			line = ft_strtrim(line, "\n");
+			free(line);
+		}
 		if (line == NULL)
 		{
 			// printf("exit\n"); // remove after
