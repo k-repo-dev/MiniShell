@@ -32,6 +32,8 @@ int		ft_exit(t_command *cmd, int last_status);
 
 // Builtin helpers
 int		is_numeric(const char *str);
+void	print_exported_env(t_env *env_list);
+void	print_exported_env(t_env *env_list);
 
 // Pathing
 char	*check_absolute_path(const char *cmd);
