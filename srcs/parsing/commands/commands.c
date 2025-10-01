@@ -19,7 +19,10 @@ t_command	*parse_commands(t_token *token_head, t_arena *arena)
 		{
 			current_cmd = create_and_link_cmd(&cmd_head, arena);
 			if (!current_cmd)
+			{
+				printf("we here? \n");
 				return (NULL);
+			}
 		}
 		if (current_token->type == PIPE_TOKEN)
 			current_cmd = NULL;
@@ -41,7 +44,9 @@ t_command	*parse_commands(t_token *token_head, t_arena *arena)
 		}
 	}
 	if (error_flag)
+	{
 		return (NULL);
+	}
 	return (cmd_head);
 }
 
@@ -50,6 +55,7 @@ static t_command	*create_and_link_cmd(t_command **cmd_head, t_arena *arena)
 	t_command	*new_cmd;
 	t_command	*last_cmd;
 
+	printf("we here too? \n");
 	new_cmd = alloc_arena(arena, sizeof(t_command));
 	if (!new_cmd)
 		return (NULL);
@@ -61,10 +67,12 @@ static t_command	*create_and_link_cmd(t_command **cmd_head, t_arena *arena)
 		*cmd_head = new_cmd;
 	else
 	{
+		printf("what about here? \n");
 		last_cmd = *cmd_head;
 		while (last_cmd->next)
 			last_cmd = last_cmd->next;
 		last_cmd->next = new_cmd;
 	}
+	printf("I guess here too? \n");
 	return (new_cmd);
 }

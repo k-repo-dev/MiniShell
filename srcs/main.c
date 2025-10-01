@@ -62,6 +62,7 @@ static int	run_minishell_loop(t_env **env_list)
 		token_list = tokenizer(line, &arena);
 		if (token_list == NULL)
 		{
+			printf("here1\n");
 			exit_status = handle_error(E_SYNTAX_ERROR, NULL);
 			free(line);
 			continue ;
@@ -69,6 +70,7 @@ static int	run_minishell_loop(t_env **env_list)
 		command_list = parse_commands(token_list, &arena);
 		if (command_list == NULL)
 		{
+			printf("exiting here2\n");
 			exit_status = handle_error(E_SYNTAX_ERROR, NULL);
 			free(line);
 			continue ;
@@ -94,6 +96,7 @@ static int	run_minishell_loop(t_env **env_list)
 			*env_list = NULL;
 			return (final_exit_code);
 		}
+		printf("here3\n");
 		free(line);
 		free_arena(&arena);
 	}
