@@ -19,7 +19,6 @@ int	parent_loop(t_command *cmd_list, t_env **env_list, int last_status)
 	}
 	else
 	{
-		printf("pipeline pls\n");
 		exit_status = execute_pipeline(cmd_list, env_list);
 		return (exit_status);
 	}
