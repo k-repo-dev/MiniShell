@@ -16,12 +16,12 @@ int	main(int ac, char *av[], char **envp)
 	if (init_sigaction(handle_sigint) == -1)
 		return (1);
 	env_list = init_env_list(envp);
-	printf("init_env_list done\n");
+	// printf("init_env_list done\n");
 	exit_code = run_minishell_loop(&env_list);
-	printf("run_minishell_loop done, now freeing the env_list\n");
+	// printf("run_minishell_loop done, now freeing the env_list\n");
 	if (env_list)
 		free_env_list(env_list);
-	printf("bye-bye\n");
+	// printf("bye-bye\n");
 	return (exit_code);
 }
 
@@ -36,7 +36,6 @@ static int	run_minishell_loop(t_env **env_list)
 		final_exit_code = process_input(env_list, &exit_status);
 		if (final_exit_code != -1)
 			return (final_exit_code);
-		printf("process_input run correctly\n");
 	}
 }
 

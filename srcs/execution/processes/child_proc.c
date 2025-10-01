@@ -4,7 +4,6 @@ void	child_proc(t_command *cmd, t_env **env, int in_fd, int *pipe_fds)
 {
 	int	exit_status;
 
-	printf("inside child\n");
 	if (in_fd != 0)
 	{
 		dup2(in_fd, STDIN_FILENO);

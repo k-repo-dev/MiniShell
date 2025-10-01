@@ -8,7 +8,6 @@ int	execute_pipeline(t_command *cmd, t_env **env)
 	int				i;
 	t_command		*cmd_list_head;
 
-	printf("before pipeline cmd\n");
 	cmd_list_head = cmd;
 	num = count_cmds(cmd);
 	pids = malloc(sizeof(pid_t) * num);
@@ -18,7 +17,6 @@ int	execute_pipeline(t_command *cmd, t_env **env)
 	i = 0;
 	while (cmd)
 	{
-		printf("inside pipeline cmd\n");
 		pipe_state.pid = &pids[i];
 		if (pipeline_fork(cmd, env, &pipe_state) == -1)
 			return (free(pids), -1);

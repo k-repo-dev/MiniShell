@@ -4,7 +4,6 @@ int	parent_loop(t_command *cmd_list, t_env **env_list, int last_status)
 {
 	int	exit_status;
 
-	printf("pre pipe\n");
 	if (cmd_list && cmd_list->args && is_parent_builtin(cmd_list->args[0])
 		&& cmd_list->next == NULL)
 	{
