@@ -26,7 +26,7 @@ void	add_arg_to_cmd(t_command *cmd, t_token *token, t_arena *arena)
 	cmd->args = new_args;
 }
 
-int add_redir_to_cmd(t_command *cmd, t_token **token, t_arena *arena)
+int	add_redir_to_cmd(t_command *cmd, t_token **token, t_arena *arena)
 {
 	t_redir	*new_redir;
 	t_redir	*current_redir;
@@ -36,16 +36,15 @@ int add_redir_to_cmd(t_command *cmd, t_token **token, t_arena *arena)
 		return (1);
 	ft_memset(new_redir, 0, sizeof(t_redir));
 	new_redir->type = (*token)->type;
-	*token = (*token)->next;
 	if (!*token)
 	{
 		ft_putstr_fd("syntax error: redirection requires argument\n", 2);
 		return (1);
 	}
 	if (new_redir->type == HEREDOC_TOKEN)
-		new_redir->filename = handle_heredoc((*token)->value);
+		new_redir->filename = handle_heredoc((*token)->next->value);
 	else
-		new_redir->filename = arena_strdup(arena, (*token)->value);
+		new_redir->filename = arena_strdup(arena, (*token)->next->value);
 	if (!new_redir->filename)
 		return (1);
 	if (!cmd->redirs)
@@ -68,12 +67,13 @@ static char	*handle_heredoc(const char *delimiter)
 	char	*tmp_filename;
 	int		fd;
 	int		id;
+	size_t	len;
 
 	id = get_heredoc_id();
 	id_str = ft_itoa(id);
 	if (!id_str)
 		return (NULL);
-	size_t	len = 11 + ft_strlen(id_str) + 1;
+	len = 11 + ft_strlen(id_str) + 1;
 	tmp_filename = (char *)malloc(len);
 	if (!tmp_filename)
 	{
@@ -104,20 +104,21 @@ static char	*handle_heredoc(const char *delimiter)
 	if (!line)
 		heredoc_warning(delimiter);
 	close(fd);
-	return(tmp_filename);
+	return (tmp_filename);
 }
 
 static int	get_heredoc_id(void)
 {
 	static int	id;
 
-	//id = 0;
+	// id = 0;
 	return (++id);
 }
 
 static void	heredoc_warning(const char *delimiter)
 {
-	ft_putstr_fd("minishell: warning: here-document at line 1 delimited by end-of0-file (wanted '", 2);
+	ft_putstr_fd("minishell: warning: here-document at line 1 delimited by end-of0-file (wanted '",
+		2);
 	ft_putstr_fd(delimiter, 2);
 	ft_putstr_fd("')\n", 2);
 }

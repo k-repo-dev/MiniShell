@@ -72,20 +72,26 @@ static int	execute_line_logic(t_env **env_list, char **line, int *exit_status)
 	t_command	*cmd_list;
 	int			command_status;
 	int			final_exit_code_signal;
+	int			error_status;
 
 	ft_memset(&arena, 0, sizeof(t_arena));
 	init_arena(&arena, (ft_strlen(*line) * 2) + 4096);
 	token_list = tokenizer(*line, &arena);
 	if (token_list == NULL)
 	{
+		printf("did we go here1\n");
+		error_status = handle_error(E_SYNTAX_ERROR, NULL);
+		*exit_status = error_status;
 		free_arena(&arena);
-		return (handle_error(E_SYNTAX_ERROR, NULL));
+		return (-1);
 	}
 	cmd_list = parse_commands(token_list, &arena);
 	if (cmd_list == NULL)
 	{
+		error_status = handle_error(E_SYNTAX_ERROR, NULL);
+		*exit_status = error_status;
 		free_arena(&arena);
-		return (handle_error(E_SYNTAX_ERROR, NULL));
+		return (-1);
 	}
 	expand_commands(cmd_list, &arena, *exit_status, *env_list);
 	command_status = parent_loop(cmd_list, env_list, *exit_status);

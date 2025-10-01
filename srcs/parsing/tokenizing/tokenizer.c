@@ -1,6 +1,7 @@
 #include "../../../incls/prototypes.h"
 
-static t_token	*create_new_token(t_arena *arena, const char *cursor, const char *token_end);
+static t_token	*create_new_token(t_arena *arena, const char *cursor,
+					const char *token_end);
 static void		link_token(t_token **head, t_token **last, t_token *new);
 
 t_token	*tokenizer(const char *line, t_arena *arena)
@@ -47,10 +48,10 @@ const char	*find_token_end(const char *start)
 	while (1)
 	{
 		while (*end && *end != ' ' && *end != '\t' && *end != '|' && *end != '<'
-				&& *end != '>' && *end != '\'' && *end != '"')
+			&& *end != '>' && *end != '\'' && *end != '"')
 			end++;
 		if (!*end || *end == ' ' || *end == '\t' || *end == '|' || *end == '<'
-				|| *end == '>')
+			|| *end == '>')
 			return (end);
 		if (*end == '\'' || *end == '"')
 		{
@@ -68,7 +69,8 @@ const char	*find_token_end(const char *start)
 	return (end);
 }
 
-static t_token	*create_new_token(t_arena *arena, const char *cursor, const char *token_end)
+static t_token	*create_new_token(t_arena *arena, const char *cursor,
+		const char *token_end)
 {
 	t_token	*new;
 
@@ -100,5 +102,5 @@ static void	link_token(t_token **head, t_token **last, t_token *new)
 		*head = new;
 	else
 		(*last)->next = new;
-	*last= new;
+	*last = new;
 }

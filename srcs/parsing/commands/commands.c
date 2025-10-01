@@ -60,7 +60,6 @@ static int	redir_handler(t_command *cmd, t_token **token, t_arena *arena)
 {
 	if (!(*token)->next)
 		return (handle_error(E_SYNTAX_ERROR, "missing filename"));
-	*token = (*token)->next;
 	if (add_redir_to_cmd(cmd, token, arena) != 0)
 		return (1);
 	return (0);

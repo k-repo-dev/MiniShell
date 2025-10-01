@@ -9,6 +9,7 @@ tmp_out_minishell/
 
 # Tester folder
 42_minishell_tester/
+minishell_tester/
 
 # Output file
 txt1.txt

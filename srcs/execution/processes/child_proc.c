@@ -15,7 +15,9 @@ void	child_proc(t_command *cmd, t_env **env, int in_fd, int *pipe_fds)
 		close(pipe_fds[0]);
 		close(pipe_fds[1]);
 	}
-	handle_redirs(cmd->redirs);
+	exit_status = handle_redirs(cmd->redirs);
+	if (exit_status != 0)
+		exit(exit_status);
 	if (cmd->args && cmd->args[0] && is_builtin(cmd->args[0]))
 	{
 		exit_status = handle_builtins(cmd, env, 0);
