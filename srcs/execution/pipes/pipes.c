@@ -17,9 +17,18 @@ int	execute_pipeline(t_command *cmd, t_env **env)
 	i = 0;
 	while (cmd)
 	{
+		//testing stuff
+		if (pipe_state.in_fd != 0) // part of it
+			close(pipe_state.in_fd); // part of it
 		pipe_state.pid = &pids[i];
 		if (pipeline_fork(cmd, env, &pipe_state) == -1)
 			return (free(pids), -1);
+		if (cmd->next) // part of it
+			close(pipe_state.pipe_fds[1]); // part of it
+		if (cmd->next) // also
+			pipe_state.in_fd = pipe_state.pipe_fds[0]; // also
+		else // also
+			pipe_state.in_fd = 0; // also
 		cmd = cmd->next;
 		i++;
 	}

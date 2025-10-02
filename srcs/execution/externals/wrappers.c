@@ -4,7 +4,7 @@ void	execve_wrapper(t_command *cmd, t_env **env_list)
 {
 	char	*cmd_path;
 	char	**envp;
-	int		exit_code;// part of test
+	int		exit_code;
 
 	envp = env_list_to_array(*env_list);
 	if (!envp)
@@ -12,20 +12,15 @@ void	execve_wrapper(t_command *cmd, t_env **env_list)
 	cmd_path = cmd_check(cmd->args[0], env_list);
 	if (!cmd_path)
 	{
-		// testing solution
-		exit_code = handle_error(E_CMD_NOT_FOUND, cmd->args[0]); // part of test
+		exit_code = handle_error(E_CMD_NOT_FOUND, cmd->args[0]);
 		free_char_array(envp);
-		//exit(127);
-		exit(exit_code); //part of test
+		exit(exit_code);
 	}
 	execve(cmd_path, cmd->args, envp);
-	//free_char_array(envp);
 	if (errno == EACCES)
-		exit_code = handle_error(E_PERMISSION_DENIED, cmd->args[0]); // part of test
-		//exit(126);
+		exit_code = handle_error(E_PERMISSION_DENIED, cmd->args[0]);
 	else
-		exit_code = handle_file_error(cmd->args[0], strerror(errno)); // part of test
-		//exit(127);
+		exit_code = handle_file_error(cmd->args[0], strerror(errno));
 	free_char_array(envp);
 	exit(exit_code);
 }
