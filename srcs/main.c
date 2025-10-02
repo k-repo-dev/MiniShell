@@ -22,7 +22,8 @@ int	main(int ac, char *av[], char **envp)
 	if (env_list)
 		free_env_list(env_list);
 	// printf("bye-bye\n");
-	return (exit_code);
+	// return (exit_code);
+	exit(exit_code);
 }
 
 static int	run_minishell_loop(t_env **env_list)

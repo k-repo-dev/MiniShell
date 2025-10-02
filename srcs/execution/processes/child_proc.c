@@ -24,6 +24,7 @@ void	child_proc(t_command *cmd, t_env **env, int in_fd, int *pipe_fds)
 		exit(exit_status);
 	}
 	execve_wrapper(cmd, env);
-	perror("minishell");
-	exit(127);
+	handle_error(E_CMD_NOT_FOUND, cmd->args[0]);
+	// perror("minishell");
+	// exit(127);
 }
