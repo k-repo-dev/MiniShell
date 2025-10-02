@@ -22,12 +22,12 @@ void	execve_wrapper(t_command *cmd, t_env **env_list)
 	// free_char_array(envp);
 	if (errno == EACCES)
 		exit_code = handle_error(E_PERMISSION_DENIED, cmd->args[0]);
-			// part of test
-																		// exit(126);
+	// part of test
+	// exit(126);
 	else
 		exit_code = handle_file_error(cmd->args[0], strerror(errno));
-			// part of test
-																		// exit(127);
+	// part of test
+	// exit(127);
 	free_char_array(envp);
 	exit(exit_code);
 }
