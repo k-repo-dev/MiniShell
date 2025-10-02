@@ -35,10 +35,11 @@ static size_t	handle_single_quotes(const char *str, int *i)
 	while (str[*i] && str[*i] != '\'')
 	{
 		len++;
-		i++;
+		(*i)++;
 	}
 	if (str[*i] == '\'')
 		len++;
+	(*i)++;
 	return (len);
 }
 
