@@ -39,11 +39,7 @@ int	ft_export(t_command *cmd, t_env **env_list)
 			return (1);
 		equals_sign = ft_strchr(cmd->args[i], '=');
 		if (!is_valid_env_name(cmd->args[i]))
-		{
-			// printf("minishell: export: '%s': not a valid identifier\n",
-			// 	cmd->args[i]);
-			exit_status = 1;
-		}
+			exit_status = handle_export_error(cmd->args[i]);
 		else if (!equals_sign)
 		{
 			if (get_env_value(*env_list, cmd->args[i]) == NULL)

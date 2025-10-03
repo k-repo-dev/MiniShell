@@ -103,3 +103,11 @@ int	handle_file_error(const char *filename, const char *msg)
 	ft_putstr_fd("\n", 2);
 	return (1);
 }
+
+int	handle_export_error(const char *arg)
+{
+	ft_putstr_fd("minishell: export: `", 2);
+	ft_putstr_fd((char *)arg, 2);
+	ft_putstr_fd("`: not a valid identifier\n", 2);
+	return (1);
+}
