@@ -49,7 +49,7 @@ int	add_redir_to_cmd(t_command *cmd, t_token **token, t_arena *arena)
 	new_redir->type = (*token)->type;
 	if (!(*token)->next || !(*token)->next->value)
 	{
-		ft_putstr_fd("syntax error: redirection requires argument\n", 2);
+		// ft_putstr_fd("syntax error: redirection requires argument\n", 2);
 		return (1);
 	}
 	if (new_redir->type == HEREDOC_TOKEN)

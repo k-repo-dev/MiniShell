@@ -58,7 +58,7 @@ static int	process_token(t_command **current_cmd, t_token **current_token,
 
 static int	redir_handler(t_command *cmd, t_token **token, t_arena *arena)
 {
-	if (!(*token)->next)
+	if (!(*token)->next || !(*token)->next->value)
 		return (handle_error(E_SYNTAX_ERROR, "missing filename"));
 	if (add_redir_to_cmd(cmd, token, arena) != 0)
 		return (1);
