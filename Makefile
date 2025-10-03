@@ -1,6 +1,6 @@
 # Compiler
 CC		:= cc
-CFLAGS	:= -Wall -Wextra -Werror -Iincls -Ilibft/incls
+CFLAGS	:= -g -Wall -Wextra -Werror -Iincls -Ilibft/incls
 
 # Directories
 OBJDIR	:= objs

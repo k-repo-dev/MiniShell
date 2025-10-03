@@ -22,15 +22,15 @@ char		*get_env_value(t_env *env_list, const char *key);
 t_env	*find_env_node(t_env *env_list, const char *key);
 
 // Function prototypes from memory_arena.c
-void		*alloc_arena(t_arena *arena, size_t size);
+void		*alloc_arena(t_arena *arena, size_t initial_size);
 int			init_arena(t_arena *arena, size_t size);
 char		*arena_strdup(t_arena *arena, const char *str);
 void		free_arena(t_arena *arena);
-char		*arena_itoa(int n, t_arena *arena);
 
 // Function prortypes from memory_utils.c
 size_t		ft_counter(long long n);
 char		*arena_strndup(t_arena *arena, const char *s1, size_t n);
+char		*arena_itoa(int n, t_arena *arena);
 
 // Function prototypes from tokenizer.c
 t_token		*tokenizer(const char *line, t_arena *arena);

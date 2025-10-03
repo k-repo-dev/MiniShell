@@ -1,31 +1,40 @@
 #include "../../incls/prototypes.h"
 
-int	init_arena(t_arena *arena, size_t size)
+static t_arena_chunk	*allocate_new_chunk(t_arena *arena, size_t min_size);
+
+int	init_arena(t_arena *arena, size_t initial_size)
 {
-	if (arena == NULL || size == 0)
-	{
-		//ft_putstr_fd(ARENA_ERR, 2);
+	if (arena == NULL)
 		return (-1);
-	}
-	arena->buffer = (char *)malloc(size);
-	if (arena->buffer == NULL)
-	{
-		//ft_putstr_fd(ALLOC_ERR, 2);
+	arena->head = NULL;
+	arena->current = NULL;
+	arena->chunk_size = ARENA_DEFAULT_CHUNK_SIZE;
+	if (initial_size > arena->chunk_size)
+		arena->chunk_size = initial_size;
+	if (!allocate_new_chunk(arena, initial_size))
 		return (-1);
-	}
-	arena->size = size;
-	arena->offset = 0;
 	return (0);
 }
 
 void	*alloc_arena(t_arena *arena, size_t size)
 {
-	void	*ptr;
+	t_arena_chunk	*chunk;
+	void			*ptr;
 
-	if (arena->offset + size > arena->size)
+	if (arena == NULL || size == 0)
 		return (NULL);
-	ptr = arena->buffer + arena->offset;
-	arena->offset += size;
+	chunk = arena->current;
+	if (chunk->offset + size <= chunk->size)
+	{
+		ptr = chunk->buffer + chunk->offset;
+		chunk->offset += size;
+		return (ptr);
+	}
+	chunk = allocate_new_chunk(arena, size);
+	if (!chunk)
+		return (NULL);
+	ptr = chunk->buffer + chunk->offset;
+	chunk->offset += size;
 	return (ptr);
 }
 
@@ -45,39 +54,49 @@ char	*arena_strdup(t_arena *arena, const char *str)
 
 void	free_arena(t_arena *arena)
 {
-	if (arena && arena->buffer)
+	t_arena_chunk	*current_chunk;
+	t_arena_chunk	*next_chunk;
+
+	if (arena == NULL)
+		return ;
+	current_chunk = arena->head;
+	while (current_chunk)
 	{
-		free(arena->buffer);
-		arena->buffer = NULL;
-		arena->size = 0;
-		arena->offset = 0;
+		next_chunk = current_chunk->next;
+		if (current_chunk->buffer)
+			free(current_chunk->buffer);
+		free(current_chunk);
+		current_chunk = next_chunk;
 	}
+	arena->head = NULL;
+	arena->current = NULL;
+	arena->chunk_size = 0;
 }
 
-char	*arena_itoa(int n, t_arena *arena)
+static t_arena_chunk	*allocate_new_chunk(t_arena *arena, size_t min_size)
 {
-	char		*result;
-	size_t		len;
-	long long	tmp_n;
+	t_arena_chunk	*new_chunk;
+	size_t			chunk_size;
 
-	tmp_n = (long long)n;
-	len = ft_counter(tmp_n);
-	result = alloc_arena(arena, len + 1);
-	if (result == NULL)
+	chunk_size = ARENA_DEFAULT_CHUNK_SIZE;
+	if (min_size > chunk_size)
+		chunk_size = min_size;
+	new_chunk = (t_arena_chunk *)malloc(sizeof(t_arena_chunk));
+	if (!new_chunk)
 		return (NULL);
-	if (tmp_n == 0)
-		result[0] = '0';
-	if (tmp_n < 0)
+	new_chunk->buffer = (char *)malloc(chunk_size);
+	if (!new_chunk->buffer)
 	{
-		tmp_n *= -1;
-		result[0] = '-';
+		free(new_chunk);
+		return (NULL);
 	}
-	result[len] = '\0';
-	while (len > 0 && tmp_n != 0)
-	{
-		result[len - 1] = (tmp_n % 10) + '0';
-		tmp_n = tmp_n / 10;
-		len--;
-	}
-	return (result);
+	new_chunk->size = chunk_size;
+	new_chunk->offset = 0;
+	new_chunk->next = NULL;
+	if (arena->current)
+		arena->current->next = new_chunk;
+	else
+		arena->head = new_chunk;
+	arena->current = new_chunk;
+	return (new_chunk);
 }
