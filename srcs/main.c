@@ -82,7 +82,7 @@ static int	execute_line_logic(t_env **env_list, char **line, int *exit_status)
 	int			error_status;
 
 	ft_memset(&arena, 0, sizeof(t_arena));
-	init_arena(&arena, (ft_strlen(*line) * 2) + 4096);
+	init_arena(&arena, 1024);
 	token_list = tokenizer(*line, &arena);
 	if (token_list == NULL)
 	{
