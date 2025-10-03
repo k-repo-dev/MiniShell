@@ -91,6 +91,12 @@ static int	execute_line_logic(t_env **env_list, char **line, int *exit_status)
 		free_arena(&arena);
 		return (-1);
 	}
+	if (check_syntax(token_list) != 0)
+	{
+		*exit_status = 258;
+		free_arena(&arena);
+		return (-1);
+	}
 	cmd_list = parse_commands(token_list, &arena);
 	if (cmd_list == NULL)
 	{
