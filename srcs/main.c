@@ -22,7 +22,8 @@ int	main(int ac, char *av[], char **envp)
 	if (env_list)
 		free_env_list(env_list);
 	// printf("bye-bye\n");
-	return (exit_code);
+	// return (exit_code);
+	exit(exit_code);
 }
 
 static int	run_minishell_loop(t_env **env_list)
@@ -44,10 +45,16 @@ static int	process_input(t_env **env_list, int *exit_status)
 	char	*line;
 	int		command_result;
 
-	line = readline("my_prompt> ");
+	if (isatty(fileno(stdin)))
+		line = readline("my_prompt> ");
+	else
+	{
+		line = get_next_line(fileno(stdin));
+		line = ft_strtrim(line, "\n");
+	}
 	if (line == NULL)
 	{
-		printf("exit\n");
+		// printf("exit\n");
 		rl_clear_history();
 		return (*exit_status);
 	}

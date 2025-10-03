@@ -18,6 +18,7 @@ int		handle_builtins(t_command *cmd, t_env **env_list, int last_status);
 void	cleanup_redirs(t_command *cmd_list);
 void	free_char_array(char **arr);
 int		is_builtin(const char *cmd);
+int		is_valid_env_name(const char *name);
 
 // Builtins Parent
 int		ft_export(t_command *cmd, t_env **env_list);
@@ -27,7 +28,7 @@ int		ft_cd(t_command *cmd, t_env **env_list);
 // Builtins Safe to run in child
 int		builtin_echo(t_command *cmd);
 int		ft_pwd(void);
-int		ft_env(t_env *env_list);
+int		ft_env(t_command *cmd, t_env *env_list);
 int		ft_exit(t_command *cmd, int last_status);
 
 // Builtin helpers

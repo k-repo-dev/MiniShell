@@ -1,6 +1,6 @@
 #include "../../../incls/prototypes.h"
 
-static int	is_valid_env_name(const char *name)
+int	is_valid_env_name(const char *name)
 {
 	int	i;
 
@@ -40,8 +40,8 @@ int	ft_export(t_command *cmd, t_env **env_list)
 		equals_sign = ft_strchr(cmd->args[i], '=');
 		if (!is_valid_env_name(cmd->args[i]))
 		{
-			printf("mini: export: `%s': not a valid identifier\n",
-				cmd->args[i]);
+			// printf("minishell: export: '%s': not a valid identifier\n",
+			// 	cmd->args[i]);
 			exit_status = 1;
 		}
 		else if (!equals_sign)

@@ -15,7 +15,7 @@ int	handle_builtins(t_command *cmd, t_env **env_list, int last_status)
 	else if (ft_strcmp(cmd->args[0], "unset") == 0)
 		return (ft_unset(cmd, env_list));
 	else if (ft_strcmp(cmd->args[0], "env") == 0)
-		return (ft_env(*env_list));
+		return (ft_env(cmd, *env_list));
 	else if (ft_strcmp(cmd->args[0], "exit") == 0)
 		return (ft_exit(cmd, last_status));
 	return (handle_error(E_CMD_NOT_FOUND, cmd->args[0]));
