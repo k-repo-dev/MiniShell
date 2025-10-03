@@ -3,7 +3,7 @@
 int	ft_exit(t_command *cmd, int last_status)
 {
 	(void)last_status;
-	ft_putstr_fd("exit\n", 1);
+	//ft_putstr_fd("exit\n", 1);
 	if (cmd->args[1])
 	{
 		if (cmd->args[2])
