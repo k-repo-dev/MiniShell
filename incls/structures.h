@@ -3,6 +3,8 @@
 
 # include "minishell.h"
 
+# define ARENA_DEFAULT_CHUNK_SIZE 4 * 1024 * 1024
+
 typedef struct sigaction	t_sa;
 
 typedef struct s_signal
@@ -42,11 +44,19 @@ typedef struct s_command
 	struct s_command		*next;
 }							t_command;
 
-typedef struct s_arena
+typedef	struct	s_arena_chunk
 {
 	char					*buffer;
 	size_t					size;
 	size_t					offset;
+	struct s_arena_chunk	*next;
+}	t_arena_chunk;
+
+typedef struct s_arena
+{
+	t_arena_chunk			*head;
+	t_arena_chunk			*current;
+	size_t					chunk_size;
 }							t_arena;
 
 typedef struct s_env

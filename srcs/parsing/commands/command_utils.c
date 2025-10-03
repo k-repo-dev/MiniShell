@@ -10,11 +10,18 @@ void	add_arg_to_cmd(t_command *cmd, t_token *token, t_arena *arena)
 	int		i;
 	int		count;
 
+	/*if (!cmd || !token || !arena)
+	{
+		ft_putstr_fd("add_arg_to_cmd: NULL pointer received\n", 2);
+		return ;
+	}*/
 	count = 0;
 	if (cmd->args)
 		while (cmd->args[count])
 			count++;
 	new_args = alloc_arena(arena, sizeof(char *) * (count + 2));
+	if (!new_args)
+		return ;
 	i = 0;
 	while (i < count)
 	{
@@ -22,6 +29,8 @@ void	add_arg_to_cmd(t_command *cmd, t_token *token, t_arena *arena)
 		i++;
 	}
 	new_args[i] = arena_strdup(arena, token->value);
+	if (!new_args[i])
+		return ;
 	new_args[i + 1] = NULL;
 	cmd->args = new_args;
 }
