@@ -38,6 +38,7 @@ int		count_cmds(t_command *cmd_list);
 t_env	**stack_to_array(t_env *env_list, int size);
 void	bubble_sort(t_env **array, int size);
 int		ft_listsize(t_env *list);
+int		handle_export_error(const char *arg);
 
 // Pipes & Redirections
 int		execute_pipeline(t_command *md_list, t_env **env_list);

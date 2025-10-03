@@ -3,7 +3,6 @@
 static char	*handle_heredoc(const char *delimiter);
 static void	heredoc_warning(const char *delimiter);
 static int	get_heredoc_id(void);
-static char	*get_stripped_delimiter(const char *raw_delimiter);
 
 void	add_arg_to_cmd(t_command *cmd, t_token *token, t_arena *arena)
 {
@@ -40,26 +39,19 @@ int	add_redir_to_cmd(t_command *cmd, t_token **token, t_arena *arena)
 {
 	t_redir	*new_redir;
 	t_redir	*current_redir;
-	char	*delimiter_to_pass;
 
 	new_redir = alloc_arena(arena, sizeof(t_redir));
 	if (!new_redir)
 		return (1);
 	ft_memset(new_redir, 0, sizeof(t_redir));
 	new_redir->type = (*token)->type;
-	if (!(*token)->next || !(*token)->next->value)
+	if (!*token)
 	{
 		// ft_putstr_fd("syntax error: redirection requires argument\n", 2);
 		return (1);
 	}
 	if (new_redir->type == HEREDOC_TOKEN)
-	{
-		delimiter_to_pass = get_stripped_delimiter((*token)->next->value);
-		if (!delimiter_to_pass)
-			return (1);
-		new_redir->filename = handle_heredoc(delimiter_to_pass);
-		free(delimiter_to_pass);
-	}
+		new_redir->filename = handle_heredoc((*token)->next->value);
 	else
 		new_redir->filename = arena_strdup(arena, (*token)->next->value);
 	if (!new_redir->filename)
@@ -138,26 +130,4 @@ static void	heredoc_warning(const char *delimiter)
 		2);
 	ft_putstr_fd(delimiter, 2);
 	ft_putstr_fd("')\n", 2);
-}
-
-static char *get_stripped_delimiter(const char *raw_delimiter)
-{
-	size_t		len;
-	const char	*start;
-	char		*stripped;
-
-	len = ft_strlen(raw_delimiter);
-	if (len >= 2 && ((raw_delimiter[0] == '\'' && raw_delimiter[len - 1] == '\'')
-		|| (raw_delimiter[0] == '"' && raw_delimiter[len - 1] == '"')))
-	{
-		start = raw_delimiter + 1;
-		len -= 2;
-	}
-	else
-		start = raw_delimiter;
-	stripped = (char *)malloc(len + 1);
-	if (!stripped)
-		return (NULL);
-	ft_strlcpy(stripped, start, len + 1);
-	return (stripped);
 }
