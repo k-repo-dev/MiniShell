@@ -86,7 +86,6 @@ static int	execute_line_logic(t_env **env_list, char **line, int *exit_status)
 	token_list = tokenizer(*line, &arena);
 	if (token_list == NULL)
 	{
-		printf("did we go here1\n");
 		error_status = handle_error(E_SYNTAX_ERROR, NULL);
 		*exit_status = error_status;
 		free_arena(&arena);
