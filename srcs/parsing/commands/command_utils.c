@@ -10,6 +10,11 @@ void	add_arg_to_cmd(t_command *cmd, t_token *token, t_arena *arena)
 	int		i;
 	int		count;
 
+	if (!cmd || !token || !arena)
+	{
+		ft_putstr_fd("add_arg_to_cmd: NULL pointer received\n", 2);
+		return ;
+	}
 	count = 0;
 	if (cmd->args)
 		while (cmd->args[count])

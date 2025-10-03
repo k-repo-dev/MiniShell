@@ -4,11 +4,11 @@ static int	is_valid_env_name(const char *name)
 {
 	int	i;
 
-	i = 0;
 	if (!name || !name[0])
 		return (0);
 	if (!(ft_isalpha(name[0]) || name[0] == '_'))
 		return (0);
+	i = 1;
 	while (name[i] && name[i] != '=')
 	{
 		if (!(ft_isalnum(name[i]) || name[i] == '_'))
