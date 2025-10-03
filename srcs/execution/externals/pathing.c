@@ -62,16 +62,17 @@ char	*cmd_path_search(char **paths, char *cmd)
 	return (NULL);
 }
 
-// unused
 char	*cmd_check(char *cmd, t_env **env)
 {
 	char	*path_env;
 	char	**paths;
 	char	*result;
 
-	result = check_absolute_path(cmd);
-	if (result)
+	if (cmd && (cmd[0] == '/' || cmd[0] == '.'))
+	{
+		result = check_absolute_path(cmd);
 		return (result);
+	}
 	path_env = cmd_findpath(*env);
 	if (!path_env)
 		return (NULL);
