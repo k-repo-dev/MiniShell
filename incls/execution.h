@@ -18,6 +18,7 @@ int		handle_builtins(t_command *cmd, t_env **env_list, int last_status);
 void	cleanup_redirs(t_command *cmd_list);
 void	free_char_array(char **arr);
 int		is_builtin(const char *cmd);
+int		is_valid_env_name(const char *name);
 
 // Builtins Parent
 int		ft_export(t_command *cmd, t_env **env_list);

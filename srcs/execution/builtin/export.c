@@ -1,6 +1,6 @@
 #include "../../../incls/prototypes.h"
 
-static int	is_valid_env_name(const char *name)
+int	is_valid_env_name(const char *name)
 {
 	int	i;
 
