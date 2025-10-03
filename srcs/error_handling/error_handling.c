@@ -8,10 +8,16 @@ static int	handle_unhandled_error(void);
 int	handle_error(t_error_type type, const char *arg)
 {
 	ft_putstr_fd("minishell: ", 2);
+	if (arg && *arg && type != E_CMD_NOT_FOUND && type != E_EMPTY_CMD
+		&& type != E_FILE_NOT_FOUND && type != E_FILE_PERMISSION)
+	{
+		ft_putstr_fd((char *)arg, 2);
+		ft_putstr_fd(": ", 2);
+	}
 	if (type == E_CMD_NOT_FOUND || type == E_EMPTY_CMD)
 	{
 		if (!arg || !*arg)
-			ft_putstr_fd(":command not found\n", 2);
+			ft_putstr_fd(": command not found\n", 2);
 		else
 		{
 			ft_putstr_fd((char *)arg, 2);
@@ -19,10 +25,12 @@ int	handle_error(t_error_type type, const char *arg)
 		}
 		return (127);
 	}
-	if (arg && *arg)
+	if (type == E_FILE_NOT_FOUND || type == E_FILE_PERMISSION)
 	{
-		ft_putstr_fd((char *)arg, 2);
-		ft_putstr_fd(": ", 2);
+		if (type == E_FILE_NOT_FOUND)
+			return (handle_file_error(arg, "No such file or directory"));
+		else
+			return (handle_file_error(arg, "Permission denied"));
 	}
 	if (type == E_PERMISSION_DENIED || type == E_SYNTAX_ERROR)
 		return (handle_system_errors(type));

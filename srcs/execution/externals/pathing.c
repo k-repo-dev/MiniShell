@@ -6,8 +6,15 @@ char	*check_absolute_path(const char *cmd)
 		return (NULL);
 	if (cmd[0] == '/' || cmd[0] == '.')
 	{
-		if (access(cmd, X_OK) == 0)
-			return (ft_strdup(cmd));
+		if (access(cmd, F_OK) == 0)
+		{
+			if (access(cmd, X_OK) == 0)
+				return (ft_strdup(cmd));
+			else
+				errno = EACCES;
+		}
+		else
+			errno = ENOENT;
 		return (NULL);
 	}
 	return (NULL);
