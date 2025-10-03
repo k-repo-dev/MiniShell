@@ -62,7 +62,6 @@ char	*cmd_path_search(char **paths, char *cmd)
 	return (NULL);
 }
 
-// unused
 char	*cmd_check(char *cmd, t_env **env)
 {
 	char	*path_env;
