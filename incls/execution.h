@@ -27,7 +27,7 @@ int		ft_cd(t_command *cmd, t_env **env_list);
 // Builtins Safe to run in child
 int		builtin_echo(t_command *cmd);
 int		ft_pwd(void);
-int		ft_env(t_env *env_list);
+int		ft_env(t_command *cmd, t_env *env_list);
 int		ft_exit(t_command *cmd, int last_status);
 
 // Builtin helpers
