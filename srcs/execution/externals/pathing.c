@@ -6,8 +6,15 @@ char	*check_absolute_path(const char *cmd)
 		return (NULL);
 	if (cmd[0] == '/' || cmd[0] == '.')
 	{
-		if (access(cmd, X_OK) == 0)
-			return (ft_strdup(cmd));
+		if (access(cmd, F_OK) == 0)
+		{
+			if (access(cmd, X_OK) == 0)
+				return (ft_strdup(cmd));
+			else
+				errno = EACCES;
+		}
+		else
+			errno = ENOENT;
 		return (NULL);
 	}
 	return (NULL);
@@ -68,9 +75,11 @@ char	*cmd_check(char *cmd, t_env **env)
 	char	**paths;
 	char	*result;
 
-	result = check_absolute_path(cmd);
-	if (result)
+	if (cmd && (cmd[0] == '/' || cmd[0] == '.'))
+	{
+		result = check_absolute_path(cmd);
 		return (result);
+	}
 	path_env = cmd_findpath(*env);
 	if (!path_env)
 		return (NULL);
