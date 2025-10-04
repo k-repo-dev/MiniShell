@@ -108,10 +108,12 @@ static int	execute_line_logic(t_env **env_list, char **line, int *exit_status)
 	expand_commands(cmd_list, &arena, *exit_status, *env_list);
 	command_status = parent_loop(cmd_list, env_list, *exit_status);
 	final_exit_code_signal = -1;
-	handle_exit_command(cmd_list, command_status, &final_exit_code_signal);
-	free_arena(&arena);
-	if (final_exit_code_signal != -1)
+	if (handle_exit_command(cmd_list, command_status, &final_exit_code_signal))
+	{
+		free_arena(&arena);
 		return (final_exit_code_signal);
+	}
+	free_arena(&arena);
 	*exit_status = command_status;
 	return (-1);
 }
@@ -135,11 +137,6 @@ static int	handle_exit_command(t_command *cmd_list, int exit_status,
 			rl_clear_history();
 			return (1);
 		}
-	}
-	else if (exit_status == 2)
-	{
-		*final_exit_code = 2;
-		return (1);
-	}
+	}	
 	return (0);
 }

@@ -24,7 +24,7 @@ int	check_syntax(t_token	*token_head)
 				handle_error(E_SYNTAX_ERROR, get_token_value(current->next));
 				return (1);
 			}
-			else if (current->type != PIPE_TOKEN || current->next->type != PIPE_TOKEN)
+			else if (current->type != PIPE_TOKEN)
 			{
 				handle_error(E_SYNTAX_ERROR, get_token_value(current->next));
 				return (1);
