@@ -1,5 +1,7 @@
 #include "../../../incls/prototypes.h"
 
+static int	ft_exp(t_command *cmd, t_env **env_list, int i, int exit_status);
+
 int	is_valid_env_name(const char *name)
 {
 	int	i;
@@ -20,10 +22,8 @@ int	is_valid_env_name(const char *name)
 
 int	ft_export(t_command *cmd, t_env **env_list)
 {
-	int		i;
-	char	*equals_sign;
-	int		exit_status;
-	char	*arg_copy;
+	int	i;
+	int	exit_status;
 
 	i = 1;
 	exit_status = 0;
@@ -34,23 +34,7 @@ int	ft_export(t_command *cmd, t_env **env_list)
 	}
 	while (cmd->args[i])
 	{
-		arg_copy = ft_strdup(cmd->args[i]);
-		if (!arg_copy)
-			return (1);
-		equals_sign = ft_strchr(cmd->args[i], '=');
-		if (!is_valid_env_name(cmd->args[i]))
-			exit_status = handle_export_error(cmd->args[i]);
-		else if (!equals_sign)
-		{
-			if (get_env_value(*env_list, cmd->args[i]) == NULL)
-				add_env_node(env_list, cmd->args[i], NULL);
-		}
-		else
-		{
-			*equals_sign = '\0';
-			add_env_node(env_list, arg_copy, equals_sign + 1);
-		}
-		free(arg_copy);
+		exit_status = ft_exp(cmd, env_list, i, exit_status);
 		i++;
 	}
 	return (exit_status);
@@ -103,4 +87,29 @@ void	bubble_sort(t_env **array, int size)
 		}
 		i++;
 	}
+}
+
+static int	ft_exp(t_command *cmd, t_env **env_list, int i, int exit_status)
+{
+	char *equals_sign;
+	char *arg_copy;
+
+	arg_copy = ft_strdup(cmd->args[i]);
+	if (!arg_copy)
+		return (1);
+	equals_sign = ft_strchr(arg_copy, '=');
+	if (!is_valid_env_name(cmd->args[i]))
+		exit_status = handle_export_error(cmd->args[i]);
+	else if (!equals_sign)
+	{
+		if (get_env_value(*env_list, cmd->args[i]) == NULL)
+			add_env_node(env_list, cmd->args[i], NULL);
+	}
+	else
+	{
+		*equals_sign = '\0';
+		add_env_node(env_list, arg_copy, equals_sign + 1);
+	}
+	free(arg_copy);
+	return (exit_status);
 }
