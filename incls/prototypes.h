@@ -43,6 +43,9 @@ t_command	*parse_commands(t_token *token_head, t_arena *arena);
 void		add_arg_to_cmd(t_command *cmd, t_token *token, t_arena *arena);
 int		add_redir_to_cmd(t_command *cmd, t_token **token, t_arena *arena);
 
+// Function prototypes from syntax.c
+int	check_syntax(t_token	*token_head);
+
 // Function prototypes from env_vars.c
 void		expand_commands(t_command *cmd_list, t_arena *arena,
 				int exit_status, t_env *env_list);
