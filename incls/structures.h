@@ -5,12 +5,7 @@
 
 # define ARENA_DEFAULT_CHUNK_SIZE 4 * 1024 * 1024
 
-typedef struct sigaction	t_sa;
-
-typedef struct s_signal
-{
-	volatile sig_atomic_t	signal_received;
-}							t_signal;
+extern volatile sig_atomic_t	g_signal_status;
 
 typedef enum e_token_type
 {

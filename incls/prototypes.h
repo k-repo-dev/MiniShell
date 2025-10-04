@@ -8,7 +8,7 @@
 
 // Function prototypes in signal.c
 int			init_sigaction(void (*handler)(int));
-void		handle_sigint(int sig);
+void		handle_sigint(int signum);
 
 // Function Prototypes from env_list.c
 t_env		*init_env_list(char **envp);

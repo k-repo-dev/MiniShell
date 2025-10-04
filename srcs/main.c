@@ -45,16 +45,32 @@ static int	process_input(t_env **env_list, int *exit_status)
 	char	*line;
 	int		command_result;
 
+	if (g_signal_status == SIGINT)
+	{
+		g_signal_status = 0;
+		*exit_status = 130;
+	}
 	if (isatty(fileno(stdin)))
 		line = readline("my_prompt> ");
 	else
 	{
 		line = get_next_line(fileno(stdin));
-		line = ft_strtrim(line, "\n");
+		if (line)
+			line = ft_strtrim(line, "\n");
+	}
+	if (g_signal_status == SIGINT)
+	{
+		g_signal_status = 0;
+		*exit_status = 130;
+		if (line)
+			free(line);
+		printf("\n");
+		return (-1);
 	}
 	if (line == NULL)
 	{
-		// printf("exit\n");
+		if (isatty(fileno(stdin)))
+			write(STDERR_FILENO, "exit\n", 5);
 		rl_clear_history();
 		return (*exit_status);
 	}
